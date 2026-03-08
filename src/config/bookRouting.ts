@@ -8,7 +8,7 @@ export const BOOK_ROUTING = {
     amazon: {
       name: 'Amazon',
       // We can use the existing env var or hardcode the Amazon link here
-      url: import.meta.env.VITE_BOOK_ORDER_URL || 'https://amazon.com', 
+      url: 'https://a.co/d/060Q44O2', 
       buttonText: 'Yes — Get The Book on Amazon',
       description: 'Get the physical book shipped fast via Amazon.'
     },
