@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { fireOptInWebhook, fireBookBumpWebhook } from '@/lib/webhooks';
 import { ValueStack } from './ValueStack';
+import { getActiveBookRoute } from '@/config/bookRouting';
 
 interface OptInFormProps {
   path: 'architect' | 'operator';
