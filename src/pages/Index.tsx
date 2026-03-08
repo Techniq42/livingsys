@@ -29,6 +29,7 @@ const Index = () => {
       ) : (
         <>
           <StoryBlock />
+          <ProofBlock />
           <ReHookBlock />
           <OfferBlock />
         </>
