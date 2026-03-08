@@ -8,7 +8,7 @@ export function ReHookBlock() {
           The gatekeeper didn't hold knowledge. It held the map.
         </h2>
 
-        <div className="space-y-6 text-muted-foreground leading-relaxed text-base md:text-lg">
+        <div className="space-y-6 text-muted-foreground leading-relaxed text-lg md:text-xl">
           <p>
             There are networks of regenerative practitioners across the globe with hundreds of videos, case studies, and field-tested knowledge. Know what they don't have? Any system to connect those resources with people who need them. No way to extract knowledge across a common network. And most of the world doesn't have access to that network even if they did.
           </p>

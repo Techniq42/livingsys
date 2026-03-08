@@ -18,7 +18,7 @@ export function OfferBlock() {
           Free. Because coordination tools should be free.
         </p>
 
-        <div className="space-y-6 text-muted-foreground leading-relaxed text-base md:text-lg mb-12">
+        <div className="space-y-6 text-muted-foreground leading-relaxed text-lg md:text-xl mb-12">
           <p>
             The Sovereign Patch Codex is a curated body of knowledge: coordination frameworks, implementation guides, technology deployment protocols, and the pattern recognition tools developed across thirty years of edge-runner systems work. From Army arms rooms to Kenyan community centers to Colorado soil labs.
           </p>
@@ -32,7 +32,7 @@ export function OfferBlock() {
 
         <button
           onClick={scrollToTop}
-          className="inline-flex items-center gap-2 text-primary font-display tracking-wider text-sm border border-primary px-6 py-3 rounded-sm hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 text-primary font-display tracking-wider text-base border border-primary px-6 py-3 rounded-sm hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"
         >
           Choose your path
           <ChevronDown className="w-4 h-4 animate-scroll-bounce rotate-180" />

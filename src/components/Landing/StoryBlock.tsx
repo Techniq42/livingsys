@@ -8,7 +8,7 @@ export function StoryBlock() {
           Someone figured it out. In an Army arms room in 1994.
         </h2>
 
-        <div className="space-y-6 text-muted-foreground leading-relaxed text-base md:text-lg">
+        <div className="space-y-6 text-muted-foreground leading-relaxed text-lg md:text-xl">
           <p>
             A supply sergeant at Fort Bragg was sitting on resources other units desperately needed. Official channels said impossible. Informal coordination made it routine. He earned an Army Achievement Medal for solving "impossible" security challenges — not by following procedures, but by building coordination networks across units with complementary resources.
           </p>
