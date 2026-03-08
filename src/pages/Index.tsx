@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { HeroFork } from '@/components/Landing/HeroFork';
 import { StoryBlock } from '@/components/Landing/StoryBlock';
 import { ReHookBlock } from '@/components/Landing/ReHookBlock';
+import { ProofBlock } from '@/components/Landing/ProofBlock';
 import { OfferBlock } from '@/components/Landing/OfferBlock';
 
 import { OptInForm } from '@/components/OptIn/OptInForm';

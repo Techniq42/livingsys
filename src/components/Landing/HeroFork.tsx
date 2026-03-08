@@ -44,11 +44,11 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
 
             <ul className="space-y-2 mb-6 text-sm">
               {[
-                'Complete n8n automation workflows',
-                'Open-source infrastructure — no vendor lock-in',
-                'GitHub repository access — fork and own it',
-                'Full documentation and deployment guides',
-                'Community support from other builders',
+                'Own your data — no platform can lock you out',
+                'Fork the entire stack and run it on your terms',
+                'Connect any community to coordination tools',
+                'Swap any service without breaking the system',
+                'Built by practitioners, not consultants',
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-foreground">
                   <span className="text-primary mt-0.5">✓</span>
