@@ -91,7 +91,7 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
             </ul>
 
             {/* Affiliate Disclosure — ABOVE the CTA */}
-            <div className="bg-secondary/10 border border-secondary/30 rounded-sm px-3 py-2 mb-4 text-[11px] text-secondary leading-relaxed">
+            <div className="bg-secondary/10 border border-secondary/30 rounded-sm px-3 py-2 mb-4 text-[13px] text-secondary leading-relaxed">
               ⚠ Disclosure: FLS has an affiliate relationship with GoHighLevel. We use it ourselves and built this system on it. You pay the same price either way — and the Architect path exists because we believe you should always have a way out.
             </div>
 
