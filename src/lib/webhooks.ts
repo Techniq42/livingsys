@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 // N8N ROUTING MAP
 // 
@@ -21,11 +21,11 @@ import { supabase } from './supabase';
 
 async function logWebhookError(eventType: string, payload: unknown, errorMessage: string) {
   try {
-    await supabase.from('webhook_errors').insert({
+    await supabase.from('webhook_errors').insert([{
       event_type: eventType,
-      payload: payload as Record<string, unknown>,
+      payload: JSON.parse(JSON.stringify(payload)),
       error_message: errorMessage,
-    });
+    }]);
   } catch (e) {
     console.error('Failed to log webhook error:', e);
   }

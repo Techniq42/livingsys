@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { AuthPage } from '@/components/Auth/AuthPage';
 import { DashboardSidebar } from '@/components/Dashboard/DashboardSidebar';
 import { CodexChat } from '@/components/Dashboard/CodexChat';

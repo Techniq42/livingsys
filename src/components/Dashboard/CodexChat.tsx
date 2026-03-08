@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { fireCodexQuery } from '@/lib/webhooks';
 
 interface Message {
