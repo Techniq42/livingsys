@@ -25,8 +25,8 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
           <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold font-display leading-tight text-foreground text-balance">
             The food system isn't broken. It was never designed to do what you think it was.
           </h1>
-          <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-3xl leading-relaxed">
-            $970 billion in coordination failure. 700 regenerative videos nobody can find. A $10,000 server that connected an entire village. The tools exist. The routing doesn't. Choose your path to fixing it.
+          <p className="mt-4 text-base md:text-lg text-foreground/70 max-w-3xl leading-relaxed">
+            $970 billion in coordination failure. Hundreds of regenerative videos nobody can find. A $10,000 server that connected an entire village. The tools exist. The routing doesn't. Choose your path forward.
           </p>
         </div>
 
