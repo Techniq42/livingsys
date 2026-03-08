@@ -39,7 +39,7 @@ export async function fireOptInWebhook(lead: {
   phone: string | null;
   path: string;
 }) {
-  const webhookUrl = import.meta.env.VITE_N8N_OPTIN_WEBHOOK_URL;
+  const webhookUrl = import.meta.env.VITE_N8N_OPTIN_WEBHOOK_URL || 'https://living-systems.app.n8n.cloud/webhook/lovable-optin';
   if (!webhookUrl) return;
 
   const payload = {
