@@ -28,21 +28,27 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase
-        .from('leads')
-        .insert({
-          first_name: formData.first_name.trim(),
-          last_name: formData.last_name.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone.trim() || null,
-          path,
-          user_agent: navigator.userAgent,
-          referrer: document.referrer || null,
-        })
-        .select('id')
-        .single();
-
-      if (error) throw error;
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/capture-lead`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            first_name: formData.first_name.trim(),
+            last_name: formData.last_name.trim(),
+            email: formData.email.trim(),
+            phone: formData.phone.trim() || null,
+            path,
+            user_agent: navigator.userAgent,
+            referrer: document.referrer || null,
+          }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Submission failed');
 
       setLeadId(data.id);
       setState('submitted');
