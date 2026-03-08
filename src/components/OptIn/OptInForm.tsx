@@ -110,13 +110,13 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
 
           <div className="border border-border bg-card rounded-sm p-8">
             <p className="text-foreground leading-relaxed mb-6">
-              Want the physical book? It's free — you cover shipping. The kind of thing that ends up dog-eared on a workbench.
+              {getActiveBookRoute().description}
             </p>
             <button
               onClick={handleBookBump}
               className="w-full bg-secondary text-secondary-foreground py-3 rounded-sm font-display text-sm tracking-wider hover:brightness-110 transition-all mb-3 cursor-pointer"
             >
-              Yes — Send Me The Printed Book
+              {getActiveBookRoute().buttonText}
             </button>
             <button
               onClick={onBack}
