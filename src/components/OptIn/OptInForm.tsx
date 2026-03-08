@@ -10,7 +10,7 @@ interface OptInFormProps {
   onBack: () => void;
 }
 
-type FormState = 'form' | 'submitted' | 'bump';
+type FormState = 'form' | 'submitted' | 'bump' | 'operator_redirect';
 
 export function OptInForm({ path, onBack }: OptInFormProps) {
   const [state, setState] = useState<FormState>('form');
