@@ -65,10 +65,10 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
         path,
       });
 
-      // For Architect path, redirect to create account after brief confirmation
       if (path === 'architect') {
         setTimeout(() => navigate('/architect-login'), 3000);
       } else {
+        // Operator path: show transition then redirect to GHL
         setTimeout(() => setState('bump'), 2500);
       }
     } catch (err) {
