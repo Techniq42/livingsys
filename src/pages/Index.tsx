@@ -37,6 +37,8 @@ const Index = () => {
           <OfferBlock />
         </>
       )}
+
+      <Footer />
     </div>
   );
 };
