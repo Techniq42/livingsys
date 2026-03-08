@@ -8,9 +8,12 @@ export function ProofBlock() {
           This isn't theory. It's running in 32 countries.
         </h2>
 
-        <p className="text-muted-foreground text-lg md:text-xl leading-relaxed mb-10 max-w-3xl">
-          HumiSoil's bacterial processing technology was presented at COP28 — converting organic waste into drought-resistant soil amendments across Malaysia, the UAE, and beyond. Watch the field demonstration.
-        </p>
+        <div className="grid lg:grid-cols-[1fr_300px] gap-8 mb-10 items-center">
+          <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-3xl">
+            HumiSoil's bacterial processing technology was presented at COP28 — converting organic waste into drought-resistant soil amendments across Malaysia, the UAE, and beyond. Watch the field demonstration.
+          </p>
+          <img src="/src/assets/images/irrigation-desert.png" alt="Desert irrigation and green growth" className="rounded-sm border border-border/50 object-cover w-full h-full max-h-[250px]" />
+        </div>
 
         {/* 16:9 responsive YouTube embed */}
         <div className="relative w-full overflow-hidden rounded-sm border border-border" style={{ paddingBottom: '56.25%' }}>
