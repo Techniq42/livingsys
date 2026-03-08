@@ -11,7 +11,7 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
       {/* Logo */}
       <a
         href="https://livingsys.org"
-        className="absolute top-8 left-6 md:left-12 lg:left-16 text-xs tracking-[0.25em] uppercase text-muted-foreground font-display hover:text-foreground transition-colors z-10"
+        className="absolute top-8 left-6 md:left-12 lg:left-16 text-xs tracking-[0.25em] uppercase text-foreground/60 font-display hover:text-foreground transition-colors z-10"
       >
         Fellowship of Living Systems
       </a>

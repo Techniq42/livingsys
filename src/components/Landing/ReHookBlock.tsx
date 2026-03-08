@@ -10,7 +10,7 @@ export function ReHookBlock() {
 
         <div className="space-y-6 text-muted-foreground leading-relaxed text-base md:text-lg">
           <p>
-            Bloom Network has 700 videos from regenerative practitioners across the globe. Know what they don't have? Any system to connect those videos with people who need them. No way to extract knowledge across a common network. And most of the world doesn't have access to that network even if they did.
+            There are networks of regenerative practitioners across the globe with hundreds of videos, case studies, and field-tested knowledge. Know what they don't have? Any system to connect those resources with people who need them. No way to extract knowledge across a common network. And most of the world doesn't have access to that network even if they did.
           </p>
           <p>
             The MGM Grand implemented a blast chiller food rescue program and saved 5 million meals since 2016. When Three Square food bank pulled out of the partnership, MGM kept the system running — because it worked economically without the charity layer.

@@ -23,7 +23,6 @@ const Index = () => {
           <StoryBlock />
           <ReHookBlock />
           <OfferBlock />
-          <DataRoomBlock />
         </>
       )}
     </div>
