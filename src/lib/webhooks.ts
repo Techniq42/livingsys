@@ -21,11 +21,11 @@ import { supabase } from '@/integrations/supabase/client';
 
 async function logWebhookError(eventType: string, payload: unknown, errorMessage: string) {
   try {
-    await supabase.from('webhook_errors').insert({
+    await supabase.from('webhook_errors').insert([{
       event_type: eventType,
       payload: payload as Record<string, unknown>,
       error_message: errorMessage,
-    });
+    }]);
   } catch (e) {
     console.error('Failed to log webhook error:', e);
   }
