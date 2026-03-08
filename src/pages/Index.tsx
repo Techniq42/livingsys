@@ -9,10 +9,17 @@ import { OptInForm } from '@/components/OptIn/OptInForm';
 const Index = () => {
   const [selectedPath, setSelectedPath] = useState<'architect' | 'operator' | null>(null);
 
+  const handleSelectPath = (path: 'architect' | 'operator') => {
+    setSelectedPath(path);
+    setTimeout(() => {
+      document.getElementById('optin-section')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <HeroFork
-        onSelectPath={setSelectedPath}
+        onSelectPath={handleSelectPath}
         selectedPath={selectedPath}
       />
 

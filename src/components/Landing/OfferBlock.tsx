@@ -32,7 +32,7 @@ export function OfferBlock() {
 
         <button
           onClick={scrollToTop}
-          className="inline-flex items-center gap-2 text-primary font-display tracking-wider text-sm border border-primary px-6 py-3 rounded-sm hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 text-primary font-display tracking-wider text-base border border-primary px-6 py-3 rounded-sm hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"
         >
           Choose your path
           <ChevronDown className="w-4 h-4 animate-scroll-bounce rotate-180" />
