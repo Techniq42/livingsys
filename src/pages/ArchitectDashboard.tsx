@@ -65,6 +65,8 @@ export default function ArchitectDashboardPage() {
           <QuickActions />
         </div>
       </div>
+
+      <CodexFloatingWidget />
     </div>
   );
 }
