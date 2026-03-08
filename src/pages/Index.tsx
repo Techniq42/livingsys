@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { HookBlock } from '@/components/Landing/HookBlock';
+import { HeroFork } from '@/components/Landing/HeroFork';
 import { StoryBlock } from '@/components/Landing/StoryBlock';
 import { ReHookBlock } from '@/components/Landing/ReHookBlock';
 import { OfferBlock } from '@/components/Landing/OfferBlock';
-import { ForkSection } from '@/components/Fork/ForkSection';
 import { OptInForm } from '@/components/OptIn/OptInForm';
 
 const Index = () => {
@@ -11,15 +10,19 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <HookBlock />
-      <StoryBlock />
-      <ReHookBlock />
-      <OfferBlock />
+      <HeroFork
+        onSelectPath={setSelectedPath}
+        selectedPath={selectedPath}
+      />
 
-      {!selectedPath ? (
-        <ForkSection onSelectPath={setSelectedPath} />
-      ) : (
+      {selectedPath ? (
         <OptInForm path={selectedPath} onBack={() => setSelectedPath(null)} />
+      ) : (
+        <>
+          <StoryBlock />
+          <ReHookBlock />
+          <OfferBlock />
+        </>
       )}
     </div>
   );
