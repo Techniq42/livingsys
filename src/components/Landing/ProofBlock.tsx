@@ -1,3 +1,5 @@
+import { AbstractVisual } from './AbstractVisual';
+
 export function ProofBlock() {
   return (
     <section className="py-24 md:py-32 px-6 md:px-12 lg:px-16 border-t border-border">
