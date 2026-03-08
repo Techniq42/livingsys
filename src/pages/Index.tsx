@@ -5,6 +5,7 @@ import { InfrastructureBlock } from '@/components/Landing/InfrastructureBlock';
 import { ReHookBlock } from '@/components/Landing/ReHookBlock';
 import { ProofBlock } from '@/components/Landing/ProofBlock';
 import { OfferBlock } from '@/components/Landing/OfferBlock';
+import { Footer } from '@/components/Landing/Footer';
 
 import { OptInForm } from '@/components/OptIn/OptInForm';
 
