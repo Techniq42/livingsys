@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { fireOptInWebhook, fireBookBumpWebhook } from '@/lib/webhooks';
+import { ValueStack } from './ValueStack';
 
 interface OptInFormProps {
   path: 'architect' | 'operator';
@@ -46,7 +47,6 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
       setLeadId(data.id);
       setState('submitted');
 
-      // Fire webhook — never block UX
       fireOptInWebhook({
         id: data.id,
         first_name: formData.first_name.trim(),
@@ -56,7 +56,6 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
         path,
       });
 
-      // Show bump after brief delay
       setTimeout(() => setState('bump'), 2500);
     } catch (err) {
       console.error('Lead submission failed:', err);
@@ -124,7 +123,7 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
 
   return (
     <section id="optin-section" className="py-24 md:py-32 px-6 md:px-12 lg:px-24 border-t border-border">
-      <div className="max-w-xl">
+      <div className="max-w-2xl">
         <button
           onClick={onBack}
           className="text-muted-foreground text-sm mb-8 hover:text-foreground transition-colors cursor-pointer font-display tracking-wider"
@@ -136,86 +135,96 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
           {isArchitect ? "Good. You're exactly who we built this for." : "We'll set it up. You run it."}
         </h2>
 
-        <p className="text-muted-foreground leading-relaxed mb-10">
+        <p className="text-muted-foreground leading-relaxed mb-8">
           {isArchitect
-            ? "The Field Guide is yours. Enter your name and email and we'll send it directly — plus the link to fork the complete open-source infrastructure repository."
-            : "You'll receive the Field Guide immediately. Within 24 hours you'll get the GoHighLevel snapshot and installation walkthrough. If you don't have a GHL account yet, the link on the next page covers that."}
+            ? "Everything you need to fork the coordination layer and own your nodes. No vendor lock-in. No permission required."
+            : "Pre-configured coordination infrastructure. You focus on impact — we handle the plumbing."}
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        {/* Value Stack */}
+        <ValueStack path={path} />
+
+        {/* Form */}
+        <div className="mt-10">
+          <p className="text-foreground font-display text-sm tracking-wider uppercase mb-6">
+            Enter your details to get started
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.first_name}
+                  onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                  className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.last_name}
+                  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                  className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
+                />
+              </div>
+            </div>
+
             <div>
               <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">
-                First Name
+                Email Address
               </label>
               <input
-                type="text"
+                type="email"
                 required
-                value={formData.first_name}
-                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
               />
             </div>
+
             <div>
               <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">
-                Last Name
+                Phone <span className="normal-case tracking-normal">(Optional: SMS updates on new toolkit releases)</span>
               </label>
               <input
-                type="text"
-                required
-                value={formData.last_name}
-                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
               />
             </div>
-          </div>
 
-          <div>
-            <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">
-              Email Address
-            </label>
-            <input
-              type="email"
-              required
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">
-              Phone <span className="normal-case tracking-normal">(Optional: SMS updates on new toolkit releases)</span>
-            </label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-3 rounded-sm font-display text-sm tracking-wider transition-all cursor-pointer ${
-              isArchitect
-                ? 'border border-primary text-foreground hover:bg-primary hover:text-primary-foreground'
-                : 'bg-secondary text-secondary-foreground hover:brightness-110'
-            } disabled:opacity-50`}
-          >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-current animate-pulse-dot" />
-                Processing
-              </span>
-            ) : isArchitect ? (
-              'Send Me The Field Guide + Repository Access'
-            ) : (
-              'Send Me The Field Guide + GHL Snapshot'
-            )}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-3 rounded-sm font-display text-sm tracking-wider transition-all cursor-pointer ${
+                isArchitect
+                  ? 'border border-primary text-foreground hover:bg-primary hover:text-primary-foreground'
+                  : 'bg-secondary text-secondary-foreground hover:brightness-110'
+              } disabled:opacity-50`}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-current animate-pulse-dot" />
+                  Processing
+                </span>
+              ) : isArchitect ? (
+                'Send Me The Field Guide + Repository Access'
+              ) : (
+                'Send Me The Field Guide + GHL Snapshot'
+              )}
+            </button>
+          </form>
+        </div>
       </div>
     </section>
   );

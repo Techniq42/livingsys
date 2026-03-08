@@ -1,20 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { fireCodexQuery } from '@/lib/webhooks';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  sources?: string[];
-  isProtected?: boolean;
 }
 
 interface CodexChatProps {
   userId: string;
   userRole: string;
 }
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/codex-chat`;
 
 export function CodexChat({ userId, userRole }: CodexChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -42,7 +42,6 @@ export function CodexChat({ userId, userRole }: CodexChatProps) {
           id: m.id,
           role: m.role as 'user' | 'assistant',
           content: m.content,
-          sources: m.sources as string[] | undefined,
         })));
       }
     }
@@ -70,41 +69,126 @@ export function CodexChat({ userId, userRole }: CodexChatProps) {
       content: userMessage.content,
     });
 
-    // Call Codex webhook
-    const lastMessages = messages.slice(-10).map((m) => ({
+    // Build conversation history for context
+    const history = messages.slice(-10).map((m) => ({
       role: m.role,
       content: m.content,
     }));
 
-    const response = await fireCodexQuery({
-      user_id: userId,
-      role: userRole,
-      session_id: sessionId,
-      message: userMessage.content,
-      conversation_history: lastMessages,
-    });
+    let assistantContent = '';
 
-    const isProtected = response.answer?.includes('[PROTECTED]');
-    const assistantMessage: Message = {
-      id: crypto.randomUUID(),
-      role: 'assistant',
-      content: isProtected
-        ? 'This source document is protected. The Codex can summarize and cite but cannot reproduce full content.'
-        : response.answer,
-      sources: response.sources,
-      isProtected,
-    };
+    try {
+      const resp = await fetch(CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: [
+            ...history,
+            { role: 'user', content: userMessage.content },
+          ],
+        }),
+      });
 
-    setMessages((prev) => [...prev, assistantMessage]);
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.error || `Request failed (${resp.status})`);
+      }
+
+      if (!resp.body) throw new Error('No response body');
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = '';
+      let streamDone = false;
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') {
+            streamDone = true;
+            break;
+          }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              setMessages((prev) => {
+                const last = prev[prev.length - 1];
+                if (last?.role === 'assistant') {
+                  return prev.map((m, i) =>
+                    i === prev.length - 1 ? { ...m, content: assistantContent } : m
+                  );
+                }
+                return [...prev, { id: crypto.randomUUID(), role: 'assistant', content: assistantContent }];
+              });
+            }
+          } catch {
+            textBuffer = line + '\n' + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Flush remaining buffer
+      if (textBuffer.trim()) {
+        for (let raw of textBuffer.split('\n')) {
+          if (!raw) continue;
+          if (raw.endsWith('\r')) raw = raw.slice(0, -1);
+          if (raw.startsWith(':') || raw.trim() === '') continue;
+          if (!raw.startsWith('data: ')) continue;
+          const jsonStr = raw.slice(6).trim();
+          if (jsonStr === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              setMessages((prev) =>
+                prev.map((m, i) =>
+                  i === prev.length - 1 && m.role === 'assistant'
+                    ? { ...m, content: assistantContent }
+                    : m
+                )
+              );
+            }
+          } catch { /* ignore */ }
+        }
+      }
+    } catch (err) {
+      console.error('Codex stream error:', err);
+      assistantContent = err instanceof Error ? err.message : 'Connection to the Codex failed. Try again shortly.';
+      setMessages((prev) => [
+        ...prev,
+        { id: crypto.randomUUID(), role: 'assistant', content: assistantContent },
+      ]);
+    }
 
     // Save assistant message
-    await supabase.from('codex_conversations').insert({
-      user_id: userId,
-      session_id: sessionId,
-      role: 'assistant',
-      content: assistantMessage.content,
-      sources: response.sources,
-    });
+    if (assistantContent) {
+      await supabase.from('codex_conversations').insert({
+        user_id: userId,
+        session_id: sessionId,
+        role: 'assistant',
+        content: assistantContent,
+      });
+    }
 
     setLoading(false);
   };
@@ -158,20 +242,18 @@ export function CodexChat({ userId, userRole }: CodexChatProps) {
                   : 'bg-card border border-border text-foreground'
               }`}
             >
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-              {msg.sources && msg.sources.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-border">
-                  <p className="text-[10px] text-muted-foreground font-display tracking-wider uppercase mb-1">Sources</p>
-                  {msg.sources.map((src, i) => (
-                    <p key={i} className="text-xs text-primary font-mono">{src}</p>
-                  ))}
+              {msg.role === 'assistant' ? (
+                <div className="text-sm leading-relaxed prose prose-invert prose-sm max-w-none">
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
                 </div>
+              ) : (
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
               )}
             </div>
           </div>
         ))}
 
-        {loading && (
+        {loading && messages[messages.length - 1]?.role !== 'assistant' && (
           <div className="flex justify-start">
             <div className="bg-card border border-border rounded-sm px-4 py-3">
               <div className="flex items-center gap-2">
