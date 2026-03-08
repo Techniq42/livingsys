@@ -1,3 +1,5 @@
+import { AbstractVisual } from './AbstractVisual';
+
 export function StoryBlock() {
   return (
     <section id="story-block" className="py-24 md:py-32 px-6 md:px-12 lg:px-16">
