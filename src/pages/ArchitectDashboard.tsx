@@ -6,6 +6,7 @@ import { ResourceLibrary } from '@/components/ArchitectDashboard/ResourceLibrary
 import { CourseModules } from '@/components/ArchitectDashboard/CourseModules';
 import { CommunityFeed } from '@/components/ArchitectDashboard/CommunityFeed';
 import { QuickActions } from '@/components/ArchitectDashboard/QuickActions';
+import { CodexFloatingWidget } from '@/components/ArchitectDashboard/CodexFloatingWidget';
 import type { Session } from '@supabase/supabase-js';
 
 export default function ArchitectDashboardPage() {
@@ -64,6 +65,8 @@ export default function ArchitectDashboardPage() {
           <QuickActions />
         </div>
       </div>
+
+      <CodexFloatingWidget />
     </div>
   );
 }
