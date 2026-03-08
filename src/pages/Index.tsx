@@ -3,6 +3,7 @@ import { HeroFork } from '@/components/Landing/HeroFork';
 import { StoryBlock } from '@/components/Landing/StoryBlock';
 import { ReHookBlock } from '@/components/Landing/ReHookBlock';
 import { OfferBlock } from '@/components/Landing/OfferBlock';
+import { DataRoomBlock } from '@/components/Landing/DataRoomBlock';
 import { OptInForm } from '@/components/OptIn/OptInForm';
 
 const Index = () => {
@@ -22,6 +23,7 @@ const Index = () => {
           <StoryBlock />
           <ReHookBlock />
           <OfferBlock />
+          <DataRoomBlock />
         </>
       )}
     </div>
