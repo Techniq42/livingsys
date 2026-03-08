@@ -1,12 +1,26 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { HookBlock } from '@/components/Landing/HookBlock';
+import { StoryBlock } from '@/components/Landing/StoryBlock';
+import { ReHookBlock } from '@/components/Landing/ReHookBlock';
+import { OfferBlock } from '@/components/Landing/OfferBlock';
+import { ForkSection } from '@/components/Fork/ForkSection';
+import { OptInForm } from '@/components/OptIn/OptInForm';
 
 const Index = () => {
+  const [selectedPath, setSelectedPath] = useState<'architect' | 'operator' | null>(null);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <HookBlock />
+      <StoryBlock />
+      <ReHookBlock />
+      <OfferBlock />
+
+      {!selectedPath ? (
+        <ForkSection onSelectPath={setSelectedPath} />
+      ) : (
+        <OptInForm path={selectedPath} onBack={() => setSelectedPath(null)} />
+      )}
     </div>
   );
 };
