@@ -75,7 +75,7 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
               You run a nonprofit, a regenerative startup, or a community initiative. You need the coordination layer but you're not here to engineer a backend. You learned sustainability through the front door — we're handing you the loading dock keys. Pre-configured. 10-minute install. Same Field Guide. You run the mission, we handle the plumbing.
             </p>
 
-            <ul className="space-y-2 mb-4 text-xs">
+            <ul className="space-y-2 mb-4 text-sm">
               {[
                 'Pre-configured GoHighLevel snapshot',
                 'Funnel sequences and email automation built',
