@@ -9,7 +9,7 @@ export function QuickActions() {
       icon: GitFork,
       label: 'Fork the Repo',
       description: 'Clone the full coordination stack',
-      onClick: () => window.open('https://github.com', '_blank'),
+      onClick: () => window.open('https://github.com/Techniq42/fls-ghl-infrastructure', '_blank'),
       variant: 'primary' as const,
     },
     {
