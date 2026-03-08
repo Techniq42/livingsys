@@ -106,6 +106,27 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
     );
   }
 
+  const handleOperatorRedirect = () => {
+    setState('operator_redirect');
+    setTimeout(() => {
+      window.open('https://app.gohighlevel.com/?fp_ref=fls', '_blank');
+    }, 2500);
+  };
+
+  if (state === 'operator_redirect') {
+    return (
+      <section id="optin-section" className="py-24 md:py-32 px-6 md:px-12 lg:px-24 border-t border-border">
+        <div className="max-w-xl">
+          <div className="flex items-center gap-3 text-secondary mb-4">
+            <span className="text-2xl">⚡</span>
+            <p className="text-lg font-display text-foreground">Setting up your system… Redirecting to GoHighLevel setup.</p>
+          </div>
+          <div className="w-6 h-6 rounded-full bg-secondary animate-pulse-dot" />
+        </div>
+      </section>
+    );
+  }
+
   if (state === 'bump') {
     return (
       <section id="optin-section" className="py-24 md:py-32 px-6 md:px-12 lg:px-24 border-t border-border">
@@ -126,10 +147,16 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
               {getActiveBookRoute().buttonText}
             </button>
             <button
-              onClick={onBack}
+              onClick={() => {
+                if (path === 'operator') {
+                  handleOperatorRedirect();
+                } else {
+                  onBack();
+                }
+              }}
               className="w-full text-muted-foreground text-sm hover:text-foreground transition-colors cursor-pointer"
             >
-              No thanks, the digital version is enough
+              {path === 'operator' ? 'Skip — take me to GoHighLevel setup' : 'No thanks, the digital version is enough'}
             </button>
           </div>
         </div>
