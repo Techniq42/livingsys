@@ -71,7 +71,7 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
             <h3 className="text-lg font-bold font-display text-foreground mb-0.5">The Operator</h3>
             <p className="text-secondary text-xs font-display tracking-wider uppercase mb-4">Done-For-You — Ready to Run</p>
 
-            <p className="text-muted-foreground text-sm leading-relaxed mb-5 flex-1">
+            <p className="text-foreground/60 text-sm leading-relaxed mb-5 flex-1">
               You run a nonprofit, a regenerative startup, or a community initiative. You need the coordination layer but you're not here to engineer a backend. You learned sustainability through the front door — we're handing you the loading dock keys. Pre-configured. 10-minute install. Same Field Guide. You run the mission, we handle the plumbing.
             </p>
 
