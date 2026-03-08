@@ -16,6 +16,7 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
   const [state, setState] = useState<FormState>('form');
   const [leadId, setLeadId] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
