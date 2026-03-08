@@ -105,7 +105,7 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
         </div>
 
         {/* Scroll hint */}
-        <p className="mt-8 text-xs text-muted-foreground font-display tracking-wider">
+        <p className="mt-8 text-sm text-muted-foreground font-display tracking-wider">
           ↓ Scroll to read the full story behind this infrastructure
         </p>
       </div>
