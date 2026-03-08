@@ -65,7 +65,12 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
         path,
       });
 
-      setTimeout(() => setState('bump'), 2500);
+      // For Architect path, redirect to create account after brief confirmation
+      if (path === 'architect') {
+        setTimeout(() => navigate('/architect-login'), 3000);
+      } else {
+        setTimeout(() => setState('bump'), 2500);
+      }
     } catch (err) {
       console.error('Lead submission failed:', err);
     } finally {
