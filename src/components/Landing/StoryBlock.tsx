@@ -21,7 +21,7 @@ export function StoryBlock() {
                 That supply sergeant spent the next thirty years applying the same pattern: nightclub operations in Nevada, community food infrastructure in Reno, water security in Kenya, soil restoration in Colorado. Every time he found the same thing.
               </p>
             </div>
-            <img src="/src/assets/images/fast-brain.png" alt="Neural network coordination" className="rounded-sm border border-border/50 object-cover w-full h-full max-h-[300px]" />
+            <AbstractVisual variant="neural-network" className="max-h-[300px]" />
           </div>
 
           <p className="text-foreground font-medium text-xl md:text-2xl border-l-4 border-primary pl-6 py-2">
