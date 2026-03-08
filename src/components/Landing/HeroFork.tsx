@@ -35,10 +35,10 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
           {/* Architect Card */}
           <div className="border border-border bg-card rounded-sm p-6 lg:p-8 flex flex-col hover:border-primary hover:glow-green transition-all">
             <Terminal className="w-7 h-7 text-primary mb-4" />
-            <h3 className="text-lg font-bold font-display text-foreground mb-0.5">The Architect</h3>
-            <p className="text-primary text-xs font-display tracking-wider uppercase mb-4">DIY — Own Your Nodes</p>
+            <h3 className="text-xl font-bold font-display text-foreground mb-0.5">The Architect</h3>
+            <p className="text-primary text-sm font-display tracking-wider uppercase mb-4">DIY — Own Your Nodes</p>
 
-            <p className="text-foreground/60 text-sm leading-relaxed mb-5 flex-1">
+            <p className="text-foreground/60 text-base leading-relaxed mb-5 flex-1">
               You've been locked out of a platform you depend on. You've watched a vendor hold your data hostage. You know sovereignty isn't a philosophy — it's an architecture decision. Fork the entire stack. Control every node. Build something no corporation can take from your community.
             </p>
 
