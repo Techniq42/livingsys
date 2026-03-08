@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { fireOptInWebhook, fireBookBumpWebhook } from '@/lib/webhooks';
 import { ValueStack } from './ValueStack';
@@ -15,6 +16,7 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
   const [state, setState] = useState<FormState>('form');
   const [leadId, setLeadId] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -63,7 +65,12 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
         path,
       });
 
-      setTimeout(() => setState('bump'), 2500);
+      // For Architect path, redirect to create account after brief confirmation
+      if (path === 'architect') {
+        setTimeout(() => navigate('/architect-login'), 3000);
+      } else {
+        setTimeout(() => setState('bump'), 2500);
+      }
     } catch (err) {
       console.error('Lead submission failed:', err);
     } finally {

@@ -44,6 +44,33 @@ export type Database = {
         }
         Relationships: []
       }
+      course_modules: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          is_locked: boolean
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          is_locked?: boolean
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_locked?: boolean
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           book_bump_clicked: boolean | null
@@ -112,6 +139,77 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      resources: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          is_active: boolean
+          resource_type: string
+          sort_order: number
+          title: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          resource_type?: string
+          sort_order?: number
+          title: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          resource_type?: string
+          sort_order?: number
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      user_module_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          module_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          module_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          module_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_module_progress_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "course_modules"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
