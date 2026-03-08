@@ -1,4 +1,5 @@
 import { Terminal, Zap } from 'lucide-react';
+import { AbstractVisual } from './AbstractVisual';
 
 interface HeroForkProps {
   onSelectPath: (path: 'architect' | 'operator') => void;
