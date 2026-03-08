@@ -1,6 +1,6 @@
 export function StoryBlock() {
   return (
-    <section id="story-block" className="py-24 md:py-32 px-6 md:px-12 lg:px-24">
+    <section id="story-block" className="py-24 md:py-32 px-6 md:px-12 lg:px-16">
       <div className="max-w-3xl">
         <p className="section-label mb-6">The Pattern</p>
 
@@ -17,6 +17,9 @@ export function StoryBlock() {
           </p>
           <p className="text-foreground font-medium text-lg md:text-xl border-l-2 border-primary pl-6">
             Resources exist everywhere. Coordination infrastructure is missing.
+          </p>
+          <p>
+            In Sori Village, Kenya, $10,000 bought a heat-optimized server, Raspberry Pi workstations, a heat pump over the rack, solar panels with battery backup, and Wi-Fi for an entire community center. Global connectivity. Total cost less than a single US nonprofit consultant's monthly fee. That's not charity. That's architecture.
           </p>
           <p>
             The food bank president who said out loud: "We can't afford to let donors know other options exist." The composting industry that blocked technology proven in 32 countries. The municipal systems that treat waste disposal as a cost center when it's a resource center.
