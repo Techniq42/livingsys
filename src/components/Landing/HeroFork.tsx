@@ -1,4 +1,5 @@
 import { Terminal, Zap } from 'lucide-react';
+import { AbstractVisual } from './AbstractVisual';
 
 interface HeroForkProps {
   onSelectPath: (path: 'architect' | 'operator') => void;
@@ -33,7 +34,7 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
           
           <div className="hidden lg:block relative">
             <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-            <img src="/src/assets/images/shattered-pillar.png" alt="Shattered pillar of the old system" className="relative z-10 w-full h-auto object-cover rounded-sm border border-border/50 shadow-2xl" />
+            <AbstractVisual variant="shattered-pillar" className="relative z-10 shadow-2xl min-h-[350px]" />
           </div>
         </div>
 

@@ -1,3 +1,5 @@
+import { AbstractVisual } from './AbstractVisual';
+
 export function ProofBlock() {
   return (
     <section className="py-24 md:py-32 px-6 md:px-12 lg:px-16 border-t border-border">
@@ -12,7 +14,7 @@ export function ProofBlock() {
           <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-3xl">
             HumiSoil's bacterial processing technology was presented at COP28 — converting organic waste into drought-resistant soil amendments across Malaysia, the UAE, and beyond. Watch the field demonstration.
           </p>
-          <img src="/src/assets/images/irrigation-desert.png" alt="Desert irrigation and green growth" className="rounded-sm border border-border/50 object-cover w-full h-full max-h-[250px]" />
+          <AbstractVisual variant="desert-growth" className="max-h-[250px]" />
         </div>
 
         {/* 16:9 responsive YouTube embed */}
