@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { HeroFork } from '@/components/Landing/HeroFork';
 import { StoryBlock } from '@/components/Landing/StoryBlock';
+import { InfrastructureBlock } from '@/components/Landing/InfrastructureBlock';
 import { ReHookBlock } from '@/components/Landing/ReHookBlock';
 import { ProofBlock } from '@/components/Landing/ProofBlock';
 import { OfferBlock } from '@/components/Landing/OfferBlock';
@@ -29,6 +30,7 @@ const Index = () => {
       ) : (
         <>
           <StoryBlock />
+          <InfrastructureBlock />
           <ProofBlock />
           <ReHookBlock />
           <OfferBlock />
