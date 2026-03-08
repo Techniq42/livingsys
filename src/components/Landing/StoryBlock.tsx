@@ -46,7 +46,7 @@ export function StoryBlock() {
                 These aren't villains. They're institutions that evolved to manage scarcity — which means they have an active interest in preventing abundance.
               </p>
             </div>
-            <img src="/src/assets/images/american-abundance.png" alt="American abundance and waste" className="rounded-sm border border-border/50 object-cover w-full h-full max-h-[300px]" />
+            <AbstractVisual variant="abundance" className="max-h-[300px]" />
           </div>
 
         </div>
