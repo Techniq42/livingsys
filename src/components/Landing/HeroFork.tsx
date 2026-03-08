@@ -19,7 +19,7 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
       <div className="min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-16 pt-20 pb-12">
         {/* Top: Pre-headline + Headline */}
         <div className="mb-8 lg:mb-10 max-w-5xl">
-          <p className="section-label mb-4">
+          <p className="section-label mb-4 text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]">
             Coordination failure costs $970B annually
           </p>
           <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold font-display leading-tight text-foreground text-balance">
