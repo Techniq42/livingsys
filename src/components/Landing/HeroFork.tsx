@@ -17,17 +17,24 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
       </a>
 
       <div className="min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-16 pt-20 pb-12">
-      {/* Top: Pre-headline + Headline */}
-        <div className="mb-8 lg:mb-10 max-w-5xl">
-          <p className="section-label mb-4 text-sm text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]">
-            Coordination failure costs $970B annually
-          </p>
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold font-display leading-tight text-foreground text-balance">
-            The food system isn't broken. It was never designed to do what you think it was.
-          </h1>
-          <p className="mt-4 text-lg md:text-xl text-foreground/70 max-w-3xl leading-relaxed">
-            $970 billion in coordination failure. Hundreds of regenerative videos nobody can find. A $10,000 server that connected an entire village. The tools exist. The routing doesn't. Choose your path forward.
-          </p>
+        <div className="grid lg:grid-cols-[1fr_400px] gap-12 items-center mb-12">
+          {/* Top: Pre-headline + Headline */}
+          <div className="max-w-4xl">
+            <p className="section-label mb-4 text-sm text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]">
+              Coordination failure costs $970B annually
+            </p>
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold font-display leading-tight text-foreground text-balance">
+              The food system isn't broken. It was never designed to do what you think it was.
+            </h1>
+            <p className="mt-6 text-lg md:text-xl text-foreground/70 leading-relaxed max-w-3xl">
+              $970 billion in coordination failure. Hundreds of regenerative videos nobody can find. A $10,000 server that connected an entire village. The tools exist. The routing doesn't. Choose your path forward.
+            </p>
+          </div>
+          
+          <div className="hidden lg:block relative">
+            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
+            <img src="/src/assets/images/shattered-pillar.png" alt="Shattered pillar of the old system" className="relative z-10 w-full h-auto object-cover rounded-sm border border-border/50 shadow-2xl" />
+          </div>
         </div>
 
         {/* Two Cards — above the fold */}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { fireOptInWebhook, fireBookBumpWebhook } from '@/lib/webhooks';
 import { ValueStack } from './ValueStack';
+import { getActiveBookRoute } from '@/config/bookRouting';
 
 interface OptInFormProps {
   path: 'architect' | 'operator';
@@ -78,8 +79,10 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
 
     fireBookBumpWebhook(leadId, path);
 
-    const bookUrl = import.meta.env.VITE_BOOK_ORDER_URL;
-    if (bookUrl) window.open(bookUrl, '_blank');
+    const activeRoute = getActiveBookRoute();
+    if (activeRoute && activeRoute.url && activeRoute.url !== '#') {
+      window.open(activeRoute.url, '_blank');
+    }
   };
 
   if (state === 'submitted') {
@@ -107,13 +110,13 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
 
           <div className="border border-border bg-card rounded-sm p-8">
             <p className="text-foreground leading-relaxed mb-6">
-              Want the physical book? It's free — you cover shipping. The kind of thing that ends up dog-eared on a workbench.
+              {getActiveBookRoute().description}
             </p>
             <button
               onClick={handleBookBump}
               className="w-full bg-secondary text-secondary-foreground py-3 rounded-sm font-display text-sm tracking-wider hover:brightness-110 transition-all mb-3 cursor-pointer"
             >
-              Yes — Send Me The Printed Book
+              {getActiveBookRoute().buttonText}
             </button>
             <button
               onClick={onBack}
