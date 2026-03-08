@@ -68,7 +68,7 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
       if (path === 'architect') {
         setTimeout(() => navigate('/architect-login'), 3000);
       } else {
-        // Operator path: show transition then redirect to GHL
+        // Operator: show book bump first, then GHL redirect
         setTimeout(() => setState('bump'), 2500);
       }
     } catch (err) {
