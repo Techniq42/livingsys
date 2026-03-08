@@ -42,7 +42,7 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
               You've been locked out of a platform you depend on. You've watched a vendor hold your data hostage. You know sovereignty isn't a philosophy — it's an architecture decision. Fork the entire stack. Control every node. Build something no corporation can take from your community.
             </p>
 
-            <ul className="space-y-2 mb-6 text-xs">
+            <ul className="space-y-2 mb-6 text-sm">
               {[
                 'Complete n8n automation workflows',
                 'Open-source infrastructure — no vendor lock-in',
