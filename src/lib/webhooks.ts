@@ -71,7 +71,7 @@ export async function fireOptInWebhook(lead: {
 }
 
 export async function fireBookBumpWebhook(leadId: string, path: string) {
-  const webhookUrl = import.meta.env.VITE_N8N_OPTIN_WEBHOOK_URL;
+  const webhookUrl = import.meta.env.VITE_N8N_OPTIN_WEBHOOK_URL || 'https://living-systems.app.n8n.cloud/webhook/lovable-optin';
   if (!webhookUrl) return;
 
   const payload = {
