@@ -23,7 +23,7 @@ async function logWebhookError(eventType: string, payload: unknown, errorMessage
   try {
     await supabase.from('webhook_errors').insert([{
       event_type: eventType,
-      payload: payload as Record<string, unknown>,
+      payload: JSON.parse(JSON.stringify(payload)),
       error_message: errorMessage,
     }]);
   } catch (e) {
