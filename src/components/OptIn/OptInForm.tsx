@@ -79,8 +79,10 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
 
     fireBookBumpWebhook(leadId, path);
 
-    const bookUrl = import.meta.env.VITE_BOOK_ORDER_URL;
-    if (bookUrl) window.open(bookUrl, '_blank');
+    const activeRoute = getActiveBookRoute();
+    if (activeRoute && activeRoute.url && activeRoute.url !== '#') {
+      window.open(activeRoute.url, '_blank');
+    }
   };
 
   if (state === 'submitted') {
