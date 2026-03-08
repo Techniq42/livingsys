@@ -26,7 +26,7 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
             The food system isn't broken. It was never designed to do what you think it was.
           </h1>
           <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-3xl leading-relaxed">
-            There is a $970 billion ghost haunting every failed community project, every rural town watching its resources extracted upstream. The ghost has a name: coordination failure. Choose your path to fixing it.
+            $970 billion in coordination failure. 700 regenerative videos nobody can find. A $10,000 server that connected an entire village. The tools exist. The routing doesn't. Choose your path to fixing it.
           </p>
         </div>
 
@@ -36,19 +36,19 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
           <div className="border border-border bg-card rounded-sm p-6 lg:p-8 flex flex-col hover:border-primary hover:glow-green transition-all">
             <Terminal className="w-7 h-7 text-primary mb-4" />
             <h3 className="text-lg font-bold font-display text-foreground mb-0.5">The Architect</h3>
-            <p className="text-primary text-xs font-display tracking-wider uppercase mb-4">DIY — Open Source</p>
+            <p className="text-primary text-xs font-display tracking-wider uppercase mb-4">DIY — Own Your Nodes</p>
 
             <p className="text-muted-foreground text-sm leading-relaxed mb-5 flex-1">
-              Own your stack. Fork it. Adapt it. Build something your community owns. Full n8n workflows, open-source infrastructure, and documentation included.
+              You've been locked out of a platform you depend on. You've watched a vendor hold your data hostage. You know sovereignty isn't a philosophy — it's an architecture decision. Fork the entire stack. Control every node. Build something no corporation can take from your community.
             </p>
 
             <ul className="space-y-2 mb-6 text-xs">
               {[
                 'Complete n8n automation workflows',
-                'Open-source GHL infrastructure snapshot',
-                'GitHub repository access',
-                'Full documentation and setup guides',
-                'Community support network',
+                'Open-source infrastructure — no vendor lock-in',
+                'GitHub repository access — fork and own it',
+                'Full documentation and deployment guides',
+                'Community support from other builders',
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-foreground">
                   <span className="text-primary mt-0.5">✓</span>
@@ -69,17 +69,17 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
           <div className="border border-secondary/40 bg-[hsl(37_30%_6%)] rounded-sm p-6 lg:p-8 flex flex-col hover:border-secondary hover:glow-gold transition-all">
             <Zap className="w-7 h-7 text-secondary mb-4" />
             <h3 className="text-lg font-bold font-display text-foreground mb-0.5">The Operator</h3>
-            <p className="text-secondary text-xs font-display tracking-wider uppercase mb-4">Done-For-You — GoHighLevel</p>
+            <p className="text-secondary text-xs font-display tracking-wider uppercase mb-4">Done-For-You — Ready to Run</p>
 
             <p className="text-muted-foreground text-sm leading-relaxed mb-5 flex-1">
-              Pre-configured system, 10-minute install. Same Field Guide, plus a GHL snapshot with funnels, email, and SMS automation ready to run.
+              You run a nonprofit, a regenerative startup, or a community initiative. You need the coordination layer but you're not here to engineer a backend. You learned sustainability through the front door — we're handing you the loading dock keys. Pre-configured. 10-minute install. Same Field Guide. You run the mission, we handle the plumbing.
             </p>
 
             <ul className="space-y-2 mb-4 text-xs">
               {[
                 'Pre-configured GoHighLevel snapshot',
-                'Funnel sequences pre-built',
-                'Email + SMS automation ready',
+                'Funnel sequences and email automation built',
+                'SMS coordination workflows ready',
                 '10-minute installation',
                 'White-glove setup guidance',
               ].map((item) => (
@@ -90,9 +90,9 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
               ))}
             </ul>
 
-            {/* Affiliate Disclosure — ABOVE the CTA, legally required */}
+            {/* Affiliate Disclosure — ABOVE the CTA */}
             <div className="bg-secondary/10 border border-secondary/30 rounded-sm px-3 py-2 mb-4 text-[11px] text-secondary leading-relaxed">
-              ⚠ Disclosure: FLS has an affiliate relationship with GoHighLevel. We use it ourselves. You pay the same price either way.
+              ⚠ Disclosure: FLS has an affiliate relationship with GoHighLevel. We use it ourselves and built this system on it. You pay the same price either way — and the Architect path exists because we believe you should always have a way out.
             </div>
 
             <button
