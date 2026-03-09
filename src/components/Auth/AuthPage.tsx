@@ -20,7 +20,7 @@ export function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
-          options: { emailRedirectTo: window.location.origin + '/dashboard' },
+          options: { emailRedirectTo: 'https://livingsys.lovable.app/dashboard' },
         });
         if (error) throw error;
         setMessage('Check your email for a confirmation link.');

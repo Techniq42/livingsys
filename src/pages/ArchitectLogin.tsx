@@ -34,7 +34,7 @@ export default function ArchitectLogin() {
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
-          options: { emailRedirectTo: window.location.origin + '/architect-dashboard' },
+          options: { emailRedirectTo: 'https://livingsys.lovable.app/architect-dashboard' },
         });
         if (error) throw error;
         setMessage('Check your email for a confirmation link.');
