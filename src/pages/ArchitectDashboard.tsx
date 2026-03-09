@@ -15,16 +15,33 @@ export default function ArchitectDashboardPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Listen for auth state changes (including token recovery from email links)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setLoading(false);
-      if (!session) navigate('/architect-login');
+      // Only redirect if we've confirmed there's no session AND it's not an initial loading event
+      if (!session && event === 'SIGNED_OUT') {
+        navigate('/architect-login');
+      }
     });
 
+    // Check for existing session, but don't redirect immediately
+    // because the URL hash fragment may still be processing
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-      if (!session) navigate('/architect-login');
+      if (session) {
+        setSession(session);
+        setLoading(false);
+      } else {
+        // Give the auth callback hash time to be processed before redirecting
+        // If there's a hash fragment, the onAuthStateChange will fire
+        const hasAuthHash = window.location.hash.includes('access_token') || 
+                           window.location.hash.includes('type=');
+        if (!hasAuthHash) {
+          setLoading(false);
+          navigate('/architect-login');
+        }
+        // If there IS a hash, wait for onAuthStateChange to handle it
+      }
     });
 
     return () => subscription.unsubscribe();
