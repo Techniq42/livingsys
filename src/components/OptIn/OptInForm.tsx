@@ -109,7 +109,7 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
   const handleOperatorRedirect = () => {
     setState('operator_redirect');
     setTimeout(() => {
-      window.open('https://app.gohighlevel.com/?fp_ref=fls', '_blank');
+      window.open('https://www.gohighlevel.com/?fp_ref=fellowship-of-living-systems53', '_blank');
     }, 2500);
   };
 
