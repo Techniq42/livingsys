@@ -100,7 +100,7 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
 
             {/* Affiliate Disclosure — ABOVE the CTA */}
                       <div className="bg-secondary/10 border border-secondary/30 rounded-sm px-3 py-2 mb-4 text-[13px] text-secondary leading-relaxed">            
-            ⚠ Disclosure: We use GoHighLevel ourselves and built this system on it. Using our link helps support our mission — you pay no additional cost.            
+            ⚠ Disclosure: The Operator snapshot runs on GoHighLevel — we use it daily and built every workflow in it. Using our link helps support our mission — you pay no additional cost.            
             </div>
 
             <button
