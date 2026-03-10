@@ -1,4 +1,13 @@
 export function InfrastructureBlock() {
+  const mainNodes = [
+    { label: 'User', sub: 'visitor', accent: false },
+    { label: 'Lovable', sub: 'UI layer', accent: true },
+    { label: 'Supabase', sub: 'data + auth', accent: true },
+    { label: 'n8n', sub: 'automate', accent: false, gold: true },
+  ];
+
+  const outputNodes = ['Email', 'GHL', 'Community'];
+
   return (
     <section className="py-24 md:py-32 px-6 md:px-12 lg:px-16 border-t border-border">
       <div className="max-w-4xl">
@@ -23,56 +32,111 @@ export function InfrastructureBlock() {
           </p>
         </div>
 
-        {/* Architecture Diagram */}
+        {/* CSS Architecture Diagram */}
         <div className="border border-border bg-card rounded-sm p-6 md:p-10">
-          <p className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-6 text-center">
+          <p className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-8 text-center">
             System Architecture
           </p>
-          <svg
-            viewBox="0 0 800 220"
-            className="w-full h-auto"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            {/* Connecting lines */}
-            <line x1="130" y1="110" x2="230" y2="110" stroke="hsl(142,71%,45%)" strokeWidth="2" opacity="0.5" />
-            <line x1="330" y1="110" x2="430" y2="110" stroke="hsl(142,71%,45%)" strokeWidth="2" opacity="0.5" />
-            <line x1="530" y1="110" x2="630" y2="110" stroke="hsl(142,71%,45%)" strokeWidth="2" opacity="0.5" />
 
-            {/* Arrow heads */}
-            <polygon points="228,105 228,115 238,110" fill="hsl(142,71%,45%)" opacity="0.5" />
-            <polygon points="428,105 428,115 438,110" fill="hsl(142,71%,45%)" opacity="0.5" />
-            <polygon points="628,105 628,115 638,110" fill="hsl(142,71%,45%)" opacity="0.5" />
+          {/* Main flow: User -> Lovable -> Supabase -> n8n */}
+          <div className="flex flex-col md:flex-row items-center gap-0 justify-center mb-8">
+            {mainNodes.map((node, i) => (
+              <div key={node.label} className="flex items-center">
+                {/* Node */}
+                <div
+                  className="flex flex-col items-center justify-center px-5 py-4 rounded border min-w-[100px]"
+                  style={{
+                    backgroundColor: 'hsl(150 22% 8%)',
+                    borderColor: node.gold
+                      ? 'hsl(37 67% 42%)'
+                      : node.accent
+                        ? 'hsl(var(--primary))'
+                        : 'hsl(var(--border))',
+                    boxShadow: node.accent
+                      ? '0 0 12px hsl(var(--primary) / 0.15)'
+                      : node.gold
+                        ? '0 0 12px hsl(37 67% 42% / 0.15)'
+                        : 'none',
+                  }}
+                >
+                  <span
+                    className="text-sm font-display font-semibold"
+                    style={{
+                      color: node.gold
+                        ? 'hsl(37 67% 42%)'
+                        : node.accent
+                          ? 'hsl(var(--primary))'
+                          : 'hsl(var(--foreground))',
+                    }}
+                  >
+                    {node.label}
+                  </span>
+                  <span className="text-[10px] font-mono text-muted-foreground mt-0.5">
+                    {node.sub}
+                  </span>
+                </div>
 
-            {/* Branch lines from n8n */}
-            <line x1="680" y1="80" x2="740" y2="50" stroke="hsl(142,71%,45%)" strokeWidth="1.5" opacity="0.4" />
-            <line x1="680" y1="110" x2="740" y2="110" stroke="hsl(142,71%,45%)" strokeWidth="1.5" opacity="0.4" />
-            <line x1="680" y1="140" x2="740" y2="170" stroke="hsl(142,71%,45%)" strokeWidth="1.5" opacity="0.4" />
+                {/* Arrow connector (not after last node) */}
+                {i < mainNodes.length - 1 && (
+                  <div className="flex items-center mx-1">
+                    {/* Horizontal on md+, vertical on mobile */}
+                    <div className="hidden md:flex items-center">
+                      <div className="w-6 h-[1px] bg-primary/40" />
+                      <div
+                        className="w-0 h-0"
+                        style={{
+                          borderTop: '5px solid transparent',
+                          borderBottom: '5px solid transparent',
+                          borderLeft: '6px solid hsl(var(--primary) / 0.5)',
+                        }}
+                      />
+                    </div>
+                    <div className="flex md:hidden flex-col items-center my-2">
+                      <div className="h-6 w-[1px] bg-primary/40" />
+                      <div
+                        className="w-0 h-0"
+                        style={{
+                          borderLeft: '5px solid transparent',
+                          borderRight: '5px solid transparent',
+                          borderTop: '6px solid hsl(var(--primary) / 0.5)',
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
 
-            {/* Node: User */}
-            <rect x="30" y="80" width="100" height="60" rx="4" fill="hsl(150,22%,8%)" stroke="hsl(155,30%,17%)" strokeWidth="1.5" />
-            <text x="80" y="106" textAnchor="middle" fill="hsl(120,40%,93%)" fontSize="13" fontFamily="Space Grotesk, sans-serif" fontWeight="600">User</text>
-            <text x="80" y="124" textAnchor="middle" fill="hsl(220,9%,58%)" fontSize="10" fontFamily="JetBrains Mono, monospace">visitor</text>
-
-            {/* Node: Lovable */}
-            <rect x="240" y="80" width="100" height="60" rx="4" fill="hsl(150,22%,8%)" stroke="hsl(142,71%,45%)" strokeWidth="1.5" />
-            <text x="290" y="106" textAnchor="middle" fill="hsl(142,71%,45%)" fontSize="13" fontFamily="Space Grotesk, sans-serif" fontWeight="600">Lovable</text>
-            <text x="290" y="124" textAnchor="middle" fill="hsl(220,9%,58%)" fontSize="10" fontFamily="JetBrains Mono, monospace">UI layer</text>
-
-            {/* Node: Supabase */}
-            <rect x="440" y="80" width="100" height="60" rx="4" fill="hsl(150,22%,8%)" stroke="hsl(142,71%,45%)" strokeWidth="1.5" />
-            <text x="490" y="106" textAnchor="middle" fill="hsl(142,71%,45%)" fontSize="13" fontFamily="Space Grotesk, sans-serif" fontWeight="600">Supabase</text>
-            <text x="490" y="124" textAnchor="middle" fill="hsl(220,9%,58%)" fontSize="10" fontFamily="JetBrains Mono, monospace">data + auth</text>
-
-            {/* Node: n8n */}
-            <rect x="640" y="80" width="80" height="60" rx="4" fill="hsl(150,22%,8%)" stroke="hsl(37,67%,42%)" strokeWidth="1.5" />
-            <text x="680" y="106" textAnchor="middle" fill="hsl(37,67%,42%)" fontSize="13" fontFamily="Space Grotesk, sans-serif" fontWeight="600">n8n</text>
-            <text x="680" y="124" textAnchor="middle" fill="hsl(220,9%,58%)" fontSize="10" fontFamily="JetBrains Mono, monospace">automate</text>
-
-            {/* Output nodes */}
-            <text x="760" y="54" textAnchor="start" fill="hsl(220,9%,58%)" fontSize="11" fontFamily="JetBrains Mono, monospace">Email</text>
-            <text x="760" y="114" textAnchor="start" fill="hsl(220,9%,58%)" fontSize="11" fontFamily="JetBrains Mono, monospace">GHL</text>
-            <text x="760" y="174" textAnchor="start" fill="hsl(220,9%,58%)" fontSize="11" fontFamily="JetBrains Mono, monospace">Community</text>
-          </svg>
+          {/* Output branches from n8n */}
+          <div className="flex justify-center">
+            <div className="flex flex-col items-center">
+              {/* Connector line down from n8n */}
+              <div className="h-4 w-[1px] bg-secondary/30" />
+              {/* Branch out */}
+              <div className="flex items-start gap-6 md:gap-10">
+                {outputNodes.map((output) => (
+                  <div key={output} className="flex flex-col items-center">
+                    <div className="h-4 w-[1px] bg-secondary/30" />
+                    <div
+                      className="px-3 py-2 rounded border text-[11px] font-mono text-muted-foreground"
+                      style={{
+                        backgroundColor: 'hsl(150 22% 6%)',
+                        borderColor: 'hsl(var(--border))',
+                      }}
+                    >
+                      {output}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Horizontal connector across outputs */}
+              <div
+                className="h-[1px] bg-secondary/20 -mt-[calc(1rem+2px+8px)]"
+                style={{ width: 'calc(100% - 24px)', marginLeft: 12, marginRight: 12 }}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>

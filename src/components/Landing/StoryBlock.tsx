@@ -1,4 +1,4 @@
-import { AbstractVisual } from './AbstractVisual';
+import { CssVisual } from './CssVisuals';
 
 export function StoryBlock() {
   return (
@@ -21,7 +21,7 @@ export function StoryBlock() {
                 I learned how to route resources through other people's infrastructure, how to play nice inside their dashboards, how to squeeze regenerative work through tools that were never designed for it.
               </p>
             </div>
-            <AbstractVisual variant="neural-network" className="max-h-[300px]" />
+            <CssVisual variant="network" className="max-h-[300px]" />
           </div>
 
           <p className="text-foreground font-medium text-xl md:text-2xl border-l-4 border-primary pl-6 py-2">
@@ -29,7 +29,7 @@ export function StoryBlock() {
           </p>
 
           <div className="grid md:grid-cols-[300px_1fr] gap-8 items-center">
-            <AbstractVisual variant="map-network" className="max-h-[300px] md:order-1 order-2" />
+            <CssVisual variant="map" className="max-h-[300px] md:order-1 order-2" />
             <div className="space-y-6 md:order-2 order-1">
               <p>
                 That was the day I stopped treating platforms as partners and started treating them as gatekeepers. The gatekeeper never held the knowledge. It held the map &mdash; the routes, automations, and relationships my community depended on.
@@ -49,7 +49,7 @@ export function StoryBlock() {
                 The Operator path exists because I know how many nonprofits and regenerative projects need a bridge today. But the heart of this work is the Architect path: a DIY route where no vendor can lock you out because you hold the map.
               </p>
             </div>
-            <AbstractVisual variant="abundance" className="max-h-[300px]" />
+            <CssVisual variant="abundance" className="max-h-[300px]" />
           </div>
 
         </div>
