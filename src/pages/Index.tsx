@@ -3,7 +3,6 @@ import { HeroFork } from '@/components/Landing/HeroFork';
 import { StoryBlock } from '@/components/Landing/StoryBlock';
 import { InfrastructureBlock } from '@/components/Landing/InfrastructureBlock';
 import { ReHookBlock } from '@/components/Landing/ReHookBlock';
-import { ProofBlock } from '@/components/Landing/ProofBlock';
 import { OfferBlock } from '@/components/Landing/OfferBlock';
 import { Footer } from '@/components/Landing/Footer';
 
@@ -133,9 +132,6 @@ const Index = () => {
                   Every major corporation, every political campaign, every megachurch already runs on this kind of infrastructure. CRM, email automation, SMS, funnels, analytics &mdash; it's not new. It's just been out of reach for the organizations doing the most important work.
                 </p>
                 <p>
-                  The MGM Grand uses coordination systems to rescue 5 million meals. Fortune 500 companies use automation to nurture every lead. There's no reason your nonprofit, your co-op, your community initiative should be running on spreadsheets and hope.
-                </p>
-                <p>
                   This isn't about keeping up with Silicon Valley. It's about giving grassroots leaders the same operational firepower that corporations take for granted.
                 </p>
               </div>
@@ -149,7 +145,6 @@ const Index = () => {
           {/* Main Lead-In Story (null state) */}
           <StoryBlock />
           <InfrastructureBlock />
-          <ProofBlock />
           <ReHookBlock />
           <OfferBlock />
 
