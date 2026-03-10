@@ -260,48 +260,6 @@ export function HeroNetworkVisual() {
         const y1 = parseFloat(n1.top);
         const x2 = parseFloat(n2.left);
         const y2 = parseFloat(n2.top);
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        const length = Math.sqrt(dx * dx + dy * dy);
-        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-        return (
-          <div
-            key={`c-${i}`}
-            className="absolute origin-left"
-            style={{
-              top: `${y1}%`,
-              left: `${x1}%`,
-              width: `${length}%`,
-              height: 1,
-              background: `linear-gradient(90deg, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.3), hsl(var(--primary) / 0.15))`,
-            }}
-          >
-            <div
-              className="absolute inset-0"
-              style={{
-                height: 1,
-                transform: `rotate(${angle - (angle > 0 ? 0 : 0)}deg)`,
-              }}
-            />
-            <div
-              className="absolute top-0 left-0 h-full"
-              style={{
-                width: '100%',
-                transform: `rotate(0deg)`,
-              }}
-            />
-          </div>
-        );
-        // Actually we need to rotate the whole line
-      }).map(() => null)}
-      {/* Re-implement connections properly */}
-      {connections.map(([a, b], i) => {
-        const n1 = nodes[a];
-        const n2 = nodes[b];
-        const x1 = parseFloat(n1.left);
-        const y1 = parseFloat(n1.top);
-        const x2 = parseFloat(n2.left);
-        const y2 = parseFloat(n2.top);
         // Use an SVG-free approach: a thin rotated div
         const dx = x2 - x1;
         const dy = y2 - y1;
