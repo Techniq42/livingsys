@@ -44,6 +44,51 @@ export type Database = {
         }
         Relationships: []
       }
+      content_pieces: {
+        Row: {
+          channels: Json | null
+          created_at: string
+          cta_text: string | null
+          format_type: string
+          hook: string | null
+          id: string
+          offer: string | null
+          scheduled_at: string | null
+          status: string
+          story: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          channels?: Json | null
+          created_at?: string
+          cta_text?: string | null
+          format_type?: string
+          hook?: string | null
+          id?: string
+          offer?: string | null
+          scheduled_at?: string | null
+          status?: string
+          story?: string | null
+          title?: string
+          user_id: string
+        }
+        Update: {
+          channels?: Json | null
+          created_at?: string
+          cta_text?: string | null
+          format_type?: string
+          hook?: string | null
+          id?: string
+          offer?: string | null
+          scheduled_at?: string | null
+          status?: string
+          story?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       course_modules: {
         Row: {
           created_at: string
