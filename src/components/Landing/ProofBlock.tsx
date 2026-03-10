@@ -1,4 +1,4 @@
-import { AbstractVisual } from './AbstractVisual';
+import { CssVisual } from './CssVisuals';
 
 export function ProofBlock() {
   return (
@@ -14,7 +14,7 @@ export function ProofBlock() {
           <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-3xl">
             HumiSoil's bacterial processing technology was presented at COP28 — converting organic waste into drought-resistant soil amendments across Malaysia, the UAE, and beyond. Watch the field demonstration.
           </p>
-          <AbstractVisual variant="desert-growth" className="max-h-[250px]" />
+          <CssVisual variant="desert" className="max-h-[250px]" />
         </div>
 
         {/* 16:9 responsive YouTube embed */}
