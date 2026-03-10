@@ -7,6 +7,7 @@ import { CourseModules } from '@/components/ArchitectDashboard/CourseModules';
 import { CommunityFeed } from '@/components/ArchitectDashboard/CommunityFeed';
 import { QuickActions } from '@/components/ArchitectDashboard/QuickActions';
 import { CodexFloatingWidget } from '@/components/ArchitectDashboard/CodexFloatingWidget';
+import { ContentEngine } from '@/components/ArchitectDashboard/ContentEngine';
 import type { Session } from '@supabase/supabase-js';
 
 export default function ArchitectDashboardPage() {
