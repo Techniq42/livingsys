@@ -79,6 +79,7 @@ export default function ArchitectDashboardPage() {
             <ResourceLibrary />
             <CourseModules />
             <CommunityFeed />
+            <ContentEngine />
           </div>
           <QuickActions />
         </div>
