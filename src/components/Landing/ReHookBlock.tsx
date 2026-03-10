@@ -5,24 +5,26 @@ export function ReHookBlock() {
         <p className="section-label mb-6">The Opportunity</p>
 
         <h2 className="text-2xl md:text-4xl font-bold font-display leading-tight mb-10 text-foreground">
-          The gatekeeper didn't hold knowledge. It held the map.
+          <a href="https://livingsys.org/climate-solutions/the-gatekeeper-didnt-hold-knowledge-it-held-the-map/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors underline decoration-primary/30 underline-offset-4">
+            The gatekeeper didn't hold knowledge. It held the map.
+          </a>
         </h2>
 
         <div className="space-y-6 text-muted-foreground leading-relaxed text-lg md:text-xl">
           <p>
-            There are networks of regenerative practitioners across the globe with hundreds of videos, case studies, and field-tested knowledge. Know what they don't have? Any system to connect those resources with people who need them. No way to extract knowledge across a common network. And most of the world doesn't have access to that network even if they did.
+            There are networks of regenerative practitioners across the globe with hundreds of videos, case studies, and field-tested knowledge. Know what they don't have? Any system to connect those resources with people who need them. The coordination layer is missing.
           </p>
           <p>
-            The MGM Grand implemented a blast chiller food rescue program and saved 5 million meals since 2016. When Three Square food bank pulled out of the partnership, MGM kept the system running — because it worked economically without the charity layer.
+            The MGM Grand implemented a blast chiller food rescue program and saved 5 million meals since 2016. When Three Square food bank pulled out of the partnership, MGM kept the system running &mdash; because it worked economically, not just charitably.
           </p>
           <p>
-            HumiSoil bacterial processing converts virtually any organic waste into drought-resistant soil amendments worth $400 per cubic yard. Works in 32 countries. The US composting industry blocked its distribution citing "market mismatch."
+            HumiSoil bacterial processing converts virtually any organic waste into drought-resistant soil amendments worth $400 per cubic yard. Works in 32 countries. The US composting industry blocked its distribution channels.
           </p>
           <p className="text-foreground font-medium text-lg md:text-xl border-l-2 border-primary pl-6">
-            Everyone learned sustainability through the front door — four-year institutions that don't know the loading dock exists. The actual work happens at the loading dock. That's where we build.
+            Everyone learned sustainability through the front door &mdash; four-year institutions that don't know the loading dock exists. The actual work happens at the loading dock. That's where we build.
           </p>
           <p>
-            Institutional resistance is market validation. When established players fight a solution this hard, it means the solution threatens their operational model. Policy frameworks provide a ceiling and a floor for business operations — then they get out of the way. The real coordination happens through vendor relationships, B2B networks, and back-channel infrastructure that nobody teaches in sustainability programs.
+            Institutional resistance is market validation. When established players fight a solution this hard, it means the solution threatens their operational model. Policy frameworks provide a ceiling and a floor for building &mdash; we build within that space.
           </p>
         </div>
       </div>
