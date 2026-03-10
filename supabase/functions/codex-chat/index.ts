@@ -1,5 +1,68 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+// === RATE LIMITING CONFIG ===
+const RATE_LIMIT = {
+  MAX_PER_IP_PER_MINUTE: 5,
+  MAX_PER_IP_PER_DAY: 50,
+  MAX_GLOBAL_PER_DAY: 500,
+  MAX_INPUT_LENGTH: 2000,
+  WINDOW_MS: 60_000,
+};
+
+// In-memory rate limit store (resets on cold start)
+const ipMinuteMap = new Map<string, { count: number; resetAt: number }>();
+const ipDayMap = new Map<string, { count: number; resetAt: number }>();
+let globalDayCount = { count: 0, resetAt: Date.now() + 86_400_000 };
+
+function getClientIP(req: Request): string {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
+
+function checkRateLimit(ip: string): { allowed: boolean; reason?: string } {
+  const now = Date.now();
+
+  // Global daily cap
+  if (now > globalDayCount.resetAt) {
+    globalDayCount = { count: 0, resetAt: now + 86_400_000 };
+  }
+  if (globalDayCount.count >= RATE_LIMIT.MAX_GLOBAL_PER_DAY) {
+    return { allowed: false, reason: "Daily query limit reached. Please try again tomorrow." };
+  }
+
+  // Per-IP per-minute
+  const minuteEntry = ipMinuteMap.get(ip);
+  if (minuteEntry && now < minuteEntry.resetAt) {
+    if (minuteEntry.count >= RATE_LIMIT.MAX_PER_IP_PER_MINUTE) {
+      return { allowed: false, reason: "Too many requests. Please wait a moment before asking again." };
+    }
+  } else {
+    ipMinuteMap.set(ip, { count: 0, resetAt: now + RATE_LIMIT.WINDOW_MS });
+  }
+
+  // Per-IP per-day
+  const dayEntry = ipDayMap.get(ip);
+  if (dayEntry && now < dayEntry.resetAt) {
+    if (dayEntry.count >= RATE_LIMIT.MAX_PER_IP_PER_DAY) {
+      return { allowed: false, reason: "Daily per-user limit reached. Please try again tomorrow." };
+    }
+  } else {
+    ipDayMap.set(ip, { count: 0, resetAt: now + 86_400_000 });
+  }
+
+  // Increment all counters
+  const m = ipMinuteMap.get(ip)!;
+  m.count++;
+  const d = ipDayMap.get(ip)!;
+  d.count++;
+  globalDayCount.count++;
+
+  return { allowed: true };
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -51,12 +114,40 @@ serve(async (req) => {
   }
 
   try {
+    // === RATE LIMIT CHECK ===
+    const clientIP = getClientIP(req);
+    const rateCheck = checkRateLimit(clientIP);
+    if (!rateCheck.allowed) {
+      console.warn(`Rate limited: ${clientIP} - ${rateCheck.reason}`);
+      return new Response(
+        JSON.stringify({ error: rateCheck.reason }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "60" } }
+      );
+    }
+
     const { messages } = await req.json();
+
+    // === INPUT VALIDATION ===
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Invalid request format." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    // Cap conversation length to prevent token bombing
+    const recentMessages = messages.slice(-10);
+    // Validate and truncate individual message lengths
+    for (const msg of recentMessages) {
+      if (typeof msg.content === "string" && msg.content.length > RATE_LIMIT.MAX_INPUT_LENGTH) {
+        msg.content = msg.content.slice(0, RATE_LIMIT.MAX_INPUT_LENGTH);
+      }
+    }
+
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
     // Convert messages to Gemini format
-    const geminiContents = messages
+    const geminiContents = recentMessages
       .filter((m: { role: string }) => m.role !== "system")
       .map((m: { role: string; content: string }) => ({
         role: m.role === "assistant" ? "model" : "user",
@@ -121,7 +212,6 @@ serve(async (req) => {
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       start(controller) {
-        // Send the main text as a streamed response
         const chunk = JSON.stringify({
           choices: [{
             delta: { content: text },
@@ -130,7 +220,6 @@ serve(async (req) => {
         });
         controller.enqueue(encoder.encode(`data: ${chunk}\n\n`));
 
-        // If there are grounding sources, append them
         if (sources.length > 0) {
           const sourcesText = "\n\n---\n**Sources:** " + sources.map(
             (s: { title: string; url: string }, i: number) => `[${i + 1}] ${s.title}`
