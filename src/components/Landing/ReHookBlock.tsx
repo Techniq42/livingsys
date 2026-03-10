@@ -15,16 +15,10 @@ export function ReHookBlock() {
             There are networks of regenerative practitioners across the globe with hundreds of videos, case studies, and field-tested knowledge. Know what they don't have? Any system to connect those resources with people who need them. The coordination layer is missing.
           </p>
           <p>
-            The MGM Grand implemented a blast chiller food rescue program and saved 5 million meals since 2016. When Three Square food bank pulled out of the partnership, MGM kept the system running &mdash; because it worked economically, not just charitably.
-          </p>
-          <p>
-            HumiSoil bacterial processing converts virtually any organic waste into drought-resistant soil amendments worth $400 per cubic yard. Works in 32 countries. The US composting industry blocked its distribution channels.
+            The tools exist. The knowledge exists. The people exist. What's missing is the routing &mdash; the infrastructure that connects what's available to who needs it, when they need it, without a gatekeeper deciding who gets access.
           </p>
           <p className="text-foreground font-medium text-lg md:text-xl border-l-2 border-primary pl-6">
             Everyone learned sustainability through the front door &mdash; four-year institutions that don't know the loading dock exists. The actual work happens at the loading dock. That's where we build.
-          </p>
-          <p>
-            Institutional resistance is market validation. When established players fight a solution this hard, it means the solution threatens their operational model. Policy frameworks provide a ceiling and a floor for building &mdash; we build within that space.
           </p>
         </div>
       </div>
