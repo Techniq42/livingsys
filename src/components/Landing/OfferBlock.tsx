@@ -52,13 +52,13 @@ export function OfferBlock() {
           This isn't about proving we can crack serious code. It's about making sure the next time a gate closes, there's already a map in people's hands.
         </p>
 
-        <button
-          onClick={scrollToTop}
-          className="inline-flex items-center gap-2 text-primary font-display tracking-wider text-base border border-primary px-6 py-3 rounded-sm hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"
-        >
-          Join the sprint
-          <ChevronDown className="w-4 h-4 animate-scroll-bounce rotate-180" />
-        </button>
+<a
+              href="#optin-section"
+              className="inline-flex items-center gap-2 text-primary font-display tracking-wider text-base border border-primary px-6 py-3 rounded-sm hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer"
+            >
+              Join the sprint
+              <ChevronDown className="w-4 h-4 animate-scroll-bounce rotate-180" />
+            </a>
       </div>
     </section>
   );
