@@ -1,37 +1,29 @@
-import { CssVisual } from './CssVisuals';
+const STATS = [
+  { value: '$970B', label: 'Annual coordination failure cost in the food system' },
+  { value: '47', label: 'Bloom Network nodes across the planet without a shared routing layer' },
+  { value: '32', label: 'Countries where field-tested solutions exist with no connection to demand' },
+];
 
 export function ProofBlock() {
   return (
     <section className="py-24 md:py-32 px-6 md:px-12 lg:px-16 border-t border-border">
       <div className="max-w-4xl">
-        <p className="section-label mb-6">Proof of Concept</p>
-
-        <h2 className="text-2xl md:text-4xl font-bold font-display leading-tight mb-4 text-foreground">
+        <p className="section-label mb-6">The Scale</p>
+        <h2 className="text-2xl md:text-4xl font-bold font-display leading-tight mb-16 text-foreground">
           This isn't theory. It's running in 32 countries.
         </h2>
-
-        <div className="grid lg:grid-cols-[1fr_300px] gap-8 mb-10 items-center">
-          <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-3xl">
-            HumiSoil's bacterial processing technology was presented at COP28 — converting organic waste into drought-resistant soil amendments across Malaysia, the UAE, and beyond. Watch the field demonstration.
-          </p>
-          <CssVisual variant="desert" className="max-h-[250px]" />
+        <div className="grid md:grid-cols-3 gap-12">
+          {STATS.map((stat) => (
+            <div key={stat.value} className="space-y-3">
+              <div className="text-4xl md:text-5xl font-bold font-display text-primary">
+                {stat.value}
+              </div>
+              <p className="text-muted-foreground leading-relaxed">
+                {stat.label}
+              </p>
+            </div>
+          ))}
         </div>
-
-        {/* 16:9 responsive YouTube embed */}
-        <div className="relative w-full overflow-hidden rounded-sm border border-border" style={{ paddingBottom: '56.25%' }}>
-          <iframe
-            className="absolute inset-0 w-full h-full"
-            src="https://www.youtube.com/embed/Og0ocvmk3GQ?start=439"
-            title="HumiSoil COP28 Presentation — Humus Oil Process and Use Cases"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            loading="lazy"
-          />
-        </div>
-
-        <p className="mt-6 text-sm text-muted-foreground font-display tracking-wider">
-          COP28, Dubai — Fellowship of Living Systems field presentation
-        </p>
       </div>
     </section>
   );
