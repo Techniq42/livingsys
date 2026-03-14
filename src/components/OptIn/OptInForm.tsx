@@ -47,6 +47,7 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
             path,
             user_agent: navigator.userAgent,
             referrer: document.referrer || null,
+            source: new URLSearchParams(window.location.search).get('source') || null,
           }),
         }
       );
