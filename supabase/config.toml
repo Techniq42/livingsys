@@ -1,1 +1,4 @@
 project_id = "spoiizdwriqfspehbcwp"
+
+[functions.submit-optin]
+verify_jwt = false
