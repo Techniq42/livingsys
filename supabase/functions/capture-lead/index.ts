@@ -37,7 +37,6 @@ Deno.serve(async (req) => {
         path,
         user_agent: user_agent || null,
         referrer: referrer || null,
-        source: source || null,
       })
       .select("id")
       .single();
