@@ -30,9 +30,28 @@ export default function ArchitectLogin() {
     setMessage('');
 
     try {
+      const trimmedEmail = email.trim().toLowerCase();
+
+      // Check approved_emails allowlist before signup or login
+      const { data: approved, error: lookupError } = await supabase
+        .from('approved_emails')
+        .select('email')
+        .eq('email', trimmedEmail)
+        .maybeSingle();
+
+      if (lookupError) {
+        throw new Error('Unable to verify access. Please try again.');
+      }
+
+      if (!approved) {
+        throw new Error(
+          'Access is by invitation only. If you believe you should have access, contact the Fellowship coordination team.'
+        );
+      }
+
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
-          email: email.trim(),
+          email: trimmedEmail,
           password,
           options: { emailRedirectTo: 'https://livingsys.lovable.app/architect-dashboard' },
         });
@@ -40,7 +59,7 @@ export default function ArchitectLogin() {
         setMessage('Check your email for a confirmation link.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
+          email: trimmedEmail,
           password,
         });
         if (error) throw error;
@@ -66,7 +85,9 @@ export default function ArchitectLogin() {
           Architect Access
         </h1>
         <p className="text-muted-foreground text-sm mb-8">
-          {isSignUp ? 'Create your account to access the coordination stack.' : 'Sign in to your Architect dashboard.'}
+          {isSignUp
+            ? 'Create your account to access the coordination stack.'
+            : 'Sign in to your Architect dashboard.'}
         </p>
 
         {error && (
@@ -74,7 +95,6 @@ export default function ArchitectLogin() {
             {error}
           </div>
         )}
-
         {message && (
           <div className="bg-primary/10 border border-primary/30 rounded-sm px-4 py-3 mb-6 text-sm text-primary">
             {message}
@@ -103,7 +123,6 @@ export default function ArchitectLogin() {
               className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
             />
           </div>
-
           <button
             type="submit"
             disabled={loading}
