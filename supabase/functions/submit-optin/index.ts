@@ -17,10 +17,15 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const webhookUrl =
-      Deno.env.get("N8N_WEBHOOK_URL") ||
-      "https://living-systems.app.n8n.cloud/webhook/lovable-optin";
-    const webhookSecret = Deno.env.get("N8N_WEBHOOK_SECRET") || "";
+    const webhookUrl = Deno.env.get("N8N_WEBHOOK_URL");
+    if (!webhookUrl) {
+      throw new Error("N8N_WEBHOOK_URL is not configured");
+    }
+
+    const webhookSecret = Deno.env.get("N8N_WEBHOOK_SECRET");
+    if (!webhookSecret) {
+      throw new Error("N8N_WEBHOOK_SECRET is not configured");
+    }
 
     const body = await req.json();
 
@@ -36,10 +41,8 @@ Deno.serve(async (req) => {
     // Forward to n8n with the secret header
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
+      "x-webhook-secret": webhookSecret,
     };
-    if (webhookSecret) {
-      headers["x-webhook-secret"] = webhookSecret;
-    }
 
     const n8nRes = await fetch(webhookUrl, {
       method: "POST",
