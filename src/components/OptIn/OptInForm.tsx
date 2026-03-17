@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { fireOptInWebhook, fireBookBumpWebhook } from '@/lib/webhooks';
 import { ValueStack } from './ValueStack';
 import { getActiveBookRoute } from '@/config/bookRouting';
@@ -79,10 +78,17 @@ export function OptInForm({ path, onBack }: OptInFormProps) {
   };
 
   const handleBookBump = async () => {
-    await supabase
-      .from('leads')
-      .update({ book_bump_clicked: true, book_bump_timestamp: new Date().toISOString() })
-      .eq('id', leadId);
+    await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/update-book-bump`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ id: leadId }),
+      }
+    );
 
     fireBookBumpWebhook(leadId, path);
 
