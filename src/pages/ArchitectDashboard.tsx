@@ -13,35 +13,54 @@ import type { Session } from '@supabase/supabase-js';
 export default function ArchitectDashboardPage() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
   const navigate = useNavigate();
+
+  // Verify user has architect role via server-side query
+  async function verifyArchitectRole(userId: string) {
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !data || data.role !== 'architect') {
+      console.warn('Access denied: user is not an architect');
+      navigate('/dashboard');
+      return false;
+    }
+    return true;
+  }
 
   useEffect(() => {
     // Listen for auth state changes (including token recovery from email links)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
-      setLoading(false);
-      // Only redirect if we've confirmed there's no session AND it's not an initial loading event
       if (!session && event === 'SIGNED_OUT') {
         navigate('/architect-login');
+        return;
       }
+      if (session?.user) {
+        const isArchitect = await verifyArchitectRole(session.user.id);
+        setAuthorized(isArchitect);
+      }
+      setLoading(false);
     });
 
-    // Check for existing session, but don't redirect immediately
-    // because the URL hash fragment may still be processing
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Check for existing session
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
         setSession(session);
+        const isArchitect = await verifyArchitectRole(session.user.id);
+        setAuthorized(isArchitect);
         setLoading(false);
       } else {
-        // Give the auth callback hash time to be processed before redirecting
-        // If there's a hash fragment, the onAuthStateChange will fire
-        const hasAuthHash = window.location.hash.includes('access_token') || 
-                           window.location.hash.includes('type=');
+        const hasAuthHash = window.location.hash.includes('access_token') ||
+          window.location.hash.includes('type=');
         if (!hasAuthHash) {
           setLoading(false);
           navigate('/architect-login');
         }
-        // If there IS a hash, wait for onAuthStateChange to handle it
       }
     });
 
@@ -56,12 +75,11 @@ export default function ArchitectDashboardPage() {
     );
   }
 
-  if (!session) return null;
+  if (!session || !authorized) return null;
 
   return (
     <div className="min-h-screen bg-background">
       <DashboardNav userEmail={session.user.email} />
-
       <div className="px-6 md:px-8 py-10">
         {/* Welcome banner */}
         <div className="mb-10">
@@ -84,7 +102,6 @@ export default function ArchitectDashboardPage() {
           <QuickActions />
         </div>
       </div>
-
       <CodexFloatingWidget />
     </div>
   );
