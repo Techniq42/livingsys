@@ -16,9 +16,28 @@ export function AuthPage() {
     setMessage('');
 
     try {
+      const trimmedEmail = email.trim().toLowerCase();
+
+      // Check approved_emails allowlist before signup or login
+      const { data: approved, error: lookupError } = await supabase
+        .from('approved_emails')
+        .select('email')
+        .eq('email', trimmedEmail)
+        .maybeSingle();
+
+      if (lookupError) {
+        throw new Error('Unable to verify access. Please try again.');
+      }
+
+      if (!approved) {
+        throw new Error(
+          'Access is by invitation only. If you believe you should have access, contact the Fellowship coordination team.'
+        );
+      }
+
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
-          email: email.trim(),
+          email: trimmedEmail,
           password,
           options: { emailRedirectTo: 'https://livingsys.lovable.app/dashboard' },
         });
@@ -26,7 +45,7 @@ export function AuthPage() {
         setMessage('Check your email for a confirmation link.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
+          email: trimmedEmail,
           password,
         });
         if (error) throw error;
@@ -47,7 +66,6 @@ export function AuthPage() {
         >
           Fellowship of Living Systems
         </a>
-
         <h1 className="text-2xl font-bold font-display mb-2 text-foreground">
           Sovereign OS v1.0
         </h1>
@@ -89,7 +107,6 @@ export function AuthPage() {
               className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
             />
           </div>
-
           <button
             type="submit"
             disabled={loading}
