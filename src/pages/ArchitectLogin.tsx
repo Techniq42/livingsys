@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+
+const TURNSTILE_SITE_KEY = '0x4AAAAAACsH-SiikIJB-A7Q';
 
 export default function ArchitectLogin() {
   const [isSignUp, setIsSignUp] = useState(true);
@@ -9,6 +11,9 @@ export default function ArchitectLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,11 +28,61 @@ export default function ArchitectLogin() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  useEffect(() => {
+    const scriptId = 'cf-turnstile-script';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+
+    (window as any).onTurnstileLoad = () => {
+      if (turnstileRef.current && (window as any).turnstile) {
+        widgetIdRef.current = (window as any).turnstile.render(turnstileRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          callback: (token: string) => setCaptchaToken(token),
+          'expired-callback': () => setCaptchaToken(null),
+          theme: 'dark',
+        });
+      }
+    };
+
+    if ((window as any).turnstile && turnstileRef.current) {
+      widgetIdRef.current = (window as any).turnstile.render(turnstileRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        callback: (token: string) => setCaptchaToken(token),
+        'expired-callback': () => setCaptchaToken(null),
+        theme: 'dark',
+      });
+    }
+
+    return () => {
+      if (widgetIdRef.current && (window as any).turnstile) {
+        (window as any).turnstile.remove(widgetIdRef.current);
+      }
+    };
+  }, []);
+
+  const resetTurnstile = () => {
+    if (widgetIdRef.current && (window as any).turnstile) {
+      (window as any).turnstile.reset(widgetIdRef.current);
+    }
+    setCaptchaToken(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setMessage('');
+
+    if (!captchaToken) {
+      setError('Please complete the CAPTCHA verification.');
+      setLoading(false);
+      return;
+    }
 
     try {
       const trimmedEmail = email.trim().toLowerCase();
@@ -42,7 +97,6 @@ export default function ArchitectLogin() {
       if (lookupError) {
         throw new Error('Unable to verify access. Please try again.');
       }
-
       if (!approved) {
         throw new Error(
           'Access is by invitation only. If you believe you should have access, contact the Fellowship coordination team.'
@@ -53,7 +107,10 @@ export default function ArchitectLogin() {
         const { error } = await supabase.auth.signUp({
           email: trimmedEmail,
           password,
-          options: { emailRedirectTo: 'https://livingsys.lovable.app/architect-dashboard' },
+          options: {
+            emailRedirectTo: 'https://livingsys.lovable.app/architect-dashboard',
+            captchaToken,
+          },
         });
         if (error) throw error;
         setMessage('Check your email for a confirmation link.');
@@ -61,6 +118,7 @@ export default function ArchitectLogin() {
         const { error } = await supabase.auth.signInWithPassword({
           email: trimmedEmail,
           password,
+          options: { captchaToken },
         });
         if (error) throw error;
       }
@@ -68,6 +126,7 @@ export default function ArchitectLogin() {
       setError(err instanceof Error ? err.message : 'Authentication failed');
     } finally {
       setLoading(false);
+      resetTurnstile();
     }
   };
 
@@ -80,7 +139,6 @@ export default function ArchitectLogin() {
         >
           Fellowship of Living Systems
         </a>
-
         <h1 className="text-2xl font-bold font-display mb-2 text-foreground">
           Architect Access
         </h1>
@@ -95,6 +153,7 @@ export default function ArchitectLogin() {
             {error}
           </div>
         )}
+
         {message && (
           <div className="bg-primary/10 border border-primary/30 rounded-sm px-4 py-3 mb-6 text-sm text-primary">
             {message}
@@ -123,6 +182,7 @@ export default function ArchitectLogin() {
               className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
             />
           </div>
+          <div ref={turnstileRef} className="flex justify-center my-2"></div>
           <button
             type="submit"
             disabled={loading}
