@@ -24,7 +24,7 @@ export default function ArchitectDashboardPage() {
       .eq('user_id', userId)
       .single();
 
-    if (error || !data || data.role !== 'architect') {
+    if (error || !data || (data.role !== 'architect' && data.role !== 'administrator')) {
       console.warn('Access denied: user is not an architect');
       navigate('/dashboard');
       return false;
