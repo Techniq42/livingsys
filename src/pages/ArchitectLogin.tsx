@@ -88,8 +88,8 @@ export default function ArchitectLogin() {
       const trimmedEmail = email.trim().toLowerCase();
 
       // Check approved_emails allowlist before signup or login
-      const { data: approved, error: lookupError } = await supabase
-        .from('approved_emails')
+      const { data: approved, error: lookupError } = await (supabase
+        .from('approved_emails') as any)
         .select('email')
         .eq('email', trimmedEmail)
         .maybeSingle();
