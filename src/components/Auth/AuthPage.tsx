@@ -116,18 +116,33 @@ export function AuthPage() {
     }
   };
 
+  const fillDemo = () => {
+    setEmail('test@edgerunner.local');
+    setPassword('testrunner2026');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6 grid-overlay">
       <div className="w-full max-w-sm">
         <a
           href="/"
-          className="text-xs tracking-[0.25em] uppercase text-muted-foreground font-display hover:text-foreground transition-colors block mb-12"
+          className="block mb-8 group"
         >
-          Fellowship of Living Systems
+          <h1
+            className="text-3xl sm:text-4xl font-bold font-display tracking-[0.08em] uppercase leading-tight"
+            style={{
+              background: 'linear-gradient(135deg, hsl(142 52% 50%), hsl(12 85% 62%))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              filter: 'drop-shadow(0 0 18px hsl(142 52% 42% / 0.35))',
+            }}
+          >
+            Fellowship of Living Systems
+          </h1>
         </a>
-        <h1 className="text-2xl font-bold font-display mb-2 text-foreground">
+        <p className="text-sm font-mono text-muted-foreground tracking-wider mb-1">
           Sovereign OS v1.0
-        </h1>
+        </p>
         <p className="text-muted-foreground text-sm mb-8">
           {isSignUp ? 'Create your Codex access.' : 'Sign in to access the Codex.'}
         </p>
@@ -176,12 +191,20 @@ export function AuthPage() {
           </button>
         </form>
 
-        <button
-          onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }}
-          className="mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer w-full text-center"
-        >
-          {isSignUp ? 'Already have access? Sign in' : "Need access? Create an account"}
-        </button>
+        <div className="mt-4 flex items-center justify-between">
+          <button
+            onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            {isSignUp ? 'Already have access? Sign in' : "Need access? Create an account"}
+          </button>
+          <button
+            onClick={fillDemo}
+            className="text-xs text-muted-foreground/60 hover:text-coral transition-colors cursor-pointer font-mono"
+          >
+            Demo login ↗
+          </button>
+        </div>
       </div>
     </div>
   );
