@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      approved_emails: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          revoked_at: string | null
+          role: string
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          revoked_at?: string | null
+          role?: string
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          revoked_at?: string | null
+          role?: string
+          source?: string | null
+        }
+        Relationships: []
+      }
       codex_conversations: {
         Row: {
           content: string
