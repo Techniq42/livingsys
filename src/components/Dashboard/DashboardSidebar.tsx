@@ -1,4 +1,5 @@
-import { MessageSquare, History, BookOpen, GitBranch, LogOut, Home, Radio } from 'lucide-react';
+import { MessageSquare, History, BookOpen, GitBranch, LogOut, Home, Sparkles } from 'lucide-react';
+import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { supabase } from '@/integrations/supabase/client';
 
 interface DashboardSidebarProps {
