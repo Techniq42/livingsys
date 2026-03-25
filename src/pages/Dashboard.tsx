@@ -9,6 +9,7 @@ import { ContentIntake } from '@/components/Primer/ContentIntake';
 import { JobStatusList } from '@/components/Primer/JobStatusList';
 import { CoordinationHealth } from '@/components/Primer/CoordinationHealth';
 import { SocialDistribution } from '@/components/Primer/SocialDistribution';
+import { ReduceMotionProvider } from '@/hooks/use-reduce-motion';
 import { BookOpen, GitBranch, History } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 
@@ -69,6 +70,7 @@ export default function Dashboard() {
   }
 
   return (
+    <ReduceMotionProvider>
     <div className="h-screen flex bg-background">
       <DashboardSidebar
         email={user.email || ''}
@@ -137,5 +139,6 @@ export default function Dashboard() {
         )}
       </main>
     </div>
+    </ReduceMotionProvider>
   );
 }
