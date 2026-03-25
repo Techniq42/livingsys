@@ -1,4 +1,5 @@
-import { MessageSquare, History, BookOpen, GitBranch, LogOut, Home, Radio } from 'lucide-react';
+import { MessageSquare, History, BookOpen, GitBranch, LogOut, Home, Sparkles } from 'lucide-react';
+import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { supabase } from '@/integrations/supabase/client';
 
 interface DashboardSidebarProps {
@@ -17,6 +18,8 @@ const navItems = [
 ];
 
 export function DashboardSidebar({ email, role, activeTab, onTabChange }: DashboardSidebarProps) {
+  const { reduceMotion, toggleReduceMotion } = useReduceMotion();
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
   };
@@ -60,8 +63,15 @@ export function DashboardSidebar({ email, role, activeTab, onTabChange }: Dashbo
         ))}
       </nav>
 
-      <div className="p-4 border-t border-border">
-        <p className="text-xs text-muted-foreground truncate mb-3">{email}</p>
+      <div className="p-4 border-t border-border space-y-3">
+        <button
+          onClick={toggleReduceMotion}
+          className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer font-display tracking-wider min-h-[44px] w-full"
+        >
+          <Sparkles className="w-3 h-3" />
+          {reduceMotion ? 'Motion: Off' : 'Motion: On'}
+        </button>
+        <p className="text-xs text-muted-foreground truncate">{email}</p>
         <button
           onClick={handleSignOut}
           className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer font-display tracking-wider min-h-[44px]"

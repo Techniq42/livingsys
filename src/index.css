@@ -162,11 +162,19 @@
   animation: gentle-pulse 3s ease-in-out infinite;
 }
 
-/* Respect reduced motion */
+/* Respect reduced motion — system preference or manual toggle */
 @media (prefers-reduced-motion: reduce) {
   .animate-pulse-dot,
   .animate-scroll-bounce,
   .animate-gentle-pulse {
     animation: none;
   }
+}
+
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
 }
