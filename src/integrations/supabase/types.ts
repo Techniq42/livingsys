@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      alerts: {
+        Row: {
+          acknowledged: boolean | null
+          alert_type: string
+          created_at: string | null
+          id: string
+          message: string
+          severity: string
+        }
+        Insert: {
+          acknowledged?: boolean | null
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          message: string
+          severity?: string
+        }
+        Update: {
+          acknowledged?: boolean | null
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          message?: string
+          severity?: string
+        }
+        Relationships: []
+      }
       approved_emails: {
         Row: {
           created_at: string
@@ -143,6 +170,54 @@ export type Database = {
         }
         Relationships: []
       }
+      jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          distribution_status: Json | null
+          error_message: string | null
+          id: string
+          input_file: string | null
+          input_type: string
+          input_url: string | null
+          outputs: Json | null
+          selected_options: Json
+          status: string
+          template_id: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          distribution_status?: Json | null
+          error_message?: string | null
+          id?: string
+          input_file?: string | null
+          input_type: string
+          input_url?: string | null
+          outputs?: Json | null
+          selected_options?: Json
+          status?: string
+          template_id?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          distribution_status?: Json | null
+          error_message?: string | null
+          id?: string
+          input_file?: string | null
+          input_type?: string
+          input_url?: string | null
+          outputs?: Json | null
+          selected_options?: Json
+          status?: string
+          template_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           book_bump_clicked: boolean | null
@@ -188,6 +263,33 @@ export type Database = {
           phone?: string | null
           referrer?: string | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      pipeline_status: {
+        Row: {
+          account_name: string
+          contact_count: number | null
+          id: string
+          last_updated: string | null
+          stuck_count: number | null
+          track: string
+        }
+        Insert: {
+          account_name: string
+          contact_count?: number | null
+          id?: string
+          last_updated?: string | null
+          stuck_count?: number | null
+          track: string
+        }
+        Update: {
+          account_name?: string
+          contact_count?: number | null
+          id?: string
+          last_updated?: string | null
+          stuck_count?: number | null
+          track?: string
         }
         Relationships: []
       }
@@ -248,6 +350,33 @@ export type Database = {
         }
         Relationships: []
       }
+      site_status: {
+        Row: {
+          domain: string
+          id: string
+          last_checked: string | null
+          last_error: string | null
+          ssl_expiry: string | null
+          status: string
+        }
+        Insert: {
+          domain: string
+          id?: string
+          last_checked?: string | null
+          last_error?: string | null
+          ssl_expiry?: string | null
+          status?: string
+        }
+        Update: {
+          domain?: string
+          id?: string
+          last_checked?: string | null
+          last_error?: string | null
+          ssl_expiry?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       user_module_progress: {
         Row: {
           completed_at: string | null
@@ -297,6 +426,33 @@ export type Database = {
         Update: {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_templates: {
+        Row: {
+          created_at: string | null
+          id: string
+          input_type: string
+          name: string
+          selected_options: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          input_type: string
+          name: string
+          selected_options?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          input_type?: string
+          name?: string
+          selected_options?: Json
           user_id?: string
         }
         Relationships: []
