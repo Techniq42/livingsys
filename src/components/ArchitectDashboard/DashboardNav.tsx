@@ -28,6 +28,7 @@ export function DashboardNav({ userEmail }: DashboardNavProps) {
             <a href="#resources" className="text-muted-foreground hover:text-foreground transition-colors">Resources</a>
             <a href="#modules" className="text-muted-foreground hover:text-foreground transition-colors">Modules</a>
             <a href="#community" className="text-muted-foreground hover:text-foreground transition-colors">Community</a>
+                          <a href="/community-radar" className="text-muted-foreground hover:text-foreground transition-colors">Radar</a>
           </nav>
         </div>
 
