@@ -266,6 +266,27 @@ export type Database = {
         }
         Relationships: []
       }
+      operator_config: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          value?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          value?: Json
+        }
+        Relationships: []
+      }
       pipeline_status: {
         Row: {
           account_name: string
