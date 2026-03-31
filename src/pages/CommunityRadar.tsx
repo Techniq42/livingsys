@@ -56,7 +56,7 @@ export default function CommunityRadarPage() {
   }, [authorized]);
 
   async function fetchThreads() {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('community_threads')
       .select('*')
       .order('created_at', { ascending: false });
@@ -64,7 +64,7 @@ export default function CommunityRadarPage() {
   }
 
   async function fetchTemplates() {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('reply_templates')
       .select('*')
       .order('sort_order', { ascending: true });
@@ -74,12 +74,12 @@ export default function CommunityRadarPage() {
   async function handleStatusChange(id: string, status: ThreadStatus) {
     const updates: Record<string, unknown> = { status };
     if (status === 'replied') updates.replied_at = new Date().toISOString();
-    await supabase.from('community_threads').update(updates).eq('id', id);
+    await (supabase as any).from('community_threads').update(updates).eq('id', id);
     setThreads(prev => prev.map(t => t.id === id ? { ...t, ...updates } as CommunityThread : t));
   }
 
   async function handleNotesChange(id: string, notes: string) {
-    await supabase.from('community_threads').update({ notes }).eq('id', id);
+    await (supabase as any).from('community_threads').update({ notes }).eq('id', id);
     setThreads(prev => prev.map(t => t.id === id ? { ...t, notes } : t));
   }
 
