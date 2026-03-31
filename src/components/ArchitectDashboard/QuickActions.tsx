@@ -1,4 +1,4 @@
-import { GitFork, MessageCircle, Bot, ExternalLink } from 'lucide-react';
+import { GitFork, MessageCircle, Bot, ExternalLink, Radar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function QuickActions() {
@@ -25,6 +25,13 @@ export function QuickActions() {
       description: 'Query the knowledge base',
       onClick: () => navigate('/dashboard'),
       variant: 'primary' as const,
+    },
+    {
+      icon: Radar,
+      label: 'Community Radar',
+      description: 'Monitor threads across platforms',
+      onClick: () => navigate('/community-radar'),
+      variant: 'secondary' as const,
     },
   ];
 
