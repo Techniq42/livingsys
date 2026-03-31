@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
 import NotFound from "./pages/NotFound";
+import CommunityRadar from "./pages/CommunityRadar";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/architect-dashboard" element={<ArchitectDashboard />} />
           <Route path="/architect-login" element={<ArchitectLogin />} />
+                      <Route path="/community-radar" element={<CommunityRadar />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
