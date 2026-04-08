@@ -14,6 +14,7 @@ import DashboardSortingHat from "./pages/dashboard/DashboardSortingHat";
 import DashboardSettings from "./pages/dashboard/DashboardSettings";
 import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
+import Supermarket from "./pages/Supermarket";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
