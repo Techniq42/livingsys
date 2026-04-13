@@ -1,17 +1,27 @@
 import { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { ThreadCard, type CommunityThread, type ThreadStatus } from '@/components/CommunityRadar/ThreadCard';
 import { TemplatePanel, type ReplyTemplate } from '@/components/CommunityRadar/TemplatePanel';
+import { ResponseDraftsPanel } from '@/components/radar/ResponseDraftsPanel';
+import { AutoResponseKillSwitch } from '@/components/radar/AutoResponseKillSwitch';
+import { AutoResponseConfigEditor } from '@/components/radar/AutoResponseConfigEditor';
+import { ShadowLogDrawer } from '@/components/radar/ShadowLogDrawer';
 import { Button } from '@/components/ui/button';
-import { Radar, Filter } from 'lucide-react';
+import { Radar, Filter, Settings2 } from 'lucide-react';
+import type { User } from '@supabase/supabase-js';
 
 type FilterStatus = ThreadStatus | 'all';
 
 export default function DashboardRadar() {
+  const { user, userRole } = useOutletContext<{ user: User; userRole: string }>();
+  const isArchitect = userRole === 'architect' || userRole === 'administrator';
+
   const [threads, setThreads] = useState<CommunityThread[]>([]);
   const [templates, setTemplates] = useState<ReplyTemplate[]>([]);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [selectedThread, setSelectedThread] = useState<CommunityThread | null>(null);
+  const [activeTab, setActiveTab] = useState<'threads' | 'drafts' | 'config'>('threads');
 
   useEffect(() => {
     fetchThreads();
@@ -53,63 +63,122 @@ export default function DashboardRadar() {
   }, {} as Record<string, number>);
 
   return (
-    <div className="p-6 md:p-8">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Radar className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold font-display text-foreground">Community Radar</h1>
-        </div>
-        <p className="text-sm text-muted-foreground italic font-body">
-          Threads surfaced from monitored communities. Review, reply, connect.
-        </p>
-      </div>
-
-      <div className="flex items-center gap-2 mb-6 flex-wrap">
-        <Filter className="h-4 w-4 text-muted-foreground" />
-        {(['all', 'new', 'reviewed', 'flagged', 'replied', 'archived'] as FilterStatus[]).map((s) => (
-          <Button
-            key={s}
-            size="sm"
-            variant={filterStatus === s ? 'default' : 'outline'}
-            className="h-7 text-xs px-3"
-            onClick={() => setFilterStatus(s)}
-          >
-            {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
-            {s !== 'all' && statusCounts[s] ? ` (${statusCounts[s]})` : ''}
-            {s === 'all' ? ` (${threads.length})` : ''}
-          </Button>
-        ))}
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredThreads.map((thread) => (
-          <ThreadCard
-            key={thread.id}
-            thread={thread}
-            onStatusChange={handleStatusChange}
-            onNotesChange={handleNotesChange}
-            onSelectTemplate={(t) => setSelectedThread(t)}
-          />
-        ))}
-      </div>
-
-      {filteredThreads.length === 0 && (
-        <div className="text-center py-16">
-          <Radar className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-          <p className="text-muted-foreground">No threads found.</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">
-            {threads.length === 0
-              ? 'Waiting for n8n to surface community threads.'
-              : 'Try a different filter.'}
+    <div className="p-6 md:p-8 pb-16">
+      {/* Header row with kill switch */}
+      <div className="mb-6 flex flex-col lg:flex-row lg:items-start gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <Radar className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-bold font-display text-foreground">Community Radar</h1>
+          </div>
+          <p className="text-sm text-muted-foreground italic font-body">
+            Threads surfaced from monitored communities. Review, reply, connect.
           </p>
+        </div>
+        {isArchitect && (
+          <div className="lg:w-auto">
+            <AutoResponseKillSwitch isArchitect={isArchitect} />
+          </div>
+        )}
+      </div>
+
+      {/* Tab switcher */}
+      <div className="flex items-center gap-2 mb-6 border-b border-border/50 pb-3">
+        <Button
+          size="sm"
+          variant={activeTab === 'threads' ? 'default' : 'ghost'}
+          className="h-8 text-xs px-4"
+          onClick={() => setActiveTab('threads')}
+        >
+          <Radar className="h-3.5 w-3.5 mr-1.5" /> Threads
+        </Button>
+        <Button
+          size="sm"
+          variant={activeTab === 'drafts' ? 'default' : 'ghost'}
+          className="h-8 text-xs px-4"
+          onClick={() => setActiveTab('drafts')}
+        >
+          Response Drafts
+        </Button>
+        {isArchitect && (
+          <Button
+            size="sm"
+            variant={activeTab === 'config' ? 'default' : 'ghost'}
+            className="h-8 text-xs px-4"
+            onClick={() => setActiveTab('config')}
+          >
+            <Settings2 className="h-3.5 w-3.5 mr-1.5" /> Auto-Response Config
+          </Button>
+        )}
+      </div>
+
+      {/* Threads tab */}
+      {activeTab === 'threads' && (
+        <>
+          <div className="flex items-center gap-2 mb-6 flex-wrap">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            {(['all', 'new', 'reviewed', 'flagged', 'replied', 'archived'] as FilterStatus[]).map((s) => (
+              <Button
+                key={s}
+                size="sm"
+                variant={filterStatus === s ? 'default' : 'outline'}
+                className="h-7 text-xs px-3"
+                onClick={() => setFilterStatus(s)}
+              >
+                {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+                {s !== 'all' && statusCounts[s] ? ` (${statusCounts[s]})` : ''}
+                {s === 'all' ? ` (${threads.length})` : ''}
+              </Button>
+            ))}
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {filteredThreads.map((thread) => (
+              <ThreadCard
+                key={thread.id}
+                thread={thread}
+                onStatusChange={handleStatusChange}
+                onNotesChange={handleNotesChange}
+                onSelectTemplate={(t) => setSelectedThread(t)}
+              />
+            ))}
+          </div>
+
+          {filteredThreads.length === 0 && (
+            <div className="text-center py-16">
+              <Radar className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+              <p className="text-muted-foreground">No threads found.</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">
+                {threads.length === 0
+                  ? 'Waiting for n8n to surface community threads.'
+                  : 'Try a different filter.'}
+              </p>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Drafts tab */}
+      {activeTab === 'drafts' && (
+        <ResponseDraftsPanel isArchitect={isArchitect} />
+      )}
+
+      {/* Config tab (architect only) */}
+      {activeTab === 'config' && isArchitect && (
+        <div className="max-w-xl">
+          <AutoResponseConfigEditor isArchitect={isArchitect} />
         </div>
       )}
 
+      {/* Template sidebar */}
       <TemplatePanel
         thread={selectedThread}
         templates={templates}
         onClose={() => setSelectedThread(null)}
       />
+
+      {/* Shadow log drawer — architect only */}
+      {isArchitect && <ShadowLogDrawer />}
     </div>
   );
 }

@@ -68,6 +68,27 @@ export type Database = {
         }
         Relationships: []
       }
+      auto_post_config: {
+        Row: {
+          config: Json
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          config?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          config?: Json
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       codex_conversations: {
         Row: {
           content: string
@@ -95,6 +116,60 @@ export type Database = {
           session_id?: string
           sources?: Json | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      community_threads: {
+        Row: {
+          author: string | null
+          created_at: string
+          id: string
+          matched_keywords: Json
+          notes: string | null
+          platform: string
+          post_id: string
+          post_title: string
+          post_url: string
+          relevance_score: number
+          replied_at: string | null
+          snippet: string | null
+          status: string
+          subreddit: string | null
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          created_at?: string
+          id?: string
+          matched_keywords?: Json
+          notes?: string | null
+          platform?: string
+          post_id?: string
+          post_title?: string
+          post_url?: string
+          relevance_score?: number
+          replied_at?: string | null
+          snippet?: string | null
+          status?: string
+          subreddit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          created_at?: string
+          id?: string
+          matched_keywords?: Json
+          notes?: string | null
+          platform?: string
+          post_id?: string
+          post_title?: string
+          post_url?: string
+          relevance_score?: number
+          replied_at?: string | null
+          snippet?: string | null
+          status?: string
+          subreddit?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -335,6 +410,42 @@ export type Database = {
         }
         Relationships: []
       }
+      reply_templates: {
+        Row: {
+          category: string
+          created_at: string
+          funnel_url: string | null
+          id: string
+          is_active: boolean
+          keywords: Json
+          scaffold: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          funnel_url?: string | null
+          id?: string
+          is_active?: boolean
+          keywords?: Json
+          scaffold?: string
+          sort_order?: number
+          title?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          funnel_url?: string | null
+          id?: string
+          is_active?: boolean
+          keywords?: Json
+          scaffold?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
       resources: {
         Row: {
           created_at: string
@@ -370,6 +481,68 @@ export type Database = {
           url?: string | null
         }
         Relationships: []
+      }
+      response_drafts: {
+        Row: {
+          auto_posted: boolean
+          auto_posted_at: string | null
+          classifier_reasoning: string | null
+          classifier_tier: number
+          created_at: string
+          draft_body: string
+          id: string
+          reddit_comment_id: string | null
+          reddit_comment_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          safety_flags: Json | null
+          status: string
+          thread_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          auto_posted?: boolean
+          auto_posted_at?: string | null
+          classifier_reasoning?: string | null
+          classifier_tier?: number
+          created_at?: string
+          draft_body?: string
+          id?: string
+          reddit_comment_id?: string | null
+          reddit_comment_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          safety_flags?: Json | null
+          status?: string
+          thread_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          auto_posted?: boolean
+          auto_posted_at?: string | null
+          classifier_reasoning?: string | null
+          classifier_tier?: number
+          created_at?: string
+          draft_body?: string
+          id?: string
+          reddit_comment_id?: string | null
+          reddit_comment_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          safety_flags?: Json | null
+          status?: string
+          thread_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "response_drafts_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "community_threads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       site_status: {
         Row: {
@@ -504,7 +677,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      shadow_log: {
+        Row: {
+          author: string | null
+          auto_posted: boolean | null
+          auto_posted_at: string | null
+          classifier_reasoning: string | null
+          classifier_tier: number | null
+          created_at: string | null
+          draft_body: string | null
+          id: string | null
+          log_category: string | null
+          post_title: string | null
+          post_url: string | null
+          reddit_comment_id: string | null
+          reddit_comment_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          safety_flags: Json | null
+          status: string | null
+          subreddit: string | null
+          thread_id: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "response_drafts_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "community_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_role: {
