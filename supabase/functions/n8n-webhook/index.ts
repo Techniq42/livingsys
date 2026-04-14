@@ -9,6 +9,8 @@ const ALLOWED_TABLES = [
   'jobs',
   'funnel_events',
   'routing_log',
+  'response_drafts',
+  'auto_post_config',
 ];
 
 Deno.serve(async (req: Request) => {
