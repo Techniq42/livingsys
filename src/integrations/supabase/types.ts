@@ -72,18 +72,21 @@ export type Database = {
         Row: {
           config: Json
           id: string
+          subreddit: string | null
           updated_at: string
           updated_by: string | null
         }
         Insert: {
           config?: Json
           id?: string
+          subreddit?: string | null
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
           config?: Json
           id?: string
+          subreddit?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -217,6 +220,67 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          external_id: string | null
+          id: string
+          metadata: Json
+          participant_handle: string | null
+          platform: string
+          source_draft_id: string | null
+          status: string
+          thread_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          metadata?: Json
+          participant_handle?: string | null
+          platform: string
+          source_draft_id?: string | null
+          status?: string
+          thread_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          metadata?: Json
+          participant_handle?: string | null
+          platform?: string
+          source_draft_id?: string | null
+          status?: string
+          thread_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_source_draft_id_fkey"
+            columns: ["source_draft_id"]
+            isOneToOne: false
+            referencedRelation: "response_drafts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_source_draft_id_fkey"
+            columns: ["source_draft_id"]
+            isOneToOne: false
+            referencedRelation: "shadow_log"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "community_threads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       course_modules: {
         Row: {
@@ -497,6 +561,7 @@ export type Database = {
           reviewed_by: string | null
           safety_flags: Json | null
           status: string
+          target_door: string | null
           thread_id: string | null
           updated_at: string
         }
@@ -514,6 +579,7 @@ export type Database = {
           reviewed_by?: string | null
           safety_flags?: Json | null
           status?: string
+          target_door?: string | null
           thread_id?: string | null
           updated_at?: string
         }
@@ -531,6 +597,7 @@ export type Database = {
           reviewed_by?: string | null
           safety_flags?: Json | null
           status?: string
+          target_door?: string | null
           thread_id?: string | null
           updated_at?: string
         }
@@ -712,6 +779,7 @@ export type Database = {
       }
     }
     Functions: {
+      check_auto_post_eligible: { Args: { _draft_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
