@@ -1,4 +1,4 @@
-import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles } from 'lucide-react';
+import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +15,7 @@ const navItems = [
   { to: '/dashboard/health', label: 'Health', icon: Activity, end: false },
   { to: '/dashboard/funnels', label: 'Funnels', icon: BarChart3, end: false },
   { to: '/dashboard/sorting-hat', label: 'Sorting Hat', icon: GitFork, end: false },
+  { to: '/dashboard/constellation', label: 'Constellation', icon: Map, end: false },
   { to: '/dashboard/settings', label: 'Settings', icon: Settings, end: false },
 ];
 

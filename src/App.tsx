@@ -12,6 +12,7 @@ import DashboardHealth from "./pages/dashboard/DashboardHealth";
 import DashboardFunnels from "./pages/dashboard/DashboardFunnels";
 import DashboardSortingHat from "./pages/dashboard/DashboardSortingHat";
 import DashboardSettings from "./pages/dashboard/DashboardSettings";
+import DashboardConstellation from "./pages/dashboard/DashboardConstellation";
 import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="funnels" element={<DashboardFunnels />} />
             <Route path="sorting-hat" element={<DashboardSortingHat />} />
             <Route path="settings" element={<DashboardSettings />} />
+            <Route path="constellation" element={<DashboardConstellation />} />
           </Route>
           <Route path="/architect-dashboard" element={<ArchitectDashboard />} />
           <Route path="/architect-login" element={<ArchitectLogin />} />
