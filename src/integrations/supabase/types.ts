@@ -562,6 +562,7 @@ export type Database = {
           safety_flags: Json | null
           status: string
           target_door: string | null
+          target_path: string | null
           thread_id: string | null
           updated_at: string
         }
@@ -580,6 +581,7 @@ export type Database = {
           safety_flags?: Json | null
           status?: string
           target_door?: string | null
+          target_path?: string | null
           thread_id?: string | null
           updated_at?: string
         }
@@ -598,6 +600,7 @@ export type Database = {
           safety_flags?: Json | null
           status?: string
           target_door?: string | null
+          target_path?: string | null
           thread_id?: string | null
           updated_at?: string
         }
