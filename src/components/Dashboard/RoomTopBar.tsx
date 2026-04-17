@@ -1,18 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useRoom, type Room, type SpoonMode } from '@/contexts/RoomContext';
 
-const ROOMS: Array<{ id: Room; label: string; route: string }> = [
-  { id: 'radar', label: 'Radar Room', route: '/dashboard/radar' },
-  { id: 'exchange', label: 'The Exchange', route: '/dashboard/exchange' },
-  { id: 'editing', label: 'Editing Bay', route: '/dashboard/editing' },
+const ROOMS: Array<{ id: Room; label: string; route: string; accent: string }> = [
+  { id: 'radar', label: 'Radar Room', route: '/dashboard/radar', accent: 'bg-[#6EB520] text-black border-[#6EB520]' },
+  { id: 'exchange', label: 'The Exchange', route: '/dashboard/exchange', accent: 'bg-[#D4AF37] text-black border-[#D4AF37]' },
+  { id: 'editing', label: 'Editing Bay', route: '/dashboard/editing', accent: 'bg-[#0B5783] text-white border-[#0B5783]' },
 ];
-
-const ROOM_ACCENTS: Record<Room, string> = {
-  radar: '#6EB520',
-  exchange: '#D4AF37',
-  editing: '#0B5783',
-  settings: '#888888',
-};
 
 const SPOON_MODES: Array<{ id: SpoonMode; label: string }> = [
   { id: 'low', label: 'Low Spoon' },
@@ -24,33 +17,21 @@ export function RoomTopBar() {
   const { currentRoom, spoonMode, setSpoonMode } = useRoom();
   const navigate = useNavigate();
 
-  const handleRoomClick = (_room: Room, route: string) => {
-    navigate(route);
-  };
-
   return (
-    <div
-      className="flex items-center justify-between gap-4 px-4 py-3 border-b"
-      style={{
-        borderColor: 'var(--room-accent-muted, hsl(var(--border)))',
-        background: 'var(--room-bg, hsl(var(--background)))',
-      }}
-    >
-      {/* Room selector pills */}
+    <div className="flex items-center justify-between gap-4 px-4 py-3 bg-gray-900/50 border-b border-white/5">
+      {/* Room pills */}
       <div className="flex items-center gap-2">
         {ROOMS.map((room) => {
           const active = currentRoom === room.id;
-          const accent = ROOM_ACCENTS[room.id];
           return (
             <button
               key={room.id}
-              onClick={() => handleRoomClick(room.id, room.route)}
-              className="px-3 py-1.5 rounded-lg text-xs font-display tracking-wider uppercase border transition-all min-h-[36px] cursor-pointer"
-              style={{
-                background: active ? accent : 'transparent',
-                color: active ? '#0a0a0a' : 'var(--room-text, hsl(var(--muted-foreground)))',
-                borderColor: active ? accent : 'var(--room-accent-muted, hsl(var(--border)))',
-              }}
+              onClick={() => navigate(room.route)}
+              className={`px-4 py-1.5 rounded-full text-xs font-display tracking-wider uppercase border transition-all cursor-pointer ${
+                active
+                  ? room.accent
+                  : 'bg-transparent text-white/60 border-white/10 hover:text-white/90 hover:border-white/20'
+              }`}
             >
               {room.label}
             </button>
@@ -58,9 +39,9 @@ export function RoomTopBar() {
         })}
       </div>
 
-      {/* Spoon mode pills */}
-      <div className="flex items-center gap-1">
-        <span className="text-[10px] tracking-[0.2em] uppercase font-display mr-2 opacity-60">
+      {/* Spoon pills */}
+      <div className="flex items-center gap-1.5">
+        <span className="text-[10px] tracking-[0.2em] uppercase font-display mr-1 text-white/40">
           Spoons
         </span>
         {SPOON_MODES.map((mode) => {
@@ -69,14 +50,11 @@ export function RoomTopBar() {
             <button
               key={mode.id}
               onClick={() => setSpoonMode(mode.id)}
-              className="px-2.5 py-1 rounded-md text-[10px] font-display tracking-wider uppercase border transition-all cursor-pointer"
-              style={{
-                background: active ? 'var(--room-accent, hsl(var(--primary)))' : 'transparent',
-                color: active ? '#0a0a0a' : 'var(--room-text, hsl(var(--muted-foreground)))',
-                borderColor: active
-                  ? 'var(--room-accent, hsl(var(--primary)))'
-                  : 'var(--room-accent-muted, hsl(var(--border)))',
-              }}
+              className={`px-3 py-1 rounded-full text-[10px] font-display tracking-wider uppercase border transition-all cursor-pointer ${
+                active
+                  ? 'bg-white text-black border-white'
+                  : 'bg-transparent text-white/50 border-white/10 hover:text-white/80 hover:border-white/20'
+              }`}
             >
               {mode.label}
             </button>
