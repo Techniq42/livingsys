@@ -19,8 +19,7 @@ export default function DashboardEditing() {
           Content Production
         </h1>
         <p className="text-base text-muted-foreground font-body leading-relaxed mb-8">
-          Where raw captures become finished pieces. Drafts, revisions, and the
-          slow work of shaping signal into story.
+          Multi-platform canon distribution. Write once, publish everywhere.
         </p>
         <div
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-display text-sm tracking-wider"
