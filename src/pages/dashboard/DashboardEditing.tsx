@@ -12,8 +12,11 @@ export default function DashboardEditing() {
         >
           The Editing Room
         </p>
-        <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
-          Craft & Refinement
+        <h1
+          className="text-3xl md:text-4xl font-display font-bold mb-4"
+          style={{ color: 'var(--room-accent, hsl(var(--foreground)))' }}
+        >
+          Content Production
         </h1>
         <p className="text-base text-muted-foreground font-body leading-relaxed mb-8">
           Where raw captures become finished pieces. Drafts, revisions, and the
