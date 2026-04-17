@@ -5,6 +5,7 @@ import { AuthPage } from '@/components/Auth/AuthPage';
 import { DashboardSidebar } from '@/components/Dashboard/DashboardSidebar';
 import { CodexFloatingWidget } from '@/components/ArchitectDashboard/CodexFloatingWidget';
 import { ReduceMotionProvider } from '@/hooks/use-reduce-motion';
+import { RoomProvider } from '@/contexts/RoomContext';
 import type { User } from '@supabase/supabase-js';
 
 export default function Dashboard() {
@@ -61,15 +62,17 @@ export default function Dashboard() {
 
   return (
     <ReduceMotionProvider>
-      <div className="h-screen flex bg-background">
-        <DashboardSidebar email={user.email || ''} role={userRole} />
-        <main className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto">
-            <Outlet context={{ user, userRole }} />
-          </div>
-        </main>
-        <CodexFloatingWidget />
-      </div>
+      <RoomProvider>
+        <div className="h-screen flex bg-background">
+          <DashboardSidebar email={user.email || ''} role={userRole} />
+          <main className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto">
+              <Outlet context={{ user, userRole }} />
+            </div>
+          </main>
+          <CodexFloatingWidget />
+        </div>
+      </RoomProvider>
     </ReduceMotionProvider>
   );
 }
