@@ -112,6 +112,24 @@ export function DashboardSidebar({ email, role }: DashboardSidebarProps) {
           </NavLink>
         ))}
 
+        <div className="pt-4 pb-1 px-3">
+          <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
+            Editing Bay
+          </p>
+        </div>
+        {editingBayItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50"
+            activeClassName="bg-accent text-primary"
+          >
+            <item.icon className="w-4 h-4" />
+            {item.label}
+          </NavLink>
+        ))}
+
         <div className="pt-4" />
         {bottomNavItems.map((item) => (
           <NavLink
