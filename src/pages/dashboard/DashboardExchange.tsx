@@ -16,8 +16,7 @@ export default function DashboardExchange() {
           Communications Hub
         </h1>
         <p className="text-base text-muted-foreground font-body leading-relaxed mb-8">
-          Where conversations land, get sorted, and turn into momentum. Inbound DMs,
-          replies, and signal threads all flow through here.
+          Email triage across three inboxes. Surfaces what matters, filters what doesn't.
         </p>
         <div
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-display text-sm tracking-wider"
