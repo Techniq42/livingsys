@@ -29,7 +29,7 @@ export default function DashboardExchange() {
           }}
         >
           <span className="w-2 h-2 rounded-full bg-current animate-pulse-dot" />
-          Coming Soon
+          In development
         </div>
       </div>
     </div>
