@@ -8,14 +8,20 @@ interface DashboardSidebarProps {
   role: string;
 }
 
-const navItems = [
+const topNavItems = [
   { to: '/dashboard', label: 'The Room', icon: Home, end: true },
   { to: '/dashboard/intake', label: 'Content Intake', icon: Upload, end: false },
+];
+
+const radarRoomItems = [
   { to: '/dashboard/radar', label: 'Community Radar', icon: Radar, end: false },
+  { to: '/dashboard/constellation', label: 'Constellation', icon: Map, end: false },
+];
+
+const bottomNavItems = [
   { to: '/dashboard/health', label: 'Health', icon: Activity, end: false },
   { to: '/dashboard/funnels', label: 'Funnels', icon: BarChart3, end: false },
   { to: '/dashboard/sorting-hat', label: 'Sorting Hat', icon: GitFork, end: false },
-  { to: '/dashboard/constellation', label: 'Constellation', icon: Map, end: false },
   { to: '/dashboard/settings', label: 'Settings', icon: Settings, end: false },
 ];
 
@@ -48,8 +54,40 @@ export function DashboardSidebar({ email, role }: DashboardSidebarProps) {
         </span>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
-        {navItems.map((item) => (
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {topNavItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50"
+            activeClassName="bg-accent text-primary"
+          >
+            <item.icon className="w-4 h-4" />
+            {item.label}
+          </NavLink>
+        ))}
+
+        <div className="pt-4 pb-1 px-3">
+          <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
+            Radar Room
+          </p>
+        </div>
+        {radarRoomItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50"
+            activeClassName="bg-accent text-primary"
+          >
+            <item.icon className="w-4 h-4" />
+            {item.label}
+          </NavLink>
+        ))}
+
+        <div className="pt-4" />
+        {bottomNavItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
