@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthPage } from '@/components/Auth/AuthPage';
 import { DashboardSidebar } from '@/components/Dashboard/DashboardSidebar';
+import { RoomTopBar } from '@/components/Dashboard/RoomTopBar';
 import { CodexFloatingWidget } from '@/components/ArchitectDashboard/CodexFloatingWidget';
 import { ReduceMotionProvider } from '@/hooks/use-reduce-motion';
 import { RoomProvider, useRoom } from '@/contexts/RoomContext';
@@ -29,6 +30,7 @@ function DashboardMain({ user, userRole }: { user: User; userRole: string }) {
         className="flex-1 flex flex-col overflow-hidden"
         style={{ background: 'var(--room-bg)', color: 'var(--room-text)' }}
       >
+        <RoomTopBar />
         <div className="flex-1 overflow-y-auto">
           <Outlet context={{ user, userRole }} />
         </div>
