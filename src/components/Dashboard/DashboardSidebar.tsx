@@ -130,7 +130,11 @@ export function DashboardSidebar({ email, role }: DashboardSidebarProps) {
           </NavLink>
         ))}
 
-        <div className="pt-4" />
+        <div className="pt-4 pb-1 px-3">
+          <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
+            System
+          </p>
+        </div>
         {bottomNavItems.map((item) => (
           <NavLink
             key={item.to}
