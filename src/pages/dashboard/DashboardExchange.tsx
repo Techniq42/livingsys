@@ -12,7 +12,10 @@ export default function DashboardExchange() {
         >
           The Exchange
         </p>
-        <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
+        <h1
+          className="text-3xl md:text-4xl font-display font-bold mb-4"
+          style={{ color: 'var(--room-accent, hsl(var(--foreground)))' }}
+        >
           Communications Hub
         </h1>
         <p className="text-base text-muted-foreground font-body leading-relaxed mb-8">
