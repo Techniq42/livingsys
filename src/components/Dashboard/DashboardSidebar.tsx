@@ -1,4 +1,4 @@
-import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail } from 'lucide-react';
+import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,6 +20,10 @@ const exchangeItems = [
 const radarRoomItems = [
   { to: '/dashboard/radar', label: 'Community Radar', icon: Radar, end: false },
   { to: '/dashboard/constellation', label: 'Constellation', icon: Map, end: false },
+];
+
+const editingBayItems = [
+  { to: '/dashboard/editing', label: 'Editing', icon: Pencil, end: false },
 ];
 
 const bottomNavItems = [
