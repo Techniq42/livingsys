@@ -1,12 +1,42 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthPage } from '@/components/Auth/AuthPage';
 import { DashboardSidebar } from '@/components/Dashboard/DashboardSidebar';
 import { CodexFloatingWidget } from '@/components/ArchitectDashboard/CodexFloatingWidget';
 import { ReduceMotionProvider } from '@/hooks/use-reduce-motion';
-import { RoomProvider } from '@/contexts/RoomContext';
+import { RoomProvider, useRoom } from '@/contexts/RoomContext';
 import type { User } from '@supabase/supabase-js';
+
+function DashboardMain({ user, userRole }: { user: User; userRole: string }) {
+  const { currentRoom } = useRoom();
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    el.setAttribute('data-room', currentRoom);
+    // CSS variables defined in index.css under [data-room="..."]
+    // cascade into descendants automatically.
+  }, [currentRoom]);
+
+  return (
+    <div className="h-screen flex bg-background">
+      <DashboardSidebar email={user.email || ''} role={userRole} />
+      <main
+        ref={mainRef}
+        data-room={currentRoom}
+        className="flex-1 flex flex-col overflow-hidden"
+        style={{ background: 'var(--room-bg)', color: 'var(--room-text)' }}
+      >
+        <div className="flex-1 overflow-y-auto">
+          <Outlet context={{ user, userRole }} />
+        </div>
+      </main>
+      <CodexFloatingWidget />
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
