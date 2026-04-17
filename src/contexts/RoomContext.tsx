@@ -2,9 +2,12 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { useLocation } from 'react-router-dom';
 
 export type Room = 'radar' | 'exchange' | 'editing' | 'system';
+export type SpoonMode = 'low' | 'normal' | 'hyperfocus';
 
-const STORAGE_KEY = 'sovereign-os.current-room';
+const ROOM_STORAGE_KEY = 'sovereign-os.current-room';
+const SPOON_STORAGE_KEY = 'sovereign-os.spoon-mode';
 const DEFAULT_ROOM: Room = 'radar';
+const DEFAULT_SPOON: SpoonMode = 'normal';
 
 const ROUTE_TO_ROOM: Array<{ match: (path: string) => boolean; room: Room }> = [
   { match: (p) => p.startsWith('/dashboard/exchange') || p.startsWith('/dashboard/intake'), room: 'exchange' },
@@ -30,6 +33,8 @@ function deriveRoomFromPath(pathname: string): Room | null {
 interface RoomContextValue {
   currentRoom: Room;
   setCurrentRoom: (room: Room) => void;
+  spoonMode: SpoonMode;
+  setSpoonMode: (mode: SpoonMode) => void;
 }
 
 const RoomContext = createContext<RoomContextValue | undefined>(undefined);
@@ -39,11 +44,16 @@ export function RoomProvider({ children }: { children: ReactNode }) {
 
   const [currentRoom, setCurrentRoomState] = useState<Room>(() => {
     if (typeof window === 'undefined') return DEFAULT_ROOM;
-    const stored = window.localStorage.getItem(STORAGE_KEY) as Room | null;
+    const stored = window.localStorage.getItem(ROOM_STORAGE_KEY) as Room | null;
     return stored ?? DEFAULT_ROOM;
   });
 
-  // Derive room from route when it matches a known mapping
+  const [spoonMode, setSpoonModeState] = useState<SpoonMode>(() => {
+    if (typeof window === 'undefined') return DEFAULT_SPOON;
+    const stored = window.localStorage.getItem(SPOON_STORAGE_KEY) as SpoonMode | null;
+    return stored ?? DEFAULT_SPOON;
+  });
+
   useEffect(() => {
     const derived = deriveRoomFromPath(location.pathname);
     if (derived && derived !== currentRoom) {
@@ -51,18 +61,30 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     }
   }, [location.pathname, currentRoom]);
 
-  // Persist to localStorage
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, currentRoom);
+      window.localStorage.setItem(ROOM_STORAGE_KEY, currentRoom);
     } catch {
-      // ignore storage errors (private mode, quota)
+      // ignore
     }
   }, [currentRoom]);
 
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SPOON_STORAGE_KEY, spoonMode);
+    } catch {
+      // ignore
+    }
+  }, [spoonMode]);
+
   const value = useMemo<RoomContextValue>(
-    () => ({ currentRoom, setCurrentRoom: setCurrentRoomState }),
-    [currentRoom],
+    () => ({
+      currentRoom,
+      setCurrentRoom: setCurrentRoomState,
+      spoonMode,
+      setSpoonMode: setSpoonModeState,
+    }),
+    [currentRoom, spoonMode],
   );
 
   return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>;
