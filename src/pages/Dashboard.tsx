@@ -93,15 +93,7 @@ export default function Dashboard() {
   return (
     <ReduceMotionProvider>
       <RoomProvider>
-        <div className="h-screen flex bg-background">
-          <DashboardSidebar email={user.email || ''} role={userRole} />
-          <main className="flex-1 flex flex-col overflow-hidden">
-            <div className="flex-1 overflow-y-auto">
-              <Outlet context={{ user, userRole }} />
-            </div>
-          </main>
-          <CodexFloatingWidget />
-        </div>
+        <DashboardMain user={user} userRole={userRole} />
       </RoomProvider>
     </ReduceMotionProvider>
   );
