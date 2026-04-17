@@ -205,7 +205,7 @@
   --room-text: #d8e4ee;
 }
 
-[data-room="system"] {
+[data-room="settings"] {
   --room-bg: #111318;
   --room-accent: #888888;
   --room-accent-muted: rgba(136, 136, 136, 0.4);

@@ -7,25 +7,24 @@ const ROOMS: Array<{ id: Room; label: string; route: string }> = [
   { id: 'editing', label: 'Editing Bay', route: '/dashboard/editing' },
 ];
 
+const ROOM_ACCENTS: Record<Room, string> = {
+  radar: '#6EB520',
+  exchange: '#D4AF37',
+  editing: '#0B5783',
+  settings: '#888888',
+};
+
 const SPOON_MODES: Array<{ id: SpoonMode; label: string }> = [
   { id: 'low', label: 'Low Spoon' },
   { id: 'normal', label: 'Normal' },
   { id: 'hyperfocus', label: 'Hyperfocus' },
 ];
 
-const ROOM_ACCENTS: Record<Room, string> = {
-  radar: '#6EB520',
-  exchange: '#D4AF37',
-  editing: '#0B5783',
-  system: '#888888',
-};
-
 export function RoomTopBar() {
-  const { currentRoom, setCurrentRoom, spoonMode, setSpoonMode } = useRoom();
+  const { currentRoom, spoonMode, setSpoonMode } = useRoom();
   const navigate = useNavigate();
 
-  const handleRoomClick = (room: Room, route: string) => {
-    setCurrentRoom(room);
+  const handleRoomClick = (_room: Room, route: string) => {
     navigate(route);
   };
 
