@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthPage } from '@/components/Auth/AuthPage';
@@ -9,23 +9,28 @@ import { ReduceMotionProvider } from '@/hooks/use-reduce-motion';
 import { RoomProvider, useRoom } from '@/contexts/RoomContext';
 import type { User } from '@supabase/supabase-js';
 
+const ROOM_THEMES: Record<string, { bg: string; accent: string; text: string }> = {
+  radar: { bg: '#0f1419', accent: '#6EB520', text: '#e0e0e0' },
+  exchange: { bg: '#1a1410', accent: '#D4AF37', text: '#e8dcc8' },
+  editing: { bg: '#0d1117', accent: '#0B5783', text: '#e0e0e0' },
+  settings: { bg: '#111318', accent: '#888888', text: '#cccccc' },
+};
+
 function DashboardMain({ user, userRole }: { user: User; userRole: string }) {
   const { currentRoom } = useRoom();
-  const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const el = mainRef.current;
-    if (!el) return;
-    el.setAttribute('data-room', currentRoom);
-    // CSS variables defined in index.css under [data-room="..."]
-    // cascade into descendants automatically.
+    const theme = ROOM_THEMES[currentRoom] ?? ROOM_THEMES.radar;
+    const root = document.documentElement;
+    root.style.setProperty('--room-bg', theme.bg);
+    root.style.setProperty('--room-accent', theme.accent);
+    root.style.setProperty('--room-text', theme.text);
   }, [currentRoom]);
 
   return (
     <div className="h-screen flex bg-background">
       <DashboardSidebar email={user.email || ''} role={userRole} />
       <main
-        ref={mainRef}
         data-room={currentRoom}
         className="flex-1 flex flex-col overflow-hidden"
         style={{ background: 'var(--room-bg, #0f1419)', color: 'var(--room-text, #e0e0e0)' }}
