@@ -178,3 +178,37 @@
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
+
+/* ============================================================
+   Room Theme Tokens
+   Applied via inline style on the dashboard main wrapper
+   based on currentRoom from RoomContext.
+   ============================================================ */
+[data-room="radar"] {
+  --room-bg: #0f1419;
+  --room-accent: #6EB520;
+  --room-accent-muted: rgba(110, 181, 32, 0.4);
+  --room-text: #e8f0e0;
+}
+
+[data-room="exchange"] {
+  --room-bg: #1a1410;
+  --room-accent: #D4AF37;
+  --room-accent-muted: rgba(212, 175, 55, 0.4);
+  --room-text: #e8dcc8;
+}
+
+[data-room="editing"] {
+  --room-bg: #0d1117;
+  --room-accent: #0B5783;
+  --room-accent-muted: rgba(11, 87, 131, 0.4);
+  --room-text: #d8e4ee;
+}
+
+[data-room="system"] {
+  --room-bg: #111318;
+  --room-accent: #888888;
+  --room-accent-muted: rgba(136, 136, 136, 0.4);
+  --room-text: #cccccc;
+}
+
