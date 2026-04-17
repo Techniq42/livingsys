@@ -19,7 +19,6 @@ export function RoomTopBar() {
 
   return (
     <div className="flex items-center justify-between gap-4 px-4 py-3 bg-gray-900/50 border-b border-white/5">
-      {/* Room pills */}
       <div className="flex items-center gap-2">
         {ROOMS.map((room) => {
           const active = currentRoom === room.id;
@@ -39,7 +38,6 @@ export function RoomTopBar() {
         })}
       </div>
 
-      {/* Spoon pills */}
       <div className="flex items-center gap-1.5">
         <span className="text-[10px] tracking-[0.2em] uppercase font-display mr-1 text-white/40">
           Spoons
