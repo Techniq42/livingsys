@@ -1,15 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, CheckCircle2, Wrench, Inbox, Clock } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Wrench, Inbox, Clock, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
   fetchIncidents,
   fetchAutofixRules,
   acknowledgeIncident,
   subscribeToIncidents,
 } from '@/lib/selfHealing';
-import type { IncidentEvent, L2AutofixRule } from '@/integrations/supabase/external-types';
+import {
+  classificationSeverity,
+  type IncidentEvent,
+  type L2AutofixRule,
+} from '@/integrations/supabase/external-types';
 
 function timeAgo(ts: string | null): string {
   if (!ts) return '—';
@@ -22,10 +31,132 @@ function timeAgo(ts: string | null): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-function severityClass(sev: string): string {
-  if (sev === 'critical' || sev === 'error') return 'text-destructive border-destructive/40 bg-destructive/10';
-  if (sev === 'warning') return 'text-warning border-warning/40 bg-warning/10';
+function truncate(s: string | null, n = 80): string {
+  if (!s) return '';
+  return s.length > n ? s.slice(0, n - 1) + '…' : s;
+}
+
+function severityClass(c: string | null): string {
+  const sev = classificationSeverity(c);
+  if (sev === 'red') return 'text-destructive border-destructive/40 bg-destructive/10';
+  if (sev === 'amber') return 'text-warning border-warning/40 bg-warning/10';
+  if (sev === 'green') return 'text-primary border-primary/30 bg-primary/5';
   return 'text-muted-foreground border-border bg-muted/30';
+}
+
+function severityDot(c: string | null): string {
+  const sev = classificationSeverity(c);
+  if (sev === 'red') return 'bg-destructive';
+  if (sev === 'amber') return 'bg-warning';
+  if (sev === 'green') return 'bg-primary';
+  return 'bg-muted-foreground';
+}
+
+/** Find the autofix rule that would match a given incident. */
+function matchRule(
+  incident: IncidentEvent,
+  rules: L2AutofixRule[],
+): L2AutofixRule | null {
+  const candidates = rules.filter(
+    (r) => r.enabled && r.classification === incident.classification,
+  );
+  for (const r of candidates) {
+    if (!r.match_pattern) return r;
+    try {
+      if (new RegExp(r.match_pattern, 'i').test(incident.error_message ?? '')) {
+        return r;
+      }
+    } catch {
+      // ignore bad regex
+    }
+  }
+  return candidates[0] ?? null;
+}
+
+function IncidentRow({
+  incident,
+  rule,
+  showAck,
+  onAck,
+}: {
+  incident: IncidentEvent;
+  rule?: L2AutofixRule | null;
+  showAck?: boolean;
+  onAck?: (id: string) => void;
+}) {
+  return (
+    <Collapsible>
+      <div className={`rounded-lg border p-3 space-y-2 ${severityClass(incident.classification)}`}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className={`w-2 h-2 rounded-full shrink-0 ${severityDot(incident.classification)}`} />
+            <span className="text-xs font-mono uppercase tracking-wider truncate">
+              {incident.classification ?? 'unknown'}
+            </span>
+          </div>
+          <span className="text-xs flex items-center gap-1 opacity-70 shrink-0">
+            <Clock className="w-3 h-3" /> {timeAgo(incident.created_at)}
+          </span>
+        </div>
+        <p className="text-sm text-foreground">
+          {truncate(incident.error_message, 80)}
+        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[10px] uppercase tracking-wider opacity-60 truncate">
+            {incident.workflow_name ?? incident.workflow_id ?? 'unknown workflow'}
+          </p>
+          <CollapsibleTrigger className="text-[10px] uppercase tracking-wider opacity-70 hover:opacity-100 flex items-center gap-1">
+            details <ChevronDown className="w-3 h-3" />
+          </CollapsibleTrigger>
+        </div>
+        <CollapsibleContent className="space-y-2 pt-2 border-t border-border/40">
+          {incident.summary && (
+            <div>
+              <p className="text-[10px] uppercase tracking-wider opacity-60">Summary</p>
+              <p className="text-xs text-foreground">{incident.summary}</p>
+            </div>
+          )}
+          {incident.likely_root_cause && (
+            <div>
+              <p className="text-[10px] uppercase tracking-wider opacity-60">Likely cause</p>
+              <p className="text-xs text-foreground">{incident.likely_root_cause}</p>
+            </div>
+          )}
+          {incident.recommended_action && (
+            <div>
+              <p className="text-[10px] uppercase tracking-wider opacity-60">Recommended</p>
+              <p className="text-xs text-foreground">{incident.recommended_action}</p>
+            </div>
+          )}
+          {incident.diagnosis && (
+            <div>
+              <p className="text-[10px] uppercase tracking-wider opacity-60">Diagnosis</p>
+              <p className="text-xs text-foreground whitespace-pre-wrap font-mono">
+                {incident.diagnosis}
+              </p>
+            </div>
+          )}
+          {rule && (
+            <div>
+              <p className="text-[10px] uppercase tracking-wider opacity-60">Matched playbook</p>
+              <p className="text-xs text-foreground">
+                {rule.rule_name ?? rule.classification}
+                {rule.notes ? ` — ${rule.notes}` : ''}
+              </p>
+            </div>
+          )}
+        </CollapsibleContent>
+        {showAck && onAck && (
+          <button
+            onClick={() => onAck(incident.id)}
+            className="w-full text-xs font-display tracking-wider uppercase bg-foreground text-background rounded-md py-2 hover:bg-foreground/90 transition min-h-[44px]"
+          >
+            Got it
+          </button>
+        )}
+      </div>
+    </Collapsible>
+  );
 }
 
 export function CoordinationHealth() {
@@ -51,31 +182,27 @@ export function CoordinationHealth() {
     return unsub;
   }, []);
 
-  // Panel 1: What broke — unresolved incidents (no resolved_at)
-  const broke = useMemo(
-    () => incidents.filter((i) => !i.resolved_at && i.autofix_status !== 'succeeded'),
-    [incidents],
-  );
+  // Panel 1: What broke — last 10 by created_at
+  const broke = useMemo(() => incidents.slice(0, 10), [incidents]);
 
-  // Panel 2: What we did — auto-resolved incidents in last 24h
+  // Panel 2: What we did — auto_retry_safe in last 24h
   const fixed = useMemo(() => {
     const cutoff = Date.now() - 24 * 60 * 60 * 1000;
     return incidents.filter(
-      (i) =>
-        i.autofix_status === 'succeeded' &&
-        new Date(i.created_at).getTime() > cutoff,
+      (i) => i.auto_retry_safe === true && new Date(i.created_at).getTime() > cutoff,
     );
   }, [incidents]);
 
-  // Panel 3: What needs you — resolved but not yet acknowledged, or autofix failed
+  // Panel 3: What needs you — matching rule.requires_human OR classification='credential_error', not yet acked
   const needsYou = useMemo(
     () =>
-      incidents.filter(
-        (i) =>
-          (i.autofix_status === 'failed' || i.autofix_status === 'skipped') &&
-          !i.acknowledged_at,
-      ),
-    [incidents],
+      incidents.filter((i) => {
+        if (i.acknowledged_at) return false;
+        if (i.classification === 'credential_error') return true;
+        const rule = matchRule(i, rules);
+        return rule?.requires_human === true;
+      }),
+    [incidents, rules],
   );
 
   const handleAck = async (id: string) => {
@@ -114,19 +241,7 @@ export function CoordinationHealth() {
               <p className="text-sm text-muted-foreground italic">No fires. Nice.</p>
             ) : (
               broke.map((i) => (
-                <div
-                  key={i.id}
-                  className={`rounded-lg border p-3 space-y-1 ${severityClass(i.severity)}`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-mono uppercase tracking-wider">{i.incident_type}</span>
-                    <span className="text-xs flex items-center gap-1 opacity-70">
-                      <Clock className="w-3 h-3" /> {timeAgo(i.created_at)}
-                    </span>
-                  </div>
-                  <p className="text-sm text-foreground">{i.message}</p>
-                  <p className="text-[10px] uppercase tracking-wider opacity-60">{i.source}</p>
-                </div>
+                <IncidentRow key={i.id} incident={i} rule={matchRule(i, rules)} />
               ))
             )}
           </CardContent>
@@ -144,24 +259,30 @@ export function CoordinationHealth() {
             {fixed.length === 0 ? (
               <p className="text-sm text-muted-foreground italic">Nothing to clean up in the last 24h.</p>
             ) : (
-              fixed.map((i) => (
-                <div
-                  key={i.id}
-                  className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-1"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-mono uppercase tracking-wider text-primary">
-                      {i.incident_type}
-                    </span>
-                    <CheckCircle2 className="w-4 h-4 text-primary" />
+              fixed.map((i) => {
+                const rule = matchRule(i, rules);
+                return (
+                  <div
+                    key={i.id}
+                    className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-1"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-mono uppercase tracking-wider text-primary truncate">
+                        {i.classification ?? 'auto-fixed'}
+                      </span>
+                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    </div>
+                    <p className="text-sm text-foreground">{truncate(i.error_message, 80)}</p>
+                    {rule?.notes && (
+                      <p className="text-xs text-muted-foreground italic">{rule.notes}</p>
+                    )}
+                    <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
+                      <span className="truncate">{i.workflow_name ?? '—'}</span>
+                      <span className="shrink-0">auto-fixed {timeAgo(i.created_at)}</span>
+                    </div>
                   </div>
-                  <p className="text-sm text-foreground">{i.message}</p>
-                  <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
-                    <span>{i.source}</span>
-                    <span>auto-fixed {timeAgo(i.created_at)}</span>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </CardContent>
         </Card>
@@ -179,27 +300,13 @@ export function CoordinationHealth() {
               <p className="text-sm text-muted-foreground italic">All quiet. Nothing for you right now.</p>
             ) : (
               needsYou.map((i) => (
-                <div
+                <IncidentRow
                   key={i.id}
-                  className="rounded-lg border border-warning/40 bg-warning/10 p-3 space-y-2"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-mono uppercase tracking-wider text-warning">
-                      {i.incident_type}
-                    </span>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> {timeAgo(i.created_at)}
-                    </span>
-                  </div>
-                  <p className="text-sm text-foreground">{i.message}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{i.source}</p>
-                  <button
-                    onClick={() => handleAck(i.id)}
-                    className="w-full text-xs font-display tracking-wider uppercase bg-foreground text-background rounded-md py-2 hover:bg-foreground/90 transition min-h-[44px]"
-                  >
-                    Got it
-                  </button>
-                </div>
+                  incident={i}
+                  rule={matchRule(i, rules)}
+                  showAck
+                  onAck={handleAck}
+                />
               ))
             )}
           </CardContent>
@@ -222,7 +329,7 @@ export function CoordinationHealth() {
                   variant={r.enabled ? 'default' : 'outline'}
                   className="text-[10px] font-mono"
                 >
-                  {r.rule_name}
+                  {r.rule_name ?? r.classification}
                   {r.trigger_count > 0 && (
                     <span className="ml-1 opacity-70">×{r.trigger_count}</span>
                   )}
