@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { renderTurnstile, type TurnstileHandle } from '@/lib/turnstile';
 
 const TURNSTILE_SITE_KEY = '0x4AAAAAACsH-SiikIJB-A7Q';
 
