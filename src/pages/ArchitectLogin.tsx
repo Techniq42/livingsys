@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
 const TURNSTILE_SITE_KEY = '0x4AAAAAACsH-SiikIJB-A7Q';
@@ -15,6 +16,27 @@ export default function ArchitectLogin() {
   const turnstileRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
   const navigate = useNavigate();
+  const [forgotMode, setForgotMode] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+
+  const handleResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setResetLoading(true);
+    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(
+      resetEmail.trim().toLowerCase(),
+      { redirectTo: `${window.location.origin}/auth/reset-password` }
+    );
+    setResetLoading(false);
+    if (resetErr) {
+      setError(resetErr.message);
+      return;
+    }
+    toast.success('Reset link sent. Check your email.');
+    setForgotMode(false);
+    setResetEmail('');
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -160,44 +182,84 @@ export default function ArchitectLogin() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">Password</label>
-            <input
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
-            />
-          </div>
-          <div ref={turnstileRef} className="flex justify-center my-2"></div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full border border-primary text-foreground py-3 rounded-sm font-display text-sm tracking-wider hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer disabled:opacity-50"
-          >
-            {loading ? 'Processing...' : isSignUp ? 'Create Account' : 'Sign In'}
-          </button>
-        </form>
+        {forgotMode ? (
+          <form onSubmit={handleResetSubmit} className="space-y-4">
+            <div>
+              <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">Email</label>
+              <input
+                type="email"
+                required
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={resetLoading}
+              className="w-full border border-primary text-foreground py-3 rounded-sm font-display text-sm tracking-wider hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer disabled:opacity-50"
+            >
+              {resetLoading ? 'Sending…' : 'Send reset link'}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setForgotMode(false); setError(''); }}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer w-full text-center"
+            >
+              ← Back to sign in
+            </button>
+          </form>
+        ) : (
+          <>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">Email</label>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground font-display tracking-wider uppercase mb-1 block">Password</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
+                />
+                {!isSignUp && (
+                  <button
+                    type="button"
+                    onClick={() => { setForgotMode(true); setError(''); setMessage(''); setResetEmail(email); }}
+                    className="mt-2 text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <div ref={turnstileRef} className="flex justify-center my-2"></div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full border border-primary text-foreground py-3 rounded-sm font-display text-sm tracking-wider hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer disabled:opacity-50"
+              >
+                {loading ? 'Processing...' : isSignUp ? 'Create Account' : 'Sign In'}
+              </button>
+            </form>
 
-        <button
-          onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }}
-          className="mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer w-full text-center"
-        >
-          {isSignUp ? 'Already have access? Sign in' : "Need access? Create an account"}
-        </button>
+            <button
+              onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }}
+              className="mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer w-full text-center"
+            >
+              {isSignUp ? 'Already have access? Sign in' : "Need access? Create an account"}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

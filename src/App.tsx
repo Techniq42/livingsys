@@ -17,6 +17,7 @@ import DashboardExchange from "./pages/dashboard/DashboardExchange";
 import DashboardEditing from "./pages/dashboard/DashboardEditing";
 import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
+import ResetPassword from "./pages/ResetPassword";
 
 import NotFound from "./pages/NotFound";
 
@@ -44,7 +45,7 @@ const App = () => (
           </Route>
           <Route path="/architect-dashboard" element={<ArchitectDashboard />} />
           <Route path="/architect-login" element={<ArchitectLogin />} />
-
+          <Route path="/auth/reset-password" element={<ResetPassword />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
