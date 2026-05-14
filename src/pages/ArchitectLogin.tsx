@@ -235,9 +235,14 @@ export default function ArchitectLogin() {
                 className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
               />
             </div>
+            <div
+              id="turnstile-forgot-architect"
+              ref={forgotTurnstileRef}
+              className="flex justify-center my-2"
+            ></div>
             <button
               type="submit"
-              disabled={resetLoading}
+              disabled={resetLoading || !forgotCaptchaToken}
               className="w-full border border-primary text-foreground py-3 rounded-sm font-display text-sm tracking-wider hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer disabled:opacity-50"
             >
               {resetLoading ? 'Sending…' : 'Send reset link'}
