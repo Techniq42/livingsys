@@ -20,16 +20,56 @@ export default function ArchitectLogin() {
   const [forgotMode, setForgotMode] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
+  const [forgotCaptchaToken, setForgotCaptchaToken] = useState<string | null>(null);
+  const forgotTurnstileRef = useRef<HTMLDivElement>(null);
+  const forgotWidgetHandleRef = useRef<TurnstileHandle | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (forgotMode && forgotTurnstileRef.current) {
+      renderTurnstile({
+        container: forgotTurnstileRef.current,
+        onToken: (token) => setForgotCaptchaToken(token),
+        onExpire: () => setForgotCaptchaToken(null),
+        theme: 'dark',
+      })
+        .then((handle) => {
+          if (cancelled) {
+            handle.remove();
+            return;
+          }
+          forgotWidgetHandleRef.current = handle;
+        })
+        .catch(() => {
+          toast.error('Verification required — please complete the challenge.');
+        });
+    }
+    return () => {
+      cancelled = true;
+      forgotWidgetHandleRef.current?.remove();
+      forgotWidgetHandleRef.current = null;
+      setForgotCaptchaToken(null);
+    };
+  }, [forgotMode]);
 
   const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (!forgotCaptchaToken) {
+      toast.error('Verification required — please complete the challenge.');
+      return;
+    }
     setResetLoading(true);
     const { error: resetErr } = await supabase.auth.resetPasswordForEmail(
       resetEmail.trim().toLowerCase(),
-      { redirectTo: `${window.location.origin}/auth/reset-password` }
+      {
+        captchaToken: forgotCaptchaToken,
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      }
     );
     setResetLoading(false);
+    forgotWidgetHandleRef.current?.reset();
+    setForgotCaptchaToken(null);
     if (resetErr) {
       setError(resetErr.message);
       return;
