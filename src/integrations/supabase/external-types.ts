@@ -1,24 +1,49 @@
 /**
- * Hand-maintained types for tables that live in the FLS production Supabase project
- * (eyoqexibycelhsatitwt) but are NOT in the auto-generated types.ts (which is bound
- * to the unused Lovable Cloud instance).
- *
- * Source of truth: SQL schema in eyoqexibycelhsatitwt. Update when the schema changes.
+ * Hand-maintained types for tables in the FLS production Supabase project
+ * (eyoqexibycelhsatitwt). Source of truth: information_schema in that project.
  */
 
-export type IncidentSeverity = 'info' | 'warning' | 'error' | 'critical';
-export type AutofixStatus = 'pending' | 'attempted' | 'succeeded' | 'failed' | 'skipped' | null;
+export type IncidentClassification =
+  | 'credential_error'
+  | 'rate_limit'
+  | 'data_conflict'
+  | 'transient'
+  | 'unknown'
+  | string;
 
 export interface IncidentEvent {
   id: string;
+  workflow_id: string | null;
+  workflow_name: string | null;
+  node_name: string | null;
+  node_type: string | null;
+  execution_id: string | null;
+  error_name: string | null;
+  error_message: string | null;
+  error_stack: string | null;
+  classification: IncidentClassification | null;
+  confidence: number | null;
+  diagnosis: string | null; // TEXT, not jsonb
+  suggested_fix: string | null;
+  auto_resolved: boolean | null;
+  auto_retry_safe: boolean | null;
+  resolution_action: string | null;
+  context_payload: Record<string, unknown> | null;
+  summary: string | null;
+  likely_root_cause: string | null;
+  recommended_action: string | null;
+  affected_surfaces: unknown | null;
+  constellation_state: unknown | null;
+  constellation_state_notes: string | null;
+  raw_execution: unknown | null;
+  raw_diagnosis: unknown | null;
+  raw_response: string | null;
+  handler_version: string | null;
+  trust_level: string | null;
+  diagnosed_by: string | null;
   created_at: string;
-  incident_type: string;
-  severity: IncidentSeverity;
-  source: string; // e.g. 'bluesky-listener', 'reddit-scanner', 'optin-intake'
-  message: string;
-  metadata: Record<string, unknown> | null;
-  autofix_rule_id: string | null;
-  autofix_status: AutofixStatus;
+  occurred_at: string | null;
+  inserted_at: string | null;
   resolved_at: string | null;
   acknowledged_at: string | null;
   acknowledged_by: string | null;
@@ -26,14 +51,17 @@ export interface IncidentEvent {
 
 export interface L2AutofixRule {
   id: string;
-  created_at: string;
-  rule_name: string;
-  incident_type: string;
-  description: string | null;
-  action: string; // e.g. 'retry', 'rate-limit-backoff', 'notify-only'
+  classification: string;
+  match_pattern: string | null; // regex tested against error_message
+  action: string | null;
+  requires_human: boolean;
+  notes: string | null;
   enabled: boolean;
-  last_triggered_at: string | null;
   trigger_count: number;
+  last_triggered_at: string | null;
+  created_at: string;
+  // legacy/optional
+  rule_name?: string | null;
 }
 
 export interface MetricEvent {
@@ -47,8 +75,19 @@ export interface MetricEvent {
 
 export type AppRole = 'architect' | 'administrator' | 'practitioner' | 'healer';
 
-export interface UserRole {
-  id: string;
-  user_id: string;
-  role: AppRole;
+/** Map classification → semantic severity bucket for UI dots/borders. */
+export function classificationSeverity(
+  c: string | null | undefined,
+): 'red' | 'amber' | 'green' | 'muted' {
+  switch (c) {
+    case 'credential_error':
+      return 'red';
+    case 'rate_limit':
+    case 'data_conflict':
+      return 'amber';
+    case 'transient':
+      return 'green';
+    default:
+      return 'muted';
+  }
 }
