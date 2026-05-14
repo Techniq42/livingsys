@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { renderTurnstile, type TurnstileHandle } from '@/lib/turnstile';
 
 const TURNSTILE_SITE_KEY = '0x4AAAAAACsH-SiikIJB-A7Q';
 
@@ -19,16 +20,56 @@ export default function ArchitectLogin() {
   const [forgotMode, setForgotMode] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
+  const [forgotCaptchaToken, setForgotCaptchaToken] = useState<string | null>(null);
+  const forgotTurnstileRef = useRef<HTMLDivElement>(null);
+  const forgotWidgetHandleRef = useRef<TurnstileHandle | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (forgotMode && forgotTurnstileRef.current) {
+      renderTurnstile({
+        container: forgotTurnstileRef.current,
+        onToken: (token) => setForgotCaptchaToken(token),
+        onExpire: () => setForgotCaptchaToken(null),
+        theme: 'dark',
+      })
+        .then((handle) => {
+          if (cancelled) {
+            handle.remove();
+            return;
+          }
+          forgotWidgetHandleRef.current = handle;
+        })
+        .catch(() => {
+          toast.error('Verification required — please complete the challenge.');
+        });
+    }
+    return () => {
+      cancelled = true;
+      forgotWidgetHandleRef.current?.remove();
+      forgotWidgetHandleRef.current = null;
+      setForgotCaptchaToken(null);
+    };
+  }, [forgotMode]);
 
   const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (!forgotCaptchaToken) {
+      toast.error('Verification required — please complete the challenge.');
+      return;
+    }
     setResetLoading(true);
     const { error: resetErr } = await supabase.auth.resetPasswordForEmail(
       resetEmail.trim().toLowerCase(),
-      { redirectTo: `${window.location.origin}/auth/reset-password` }
+      {
+        captchaToken: forgotCaptchaToken,
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      }
     );
     setResetLoading(false);
+    forgotWidgetHandleRef.current?.reset();
+    setForgotCaptchaToken(null);
     if (resetErr) {
       setError(resetErr.message);
       return;
@@ -194,9 +235,14 @@ export default function ArchitectLogin() {
                 className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
               />
             </div>
+            <div
+              id="turnstile-forgot-architect"
+              ref={forgotTurnstileRef}
+              className="flex justify-center my-2"
+            ></div>
             <button
               type="submit"
-              disabled={resetLoading}
+              disabled={resetLoading || !forgotCaptchaToken}
               className="w-full border border-primary text-foreground py-3 rounded-sm font-display text-sm tracking-wider hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer disabled:opacity-50"
             >
               {resetLoading ? 'Sending…' : 'Send reset link'}

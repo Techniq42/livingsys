@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { renderTurnstile, type TurnstileHandle } from '@/lib/turnstile';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -10,28 +11,55 @@ export default function ResetPassword() {
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const widgetHandleRef = useRef<TurnstileHandle | null>(null);
 
   useEffect(() => {
-    // Supabase populates the session from the URL hash on load.
-    // Wait briefly for the session to be parsed before showing the form.
     const check = async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
         setReady(true);
         return;
       }
-      // Fall back to listening for PASSWORD_RECOVERY / SIGNED_IN events
       const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
         if (session && (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
           setReady(true);
         }
       });
-      // Timeout fallback to show form anyway (user may still try)
       setTimeout(() => setReady(true), 1500);
       return () => sub.subscription.unsubscribe();
     };
     check();
   }, []);
+
+  // Mount Turnstile once the form is shown
+  useEffect(() => {
+    let cancelled = false;
+    if (ready && turnstileRef.current) {
+      renderTurnstile({
+        container: turnstileRef.current,
+        onToken: (token) => setCaptchaToken(token),
+        onExpire: () => setCaptchaToken(null),
+        theme: 'dark',
+      })
+        .then((handle) => {
+          if (cancelled) {
+            handle.remove();
+            return;
+          }
+          widgetHandleRef.current = handle;
+        })
+        .catch(() => {
+          toast.error('Verification required — please complete the challenge.');
+        });
+    }
+    return () => {
+      cancelled = true;
+      widgetHandleRef.current?.remove();
+      widgetHandleRef.current = null;
+    };
+  }, [ready]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,9 +72,25 @@ export default function ResetPassword() {
       setError('Passwords do not match.');
       return;
     }
+    if (!captchaToken) {
+      toast.error('Verification required — please complete the challenge.');
+      return;
+    }
     setLoading(true);
-    const { error: updateError } = await supabase.auth.updateUser({ password });
+
+    // SDK note: @supabase/supabase-js ^2.98.0 does not declare `captchaToken`
+    // in the public type for `updateUser` options. We pass it via a cast so
+    // server-side captcha enforcement (if enabled) still receives a valid
+    // token. Supabase Auth typically does not enforce captcha on /user PATCH,
+    // but this future-proofs the call. Remove the cast after an SDK upgrade
+    // that adds captchaToken to UserAttributes options.
+    const { error: updateError } = await supabase.auth.updateUser(
+      { password },
+      { captchaToken } as unknown as { emailRedirectTo?: string }
+    );
     setLoading(false);
+    widgetHandleRef.current?.reset();
+    setCaptchaToken(null);
     if (updateError) {
       setError(updateError.message);
       return;
@@ -104,9 +148,14 @@ export default function ResetPassword() {
                 className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
               />
             </div>
+            <div
+              id="turnstile-reset-password"
+              ref={turnstileRef}
+              className="flex justify-center my-2"
+            ></div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !captchaToken}
               className="w-full border border-primary text-foreground py-3 rounded-sm font-display text-sm tracking-wider hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer disabled:opacity-50"
             >
               {loading ? 'Updating…' : 'Update password'}
