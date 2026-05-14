@@ -78,22 +78,15 @@ export default function ResetPassword() {
     }
     setLoading(true);
 
-    // SDK note: @supabase/supabase-js ^2.98.0 does not include `captchaToken`
-    // in the public type signature for `updateUser` options. We pass it via a
-    // cast so the server-side captcha enforcement (if enabled in dashboard)
-    // still receives a valid token. If a future SDK upgrade tightens the type,
-    // this cast can be removed. If the server ignores it, the call still works
-    // because Supabase Auth typically does NOT enforce captcha on /user PATCH.
-    if (!('captchaToken' in ({} as Parameters<typeof supabase.auth.updateUser>[1] extends infer T ? T : never))) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        '[ResetPassword] supabase-js updateUser type does not declare captchaToken; sending via cast — server will validate if enforced.'
-      );
-    }
-
+    // SDK note: @supabase/supabase-js ^2.98.0 does not declare `captchaToken`
+    // in the public type for `updateUser` options. We pass it via a cast so
+    // server-side captcha enforcement (if enabled) still receives a valid
+    // token. Supabase Auth typically does not enforce captcha on /user PATCH,
+    // but this future-proofs the call. Remove the cast after an SDK upgrade
+    // that adds captchaToken to UserAttributes options.
     const { error: updateError } = await supabase.auth.updateUser(
       { password },
-      { captchaToken } as unknown as Parameters<typeof supabase.auth.updateUser>[1]
+      { captchaToken } as unknown as { emailRedirectTo?: string }
     );
     setLoading(false);
     widgetHandleRef.current?.reset();
