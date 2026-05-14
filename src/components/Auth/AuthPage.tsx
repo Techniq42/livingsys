@@ -14,6 +14,27 @@ export function AuthPage() {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+
+  const handleResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setResetLoading(true);
+    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(
+      resetEmail.trim().toLowerCase(),
+      { redirectTo: `${window.location.origin}/auth/reset-password` }
+    );
+    setResetLoading(false);
+    if (resetErr) {
+      setError(resetErr.message);
+      return;
+    }
+    toast.success('Reset link sent. Check your email.');
+    setForgotMode(false);
+    setResetEmail('');
+  };
 
   useEffect(() => {
     const scriptId = 'cf-turnstile-script';
