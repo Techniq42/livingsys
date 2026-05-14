@@ -128,13 +128,17 @@ export type Database = {
           created_at: string
           id: string
           matched_keywords: Json
+          narrative_tracks: string[] | null
           notes: string | null
           platform: string
           post_id: string
           post_title: string
           post_url: string
+          reddit_id: string | null
           relevance_score: number
           replied_at: string | null
+          response_count: number | null
+          shannon_engaged: boolean | null
           snippet: string | null
           status: string
           subreddit: string | null
@@ -145,13 +149,17 @@ export type Database = {
           created_at?: string
           id?: string
           matched_keywords?: Json
+          narrative_tracks?: string[] | null
           notes?: string | null
           platform?: string
           post_id?: string
           post_title?: string
           post_url?: string
+          reddit_id?: string | null
           relevance_score?: number
           replied_at?: string | null
+          response_count?: number | null
+          shannon_engaged?: boolean | null
           snippet?: string | null
           status?: string
           subreddit?: string | null
@@ -162,13 +170,17 @@ export type Database = {
           created_at?: string
           id?: string
           matched_keywords?: Json
+          narrative_tracks?: string[] | null
           notes?: string | null
           platform?: string
           post_id?: string
           post_title?: string
           post_url?: string
+          reddit_id?: string | null
           relevance_score?: number
           replied_at?: string | null
+          response_count?: number | null
+          shannon_engaged?: boolean | null
           snippet?: string | null
           status?: string
           subreddit?: string | null
@@ -405,23 +417,71 @@ export type Database = {
         }
         Relationships: []
       }
+      module_access: {
+        Row: {
+          created_at: string | null
+          display_name: string
+          id: string
+          is_enabled: boolean | null
+          is_public: boolean | null
+          module_key: string
+          requires_role: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_name: string
+          id?: string
+          is_enabled?: boolean | null
+          is_public?: boolean | null
+          module_key: string
+          requires_role?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string
+          id?: string
+          is_enabled?: boolean | null
+          is_public?: boolean | null
+          module_key?: string
+          requires_role?: string | null
+        }
+        Relationships: []
+      }
       operator_config: {
         Row: {
+          auto_post_enabled: boolean | null
           created_at: string
           id: string
           key: string
+          last_killed_at: string | null
+          last_killed_by: string | null
+          last_killed_reason: string | null
+          responder_enabled: boolean | null
+          scanner_enabled: boolean | null
           value: Json
         }
         Insert: {
+          auto_post_enabled?: boolean | null
           created_at?: string
           id?: string
           key: string
+          last_killed_at?: string | null
+          last_killed_by?: string | null
+          last_killed_reason?: string | null
+          responder_enabled?: boolean | null
+          scanner_enabled?: boolean | null
           value?: Json
         }
         Update: {
+          auto_post_enabled?: boolean | null
           created_at?: string
           id?: string
           key?: string
+          last_killed_at?: string | null
+          last_killed_by?: string | null
+          last_killed_reason?: string | null
+          responder_enabled?: boolean | null
+          scanner_enabled?: boolean | null
           value?: Json
         }
         Relationships: []
@@ -553,18 +613,31 @@ export type Database = {
           classifier_reasoning: string | null
           classifier_tier: number
           created_at: string
+          cta_eligible: boolean | null
           draft_body: string
+          draft_text: string | null
           id: string
+          narrative_track: string | null
+          post_title: string | null
+          post_url: string | null
+          posted_at: string | null
           reddit_comment_id: string | null
           reddit_comment_url: string | null
+          reddit_id: string | null
+          reply_to_comments: Json | null
+          response_mode: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           safety_flags: Json | null
+          shannon_edits: string | null
           status: string
+          subreddit: string | null
           target_door: string | null
           target_path: string | null
           thread_id: string | null
           updated_at: string
+          voice_key: string | null
+          word_count: number | null
         }
         Insert: {
           auto_posted?: boolean
@@ -572,18 +645,31 @@ export type Database = {
           classifier_reasoning?: string | null
           classifier_tier?: number
           created_at?: string
+          cta_eligible?: boolean | null
           draft_body?: string
+          draft_text?: string | null
           id?: string
+          narrative_track?: string | null
+          post_title?: string | null
+          post_url?: string | null
+          posted_at?: string | null
           reddit_comment_id?: string | null
           reddit_comment_url?: string | null
+          reddit_id?: string | null
+          reply_to_comments?: Json | null
+          response_mode?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           safety_flags?: Json | null
+          shannon_edits?: string | null
           status?: string
+          subreddit?: string | null
           target_door?: string | null
           target_path?: string | null
           thread_id?: string | null
           updated_at?: string
+          voice_key?: string | null
+          word_count?: number | null
         }
         Update: {
           auto_posted?: boolean
@@ -591,18 +677,31 @@ export type Database = {
           classifier_reasoning?: string | null
           classifier_tier?: number
           created_at?: string
+          cta_eligible?: boolean | null
           draft_body?: string
+          draft_text?: string | null
           id?: string
+          narrative_track?: string | null
+          post_title?: string | null
+          post_url?: string | null
+          posted_at?: string | null
           reddit_comment_id?: string | null
           reddit_comment_url?: string | null
+          reddit_id?: string | null
+          reply_to_comments?: Json | null
+          response_mode?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           safety_flags?: Json | null
+          shannon_edits?: string | null
           status?: string
+          subreddit?: string | null
           target_door?: string | null
           target_path?: string | null
           thread_id?: string | null
           updated_at?: string
+          voice_key?: string | null
+          word_count?: number | null
         }
         Relationships: [
           {
