@@ -11,6 +11,7 @@ const ALLOWED_TABLES = [
   'routing_log',
   'response_drafts',
   'auto_post_config',
+  'redirect_targets',
 ];
 
 Deno.serve(async (req: Request) => {
