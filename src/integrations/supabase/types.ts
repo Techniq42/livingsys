@@ -125,8 +125,11 @@ export type Database = {
       community_threads: {
         Row: {
           author: string | null
+          card_type: string
           created_at: string
           id: string
+          ingested_at: string | null
+          match_reason: Json | null
           matched_keywords: Json
           narrative_tracks: string[] | null
           notes: string | null
@@ -140,14 +143,22 @@ export type Database = {
           response_count: number | null
           shannon_engaged: boolean | null
           snippet: string | null
+          source_feed_id: string | null
+          source_handle: string | null
+          source_platform: string | null
+          source_url: string | null
           status: string
           subreddit: string | null
+          substrate_filter_active: boolean | null
           updated_at: string
         }
         Insert: {
           author?: string | null
+          card_type?: string
           created_at?: string
           id?: string
+          ingested_at?: string | null
+          match_reason?: Json | null
           matched_keywords?: Json
           narrative_tracks?: string[] | null
           notes?: string | null
@@ -161,14 +172,22 @@ export type Database = {
           response_count?: number | null
           shannon_engaged?: boolean | null
           snippet?: string | null
+          source_feed_id?: string | null
+          source_handle?: string | null
+          source_platform?: string | null
+          source_url?: string | null
           status?: string
           subreddit?: string | null
+          substrate_filter_active?: boolean | null
           updated_at?: string
         }
         Update: {
           author?: string | null
+          card_type?: string
           created_at?: string
           id?: string
+          ingested_at?: string | null
+          match_reason?: Json | null
           matched_keywords?: Json
           narrative_tracks?: string[] | null
           notes?: string | null
@@ -182,9 +201,41 @@ export type Database = {
           response_count?: number | null
           shannon_engaged?: boolean | null
           snippet?: string | null
+          source_feed_id?: string | null
+          source_handle?: string | null
+          source_platform?: string | null
+          source_url?: string | null
           status?: string
           subreddit?: string | null
+          substrate_filter_active?: boolean | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      compliance_evidence: {
+        Row: {
+          audit_trail: Json | null
+          badge_state: string
+          evidence_url: string | null
+          id: string
+          recorded_at: string
+          scope: string
+        }
+        Insert: {
+          audit_trail?: Json | null
+          badge_state: string
+          evidence_url?: string | null
+          id?: string
+          recorded_at?: string
+          scope: string
+        }
+        Update: {
+          audit_trail?: Json | null
+          badge_state?: string
+          evidence_url?: string | null
+          id?: string
+          recorded_at?: string
+          scope?: string
         }
         Relationships: []
       }
@@ -321,6 +372,200 @@ export type Database = {
         }
         Relationships: []
       }
+      email_triage_items: {
+        Row: {
+          draft_body: string | null
+          id: string
+          processed_at: string | null
+          received_at: string
+          sender: string
+          snippet: string | null
+          status: string
+          subject: string | null
+          suggested_action: string | null
+          tier: number
+        }
+        Insert: {
+          draft_body?: string | null
+          id?: string
+          processed_at?: string | null
+          received_at?: string
+          sender: string
+          snippet?: string | null
+          status?: string
+          subject?: string | null
+          suggested_action?: string | null
+          tier?: number
+        }
+        Update: {
+          draft_body?: string | null
+          id?: string
+          processed_at?: string | null
+          received_at?: string
+          sender?: string
+          snippet?: string | null
+          status?: string
+          subject?: string | null
+          suggested_action?: string | null
+          tier?: number
+        }
+        Relationships: []
+      }
+      email_triage_whitelist: {
+        Row: {
+          added_at: string
+          added_by: string | null
+          contact_name: string | null
+          email: string
+          notes: string | null
+        }
+        Insert: {
+          added_at?: string
+          added_by?: string | null
+          contact_name?: string | null
+          email: string
+          notes?: string | null
+        }
+        Update: {
+          added_at?: string
+          added_by?: string | null
+          contact_name?: string | null
+          email?: string
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      federation_operators: {
+        Row: {
+          created_at: string
+          display_name: string
+          email: string | null
+          id: string
+          location: string | null
+          notes: string | null
+          recognition_token: string | null
+          role: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          email?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          recognition_token?: string | null
+          role?: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          email?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          recognition_token?: string | null
+          role?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      feedback_signals: {
+        Row: {
+          created_at: string
+          id: string
+          note: string | null
+          operator_id: string
+          signal_type: string
+          substrate_topic: string | null
+          thread_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          operator_id: string
+          signal_type: string
+          substrate_topic?: string | null
+          thread_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          operator_id?: string
+          signal_type?: string
+          substrate_topic?: string | null
+          thread_id?: string
+        }
+        Relationships: []
+      }
+      guild_members: {
+        Row: {
+          id: string
+          joined_at: string
+          status: string
+          tier_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          status?: string
+          tier_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          status?: string
+          tier_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guild_members_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "guild_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guild_tiers: {
+        Row: {
+          benefits: Json
+          created_at: string
+          id: string
+          label: string
+          obligations: Json
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          benefits?: Json
+          created_at?: string
+          id?: string
+          label: string
+          obligations?: Json
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          benefits?: Json
+          created_at?: string
+          id?: string
+          label?: string
+          obligations?: Json
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           completed_at: string | null
@@ -414,6 +659,30 @@ export type Database = {
           phone?: string | null
           referrer?: string | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      member_contributions: {
+        Row: {
+          contribution_type: string
+          created_at: string
+          id: string
+          member_id: string
+          payload: Json | null
+        }
+        Insert: {
+          contribution_type: string
+          created_at?: string
+          id?: string
+          member_id: string
+          payload?: Json | null
+        }
+        Update: {
+          contribution_type?: string
+          created_at?: string
+          id?: string
+          member_id?: string
+          payload?: Json | null
         }
         Relationships: []
       }
@@ -567,6 +836,42 @@ export type Database = {
           last_updated?: string | null
           stuck_count?: number | null
           track?: string
+        }
+        Relationships: []
+      }
+      predator_pattern_observations: {
+        Row: {
+          connector_diligence_score: number | null
+          created_at: string
+          id: string
+          lure_language_pattern: string | null
+          payload_mechanism: string | null
+          red_flags_caught: string[] | null
+          typology: string
+          vector_type: string | null
+          where_caught: string | null
+        }
+        Insert: {
+          connector_diligence_score?: number | null
+          created_at?: string
+          id?: string
+          lure_language_pattern?: string | null
+          payload_mechanism?: string | null
+          red_flags_caught?: string[] | null
+          typology: string
+          vector_type?: string | null
+          where_caught?: string | null
+        }
+        Update: {
+          connector_diligence_score?: number | null
+          created_at?: string
+          id?: string
+          lure_language_pattern?: string | null
+          payload_mechanism?: string | null
+          red_flags_caught?: string[] | null
+          typology?: string
+          vector_type?: string | null
+          where_caught?: string | null
         }
         Relationships: []
       }
@@ -877,6 +1182,30 @@ export type Database = {
           },
         ]
       }
+      sender_patterns: {
+        Row: {
+          created_at: string
+          id: string
+          pattern_type: string
+          pattern_value: string
+          signal: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          pattern_type: string
+          pattern_value: string
+          signal?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          pattern_type?: string
+          pattern_value?: string
+          signal?: Json | null
+        }
+        Relationships: []
+      }
       site_status: {
         Row: {
           domain: string
@@ -943,6 +1272,99 @@ export type Database = {
           prompt_fragment?: string | null
           slug?: string
           sort_order?: number
+        }
+        Relationships: []
+      }
+      source_kill_switches: {
+        Row: {
+          disabled_at: string | null
+          disabled_by: string | null
+          enabled: boolean
+          reason: string | null
+          source_platform: string
+          updated_at: string
+        }
+        Insert: {
+          disabled_at?: string | null
+          disabled_by?: string | null
+          enabled?: boolean
+          reason?: string | null
+          source_platform: string
+          updated_at?: string
+        }
+        Update: {
+          disabled_at?: string | null
+          disabled_by?: string | null
+          enabled?: boolean
+          reason?: string | null
+          source_platform?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      telegram_channels: {
+        Row: {
+          created_at: string
+          host_display_name: string | null
+          host_user_id: string | null
+          id: string
+          is_active: boolean
+          label: string
+          scope_config: Json
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          host_display_name?: string | null
+          host_user_id?: string | null
+          id?: string
+          is_active?: boolean
+          label: string
+          scope_config?: Json
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          host_display_name?: string | null
+          host_user_id?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string
+          scope_config?: Json
+          slug?: string
+        }
+        Relationships: []
+      }
+      tool_library: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          slug: string
+          tier_required: string | null
+          title: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          slug: string
+          tier_required?: string | null
+          title: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          slug?: string
+          tier_required?: string | null
+          title?: string
+          url?: string | null
         }
         Relationships: []
       }
@@ -1050,6 +1472,42 @@ export type Database = {
           name?: string
           selected_options?: Json
           user_id?: string
+        }
+        Relationships: []
+      }
+      voice_memos: {
+        Row: {
+          audio_url: string | null
+          captured_at: string
+          id: string
+          operator_id: string
+          processed_at: string | null
+          routing_decision: Json | null
+          source_channel: string | null
+          status: string
+          transcript: string | null
+        }
+        Insert: {
+          audio_url?: string | null
+          captured_at?: string
+          id?: string
+          operator_id: string
+          processed_at?: string | null
+          routing_decision?: Json | null
+          source_channel?: string | null
+          status?: string
+          transcript?: string | null
+        }
+        Update: {
+          audio_url?: string | null
+          captured_at?: string
+          id?: string
+          operator_id?: string
+          processed_at?: string | null
+          routing_decision?: Json | null
+          source_channel?: string | null
+          status?: string
+          transcript?: string | null
         }
         Relationships: []
       }
