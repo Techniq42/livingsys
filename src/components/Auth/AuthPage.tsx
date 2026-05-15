@@ -56,7 +56,7 @@ export function AuthPage() {
   const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!forgotCaptchaToken) {
+    if (CAPTCHA_REQUIRED && !forgotCaptchaToken) {
       toast.error('Verification required — please complete the challenge.');
       return;
     }
@@ -64,7 +64,7 @@ export function AuthPage() {
     const { error: resetErr } = await supabase.auth.resetPasswordForEmail(
       resetEmail.trim().toLowerCase(),
       {
-        captchaToken: forgotCaptchaToken,
+        captchaToken: CAPTCHA_REQUIRED ? (forgotCaptchaToken ?? undefined) : undefined,
         redirectTo: `${window.location.origin}/auth/reset-password`,
       }
     );
@@ -81,6 +81,7 @@ export function AuthPage() {
   };
 
   useEffect(() => {
+    if (!CAPTCHA_REQUIRED) return;
     const scriptId = 'cf-turnstile-script';
     if (!document.getElementById(scriptId)) {
       const script = document.createElement('script');
