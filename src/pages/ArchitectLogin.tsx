@@ -57,7 +57,7 @@ export default function ArchitectLogin() {
   const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!forgotCaptchaToken) {
+    if (CAPTCHA_REQUIRED && !forgotCaptchaToken) {
       toast.error('Verification required — please complete the challenge.');
       return;
     }
@@ -65,7 +65,7 @@ export default function ArchitectLogin() {
     const { error: resetErr } = await supabase.auth.resetPasswordForEmail(
       resetEmail.trim().toLowerCase(),
       {
-        captchaToken: forgotCaptchaToken,
+        captchaToken: CAPTCHA_REQUIRED ? (forgotCaptchaToken ?? undefined) : undefined,
         redirectTo: `${window.location.origin}/auth/reset-password`,
       }
     );
