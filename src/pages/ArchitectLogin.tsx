@@ -94,6 +94,7 @@ export default function ArchitectLogin() {
   }, [navigate]);
 
   useEffect(() => {
+    if (!CAPTCHA_REQUIRED) return;
     const scriptId = 'cf-turnstile-script';
     if (!document.getElementById(scriptId)) {
       const script = document.createElement('script');
