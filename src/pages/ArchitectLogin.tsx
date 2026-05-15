@@ -295,7 +295,13 @@ export default function ArchitectLogin() {
                   </button>
                 )}
               </div>
-              <div ref={turnstileRef} className="flex justify-center my-2"></div>
+              {CAPTCHA_REQUIRED ? (
+                <div ref={turnstileRef} className="flex justify-center my-2"></div>
+              ) : (
+                <p className="text-[10px] font-mono uppercase tracking-wider text-amber-500/70 text-center my-2">
+                  sandbox — captcha bypassed
+                </p>
+              )}
               <button
                 type="submit"
                 disabled={loading}
