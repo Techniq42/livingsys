@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { renderTurnstile, type TurnstileHandle } from '@/lib/turnstile';
+import { CAPTCHA_REQUIRED } from '@/lib/auth-config';
 
 const TURNSTILE_SITE_KEY = '0x4AAAAAACsH-SiikIJB-A7Q';
 
@@ -24,6 +25,7 @@ export function AuthPage() {
 
   // Mount/unmount the forgot-password Turnstile widget when toggling modes
   useEffect(() => {
+    if (!CAPTCHA_REQUIRED) return;
     let cancelled = false;
     if (forgotMode && forgotTurnstileRef.current) {
       renderTurnstile({
@@ -54,7 +56,7 @@ export function AuthPage() {
   const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!forgotCaptchaToken) {
+    if (CAPTCHA_REQUIRED && !forgotCaptchaToken) {
       toast.error('Verification required — please complete the challenge.');
       return;
     }
@@ -62,7 +64,7 @@ export function AuthPage() {
     const { error: resetErr } = await supabase.auth.resetPasswordForEmail(
       resetEmail.trim().toLowerCase(),
       {
-        captchaToken: forgotCaptchaToken,
+        captchaToken: CAPTCHA_REQUIRED ? (forgotCaptchaToken ?? undefined) : undefined,
         redirectTo: `${window.location.origin}/auth/reset-password`,
       }
     );
@@ -79,6 +81,7 @@ export function AuthPage() {
   };
 
   useEffect(() => {
+    if (!CAPTCHA_REQUIRED) return;
     const scriptId = 'cf-turnstile-script';
     if (!document.getElementById(scriptId)) {
       const script = document.createElement('script');
@@ -128,11 +131,13 @@ export function AuthPage() {
     setError('');
     setMessage('');
 
-    if (!captchaToken) {
+    if (CAPTCHA_REQUIRED && !captchaToken) {
       setError('Please complete the CAPTCHA verification.');
       setLoading(false);
       return;
     }
+
+    const captchaArg = CAPTCHA_REQUIRED ? (captchaToken ?? undefined) : undefined;
 
     try {
       const trimmedEmail = email.trim().toLowerCase();
@@ -159,7 +164,7 @@ export function AuthPage() {
           password,
           options: {
             emailRedirectTo: 'https://livingsys.lovable.app/dashboard',
-            captchaToken,
+            captchaToken: captchaArg,
           },
         });
         if (error) throw error;
@@ -168,7 +173,7 @@ export function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({
           email: trimmedEmail,
           password,
-          options: { captchaToken },
+          options: { captchaToken: captchaArg },
         });
         if (error) throw error;
       }
@@ -235,14 +240,16 @@ export function AuthPage() {
                 className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
               />
             </div>
-            <div
-              id="turnstile-forgot-auth"
-              ref={forgotTurnstileRef}
-              className="flex justify-center my-2"
-            ></div>
+            {CAPTCHA_REQUIRED && (
+              <div
+                id="turnstile-forgot-auth"
+                ref={forgotTurnstileRef}
+                className="flex justify-center my-2"
+              ></div>
+            )}
             <button
               type="submit"
-              disabled={resetLoading || !forgotCaptchaToken}
+              disabled={resetLoading || (CAPTCHA_REQUIRED && !forgotCaptchaToken)}
               className="w-full border border-primary text-foreground py-3 rounded-sm font-display text-sm tracking-wider hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer disabled:opacity-50"
             >
               {resetLoading ? 'Sending…' : 'Send reset link'}
@@ -288,7 +295,14 @@ export function AuthPage() {
                   </button>
                 )}
               </div>
-              <div ref={turnstileRef} className="flex justify-center my-2"></div>
+              {CAPTCHA_REQUIRED && (
+                <div ref={turnstileRef} className="flex justify-center my-2"></div>
+              )}
+              {!CAPTCHA_REQUIRED && (
+                <p className="text-[10px] font-mono uppercase tracking-wider text-amber-500/70 text-center my-2">
+                  sandbox — captcha bypassed
+                </p>
+              )}
               <button
                 type="submit"
                 disabled={loading}
