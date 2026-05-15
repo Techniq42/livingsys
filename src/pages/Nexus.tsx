@@ -165,6 +165,36 @@ function NexusInner({ user, role }: { user: User; role: string }) {
           })}
         </nav>
         <div className="ml-auto flex items-center gap-3 text-xs text-muted-foreground">
+          {/* Skin switcher — venue register override */}
+          <div className="hidden md:flex items-center gap-1 pr-3 border-r border-border">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground/70 mr-1">Skin</span>
+            {SKIN_OPTIONS.map((opt) => {
+              const active = skin === opt.token;
+              return (
+                <button
+                  key={opt.token}
+                  onClick={() => setSkinOverride(opt.token === currentLane?.skin_token ? null : opt.token)}
+                  className={`px-2 py-0.5 text-[10px] uppercase tracking-wider rounded border transition-colors ${
+                    active
+                      ? 'bg-primary/15 border-primary/40 text-primary'
+                      : 'border-border text-muted-foreground hover:text-foreground'
+                  }`}
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+            {skinOverride && (
+              <button
+                onClick={() => setSkinOverride(null)}
+                className="text-[10px] text-muted-foreground hover:text-foreground ml-1"
+                title="Reset to lane default"
+              >
+                ×
+              </button>
+            )}
+          </div>
           <span className="hidden md:inline">{user.email}</span>
           <span className="px-2 py-0.5 rounded border border-coral/40 text-coral text-[10px] uppercase tracking-wider">{role}</span>
           <button onClick={handleSignOut} className="hover:text-foreground inline-flex items-center gap-1">
