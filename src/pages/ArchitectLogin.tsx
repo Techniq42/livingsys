@@ -144,11 +144,13 @@ export default function ArchitectLogin() {
     setError('');
     setMessage('');
 
-    if (!captchaToken) {
+    if (CAPTCHA_REQUIRED && !captchaToken) {
       setError('Please complete the CAPTCHA verification.');
       setLoading(false);
       return;
     }
+
+    const captchaArg = CAPTCHA_REQUIRED ? (captchaToken ?? undefined) : undefined;
 
     try {
       const trimmedEmail = email.trim().toLowerCase();
@@ -175,7 +177,7 @@ export default function ArchitectLogin() {
           password,
           options: {
             emailRedirectTo: 'https://livingsys.lovable.app/architect-dashboard',
-            captchaToken,
+            captchaToken: captchaArg,
           },
         });
         if (error) throw error;
@@ -184,7 +186,7 @@ export default function ArchitectLogin() {
         const { error } = await supabase.auth.signInWithPassword({
           email: trimmedEmail,
           password,
-          options: { captchaToken },
+          options: { captchaToken: captchaArg },
         });
         if (error) throw error;
       }
