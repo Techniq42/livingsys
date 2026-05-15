@@ -96,7 +96,12 @@ function NexusInner({ user, role }: { user: User; role: string }) {
   }, [activeLane, activeMode, activeTopic, lanes]);
 
   const currentLane = lanes.find((l) => l.slug === activeLane);
-  const skin = currentLane?.skin_token || 'reddit';
+  const skin = skinOverride || currentLane?.skin_token || 'reddit';
+  const SKIN_OPTIONS: Array<{ token: string; label: string }> = [
+    { token: 'reddit', label: 'Reddit' },
+    { token: 'telegram', label: 'Telegram' },
+    { token: 'bluesky', label: 'Bluesky' },
+  ];
 
   const guardrails = skills.filter((s) => s.always_loaded);
   const optionalSkills = skills.filter((s) => !s.always_loaded);
