@@ -19,4 +19,14 @@
  * re-enable CAPTCHA in the Supabase Auth dashboard.
  */
 const raw = (import.meta.env.VITE_CAPTCHA_REQUIRED ?? 'true').toString().toLowerCase();
-export const CAPTCHA_REQUIRED = raw !== 'false';
+const fromEnv = raw !== 'false';
+
+// SANDBOX OVERRIDE — flip this to `fromEnv` (or delete the override) before go-live.
+// Supabase server-side CAPTCHA is currently OFF in this sandbox. Setting this to
+// false skips client-side Turnstile entirely so we can exercise sign-in /
+// forgot-password / reset-password without the widget. To re-enable CAPTCHA:
+//   1) export const CAPTCHA_REQUIRED = fromEnv;
+//   2) Re-enable CAPTCHA in Supabase Auth dashboard
+//   3) Whitelist hostnames in Cloudflare Turnstile site config
+export const CAPTCHA_REQUIRED = false;
+void fromEnv;
