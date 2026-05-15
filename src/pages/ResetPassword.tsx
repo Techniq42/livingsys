@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { renderTurnstile, type TurnstileHandle } from '@/lib/turnstile';
+import { CAPTCHA_REQUIRED } from '@/lib/auth-config';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
+  const [simulated, setSimulated] = useState(false);
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,26 +17,92 @@ export default function ResetPassword() {
   const turnstileRef = useRef<HTMLDivElement>(null);
   const widgetHandleRef = useRef<TurnstileHandle | null>(null);
 
+  // Establish recovery session from URL hash (#access_token=...&refresh_token=...&type=recovery)
+  // OR from ?code= (PKCE flow), OR fall back to existing session. In sandbox mode
+  // (CAPTCHA_REQUIRED=false) AND already-signed-in, allow simulated recovery so the
+  // form can be exercised by manually navigating to /auth/reset-password.
   useEffect(() => {
-    const check = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        setReady(true);
+    let cancelled = false;
+    const bootstrap = async () => {
+      // 1) Hash-fragment recovery (implicit flow)
+      const hash = window.location.hash.startsWith('#')
+        ? window.location.hash.slice(1)
+        : '';
+      const hashParams = new URLSearchParams(hash);
+      const access_token = hashParams.get('access_token');
+      const refresh_token = hashParams.get('refresh_token');
+      const type = hashParams.get('type');
+
+      if (access_token && refresh_token && (type === 'recovery' || !type)) {
+        const { error: setErr } = await supabase.auth.setSession({
+          access_token,
+          refresh_token,
+        });
+        if (!cancelled) {
+          if (setErr) setError(setErr.message);
+          else {
+            // Clean the hash so a refresh doesn't reuse a one-shot token
+            window.history.replaceState(null, '', window.location.pathname);
+            setReady(true);
+          }
+        }
         return;
       }
-      const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-        if (session && (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+
+      // 2) PKCE recovery (?code=...)
+      const search = new URLSearchParams(window.location.search);
+      const code = search.get('code');
+      if (code) {
+        const { error: exchErr } = await supabase.auth.exchangeCodeForSession(code);
+        if (!cancelled) {
+          if (exchErr) setError(exchErr.message);
+          else {
+            window.history.replaceState(null, '', window.location.pathname);
+            setReady(true);
+          }
+        }
+        return;
+      }
+
+      // 3) Fallback to existing session (live PASSWORD_RECOVERY event)
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        if (!cancelled) {
+          // Sandbox-only: signed-in user without recovery hash → simulated dev path.
+          if (!CAPTCHA_REQUIRED) setSimulated(true);
           setReady(true);
         }
+        return;
+      }
+
+      // 4) Wait briefly for an auth event in case Supabase hasn't fired yet
+      const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+        if (
+          session &&
+          (event === 'PASSWORD_RECOVERY' ||
+            event === 'SIGNED_IN' ||
+            event === 'INITIAL_SESSION')
+        ) {
+          if (!cancelled) setReady(true);
+        }
       });
-      setTimeout(() => setReady(true), 1500);
-      return () => sub.subscription.unsubscribe();
+      setTimeout(() => {
+        if (!cancelled) {
+          // Give up — show form anyway; updateUser will surface the real error.
+          setReady(true);
+        }
+        sub.subscription.unsubscribe();
+      }, 1500);
     };
-    check();
+    bootstrap();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  // Mount Turnstile once the form is shown
+  // Mount Turnstile once the form is shown (only when CAPTCHA is required)
   useEffect(() => {
+    if (!CAPTCHA_REQUIRED) return;
     let cancelled = false;
     if (ready && turnstileRef.current) {
       renderTurnstile({
@@ -72,21 +140,21 @@ export default function ResetPassword() {
       setError('Passwords do not match.');
       return;
     }
-    if (!captchaToken) {
+    if (CAPTCHA_REQUIRED && !captchaToken) {
       toast.error('Verification required — please complete the challenge.');
       return;
     }
     setLoading(true);
 
     // SDK note: @supabase/supabase-js ^2.98.0 does not declare `captchaToken`
-    // in the public type for `updateUser` options. We pass it via a cast so
-    // server-side captcha enforcement (if enabled) still receives a valid
-    // token. Supabase Auth typically does not enforce captcha on /user PATCH,
-    // but this future-proofs the call. Remove the cast after an SDK upgrade
-    // that adds captchaToken to UserAttributes options.
+    // on updateUser options. We pass it via cast when present so server-side
+    // captcha enforcement (if enabled) receives a valid token.
+    const captchaArg = CAPTCHA_REQUIRED ? (captchaToken ?? undefined) : undefined;
     const { error: updateError } = await supabase.auth.updateUser(
       { password },
-      { captchaToken } as unknown as { emailRedirectTo?: string }
+      captchaArg
+        ? ({ captchaToken: captchaArg } as unknown as { emailRedirectTo?: string })
+        : undefined
     );
     setLoading(false);
     widgetHandleRef.current?.reset();
@@ -115,6 +183,13 @@ export default function ResetPassword() {
         <p className="text-muted-foreground text-sm mb-8">
           Choose a new password to recover access to the Codex.
         </p>
+
+        {simulated && (
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-sm px-4 py-3 mb-4 text-xs font-mono text-amber-500/90">
+            sandbox — simulated recovery. You are signed in; submitting will
+            change your live password. No reset email was used.
+          </div>
+        )}
 
         {error && (
           <div className="bg-destructive/10 border border-destructive/30 rounded-sm px-4 py-3 mb-6 text-sm text-destructive">
@@ -148,14 +223,20 @@ export default function ResetPassword() {
                 className="w-full bg-card border border-border rounded-sm px-4 py-3 text-foreground focus:border-primary focus:outline-none transition-colors"
               />
             </div>
-            <div
-              id="turnstile-reset-password"
-              ref={turnstileRef}
-              className="flex justify-center my-2"
-            ></div>
+            {CAPTCHA_REQUIRED ? (
+              <div
+                id="turnstile-reset-password"
+                ref={turnstileRef}
+                className="flex justify-center my-2"
+              ></div>
+            ) : (
+              <p className="text-[10px] font-mono uppercase tracking-wider text-amber-500/70 text-center my-2">
+                sandbox — captcha bypassed
+              </p>
+            )}
             <button
               type="submit"
-              disabled={loading || !captchaToken}
+              disabled={loading || (CAPTCHA_REQUIRED && !captchaToken)}
               className="w-full border border-primary text-foreground py-3 rounded-sm font-display text-sm tracking-wider hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer disabled:opacity-50"
             >
               {loading ? 'Updating…' : 'Update password'}
