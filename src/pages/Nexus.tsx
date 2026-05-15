@@ -236,7 +236,7 @@ function NexusInner({ user, role }: { user: User; role: string }) {
 
         {/* Center: workspace */}
         <main className="flex-1 overflow-y-auto p-6 space-y-4">
-          {activeLane === 'reddit' && activeMode === 'outreach' ? (
+          {currentLane?.status === 'live' && activeMode === 'outreach' ? (
             <>
               <div className="text-xs text-muted-foreground">
                 {threads.length} thread{threads.length === 1 ? '' : 's'} · {Object.keys(draftByThread).length} draft{Object.keys(draftByThread).length === 1 ? '' : 's'}
