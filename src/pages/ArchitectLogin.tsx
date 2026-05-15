@@ -26,6 +26,7 @@ export default function ArchitectLogin() {
   const forgotWidgetHandleRef = useRef<TurnstileHandle | null>(null);
 
   useEffect(() => {
+    if (!CAPTCHA_REQUIRED) return;
     let cancelled = false;
     if (forgotMode && forgotTurnstileRef.current) {
       renderTurnstile({
