@@ -18,6 +18,7 @@ import DashboardEditing from "./pages/dashboard/DashboardEditing";
 import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
 import ResetPassword from "./pages/ResetPassword";
+import Nexus from "./pages/Nexus";
 
 import NotFound from "./pages/NotFound";
 
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="exchange" element={<DashboardExchange />} />
             <Route path="editing" element={<DashboardEditing />} />
           </Route>
+          <Route path="/nexus" element={<Nexus />} />
           <Route path="/architect-dashboard" element={<ArchitectDashboard />} />
           <Route path="/architect-login" element={<ArchitectLogin />} />
           <Route path="/auth/reset-password" element={<ResetPassword />} />

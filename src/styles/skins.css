@@ -1,0 +1,35 @@
+/* Per-venue skin tokens for the Nexus surface.
+ * Applied via [data-skin="..."] on the Nexus shell.
+ * All values stay HSL — these are semantic-token overrides, not new colors.
+ */
+
+[data-skin="reddit"] {
+  /* Utilitarian — sharper edges, denser type, mono-leaning labels */
+  --background: 160 10% 6%;
+  --card: 160 12% 10%;
+  --border: 160 12% 18%;
+  --radius: 0.25rem;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+[data-skin="telegram"] {
+  /* Operator-direct — terminal-flat, monospace headers, minimal chrome */
+  --background: 200 14% 4%;
+  --card: 200 16% 8%;
+  --border: 200 18% 16%;
+  --radius: 0.125rem;
+  --font-display: 'JetBrains Mono', monospace;
+  --font-body: 'JetBrains Mono', monospace;
+}
+
+[data-skin="bluesky"] {
+  /* Soft-warm — rounded, lower contrast, generous whitespace */
+  --background: 30 14% 8%;
+  --card: 30 18% 13%;
+  --border: 30 14% 22%;
+  --radius: 1.25rem;
+  --primary: 32 80% 62%;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
