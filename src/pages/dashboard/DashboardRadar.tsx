@@ -1,17 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ThreadCard, type CommunityThread, type ThreadStatus } from '@/components/CommunityRadar/ThreadCard';
+import { ThreadCard, type CommunityThread, type ThreadStatus, type SourcePlatform } from '@/components/CommunityRadar/ThreadCard';
 import { TemplatePanel, type ReplyTemplate } from '@/components/CommunityRadar/TemplatePanel';
 import { ResponseDraftsPanel } from '@/components/radar/ResponseDraftsPanel';
 import { AutoResponseKillSwitch } from '@/components/radar/AutoResponseKillSwitch';
 import { AutoResponseConfigEditor } from '@/components/radar/AutoResponseConfigEditor';
 import { ShadowLogDrawer } from '@/components/radar/ShadowLogDrawer';
+import { SourceKillSwitches } from '@/components/radar/SourceKillSwitches';
+import { SubstrateFilterIndicator } from '@/components/radar/SubstrateFilterIndicator';
 import { Button } from '@/components/ui/button';
 import { Radar, Filter, Settings2 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 
 type FilterStatus = ThreadStatus | 'all';
+type FilterSource = SourcePlatform | 'all';
+
+const SOURCE_LABELS: Record<FilterSource, string> = {
+  all: 'All sources',
+  reddit: 'Reddit',
+  bluesky: 'Bluesky',
+  discord: 'Discord',
+  forum: 'Forums',
+  other: 'Other',
+};
 
 export default function DashboardRadar() {
   const { user, userRole } = useOutletContext<{ user: User; userRole: string }>();
@@ -20,6 +32,7 @@ export default function DashboardRadar() {
   const [threads, setThreads] = useState<CommunityThread[]>([]);
   const [templates, setTemplates] = useState<ReplyTemplate[]>([]);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
+  const [filterSource, setFilterSource] = useState<FilterSource>('all');
   const [selectedThread, setSelectedThread] = useState<CommunityThread | null>(null);
   const [activeTab, setActiveTab] = useState<'threads' | 'drafts' | 'config'>('threads');
 
@@ -56,65 +69,99 @@ export default function DashboardRadar() {
     setThreads(prev => prev.map(t => t.id === id ? { ...t, notes } : t));
   }
 
-  const filteredThreads = filterStatus === 'all' ? threads : threads.filter(t => t.status === filterStatus);
+  async function handleDraftReframe(thread: CommunityThread) {
+    await (supabase as any).from('feedback_signals').insert({
+      thread_id: thread.id,
+      operator_id: user.id,
+      signal_type: 'reframe_flag',
+      substrate_topic: thread.match_reason?.substrate_topic || null,
+      note: 'Operator triggered Draft Reframe',
+    });
+    await handleStatusChange(thread.id, 'flagged');
+  }
+
+  const sourceCounts = useMemo(() => {
+    const acc: Record<string, number> = {};
+    threads.forEach((t) => {
+      const s = (t.source_platform || 'other') as string;
+      acc[s] = (acc[s] || 0) + 1;
+    });
+    return acc;
+  }, [threads]);
+
+  const filteredThreads = threads.filter((t) => {
+    if (filterStatus !== 'all' && t.status !== filterStatus) return false;
+    if (filterSource !== 'all' && (t.source_platform || 'other') !== filterSource) return false;
+    return true;
+  });
+
   const statusCounts = threads.reduce((acc, t) => {
     acc[t.status] = (acc[t.status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
+
+  const sourceFilters: FilterSource[] = ['all', 'reddit', 'bluesky', 'discord', 'forum', 'other'];
 
   return (
     <div className="p-6 md:p-8 pb-16">
       {/* Header row with kill switch */}
       <div className="mb-6 flex flex-col lg:flex-row lg:items-start gap-4">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-2 flex-wrap">
             <Radar className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold font-display text-foreground">Community Radar</h1>
+            <SubstrateFilterIndicator />
           </div>
           <p className="text-sm text-muted-foreground italic font-body">
             Threads surfaced from monitored communities. Review, reply, connect.
           </p>
         </div>
         {isArchitect && (
-          <div className="lg:w-auto">
+          <div className="lg:w-auto space-y-3">
             <AutoResponseKillSwitch isArchitect={isArchitect} />
+            <SourceKillSwitches isArchitect={isArchitect} />
           </div>
         )}
       </div>
 
       {/* Tab switcher */}
       <div className="flex items-center gap-2 mb-6 border-b border-border/50 pb-3">
-        <Button
-          size="sm"
-          variant={activeTab === 'threads' ? 'default' : 'ghost'}
-          className="h-8 text-xs px-4"
-          onClick={() => setActiveTab('threads')}
-        >
+        <Button size="sm" variant={activeTab === 'threads' ? 'default' : 'ghost'} className="h-8 text-xs px-4"
+          onClick={() => setActiveTab('threads')}>
           <Radar className="h-3.5 w-3.5 mr-1.5" /> Threads
         </Button>
-        <Button
-          size="sm"
-          variant={activeTab === 'drafts' ? 'default' : 'ghost'}
-          className="h-8 text-xs px-4"
-          onClick={() => setActiveTab('drafts')}
-        >
+        <Button size="sm" variant={activeTab === 'drafts' ? 'default' : 'ghost'} className="h-8 text-xs px-4"
+          onClick={() => setActiveTab('drafts')}>
           Response Drafts
         </Button>
         {isArchitect && (
-          <Button
-            size="sm"
-            variant={activeTab === 'config' ? 'default' : 'ghost'}
-            className="h-8 text-xs px-4"
-            onClick={() => setActiveTab('config')}
-          >
+          <Button size="sm" variant={activeTab === 'config' ? 'default' : 'ghost'} className="h-8 text-xs px-4"
+            onClick={() => setActiveTab('config')}>
             <Settings2 className="h-3.5 w-3.5 mr-1.5" /> Auto-Response Config
           </Button>
         )}
       </div>
 
-      {/* Threads tab */}
       {activeTab === 'threads' && (
         <>
+          {/* Source filter chips */}
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-display mr-1">Source</span>
+            {sourceFilters.map((s) => (
+              <Button
+                key={s}
+                size="sm"
+                variant={filterSource === s ? 'default' : 'outline'}
+                className="h-7 text-xs px-3"
+                onClick={() => setFilterSource(s)}
+              >
+                {SOURCE_LABELS[s]}
+                {s === 'all' ? ` (${threads.length})` : sourceCounts[s] ? ` (${sourceCounts[s]})` : ''}
+              </Button>
+            ))}
+          </div>
+
+          {/* Status filter chips */}
           <div className="flex items-center gap-2 mb-6 flex-wrap">
             <Filter className="h-4 w-4 text-muted-foreground" />
             {(['all', 'new', 'reviewed', 'flagged', 'replied', 'archived'] as FilterStatus[]).map((s) => (
@@ -137,9 +184,11 @@ export default function DashboardRadar() {
               <ThreadCard
                 key={thread.id}
                 thread={thread}
+                operatorId={user?.id}
                 onStatusChange={handleStatusChange}
                 onNotesChange={handleNotesChange}
                 onSelectTemplate={(t) => setSelectedThread(t)}
+                onDraftReframe={handleDraftReframe}
               />
             ))}
           </div>
@@ -158,26 +207,22 @@ export default function DashboardRadar() {
         </>
       )}
 
-      {/* Drafts tab */}
       {activeTab === 'drafts' && (
         <ResponseDraftsPanel isArchitect={isArchitect} />
       )}
 
-      {/* Config tab (architect only) */}
       {activeTab === 'config' && isArchitect && (
         <div className="max-w-xl">
           <AutoResponseConfigEditor isArchitect={isArchitect} />
         </div>
       )}
 
-      {/* Template sidebar */}
       <TemplatePanel
         thread={selectedThread}
         templates={templates}
         onClose={() => setSelectedThread(null)}
       />
 
-      {/* Shadow log drawer — architect only */}
       {isArchitect && <ShadowLogDrawer />}
     </div>
   );

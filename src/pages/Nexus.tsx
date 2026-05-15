@@ -39,10 +39,17 @@ function NexusInner({ user, role }: { user: User; role: string }) {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [drafts, setDrafts] = useState<Draft[]>([]);
 
-  const [activeLane, setActiveLane] = useState<string>('reddit');
+  const [activeLane, setActiveLane] = useState<string>(() => localStorage.getItem('nexus.activeLane') || 'fire_defense');
   const [activeMode, setActiveMode] = useState<string>('outreach');
   const [activeTopic] = useState<string>('fire_defense');
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+  const [skinOverride, setSkinOverride] = useState<string | null>(() => localStorage.getItem('nexus.skinOverride'));
+
+  useEffect(() => { localStorage.setItem('nexus.activeLane', activeLane); }, [activeLane]);
+  useEffect(() => {
+    if (skinOverride) localStorage.setItem('nexus.skinOverride', skinOverride);
+    else localStorage.removeItem('nexus.skinOverride');
+  }, [skinOverride]);
 
   useEffect(() => {
     (async () => {
@@ -60,20 +67,24 @@ function NexusInner({ user, role }: { user: User; role: string }) {
   }, []);
 
   useEffect(() => {
-    // Reddit-only live data for the proving slice.
-    if (activeLane !== 'reddit' || activeMode !== 'outreach') {
+    const lane = lanes.find((l) => l.slug === activeLane);
+    if (!lane || lane.status !== 'live' || activeMode !== 'outreach') {
       setThreads([]);
       setDrafts([]);
       setSelectedThreadId(null);
       return;
     }
     (async () => {
-      const { data: t } = await (supabase as any)
-        .from('community_threads')
-        .select('*')
-        .eq('platform', 'reddit')
-        .order('created_at', { ascending: false })
-        .limit(40);
+      // Topic-style lanes (e.g. fire_defense) filter by substrate_topic in match_reason.
+      // Venue-style lanes (reddit/bluesky/telegram) filter by source_platform.
+      const isTopic = lane.slug === activeTopic;
+      let query = (supabase as any).from('community_threads').select('*');
+      if (isTopic) {
+        query = query.eq('match_reason->>substrate_topic', activeTopic);
+      } else {
+        query = query.eq('source_platform', lane.slug);
+      }
+      const { data: t } = await query.order('created_at', { ascending: false }).limit(40);
       setThreads(t || []);
       const { data: d } = await (supabase as any)
         .from('response_drafts')
@@ -82,10 +93,15 @@ function NexusInner({ user, role }: { user: User; role: string }) {
         .limit(60);
       setDrafts(d || []);
     })();
-  }, [activeLane, activeMode]);
+  }, [activeLane, activeMode, activeTopic, lanes]);
 
   const currentLane = lanes.find((l) => l.slug === activeLane);
-  const skin = currentLane?.skin_token || 'reddit';
+  const skin = skinOverride || currentLane?.skin_token || 'reddit';
+  const SKIN_OPTIONS: Array<{ token: string; label: string }> = [
+    { token: 'reddit', label: 'Reddit' },
+    { token: 'telegram', label: 'Telegram' },
+    { token: 'bluesky', label: 'Bluesky' },
+  ];
 
   const guardrails = skills.filter((s) => s.always_loaded);
   const optionalSkills = skills.filter((s) => !s.always_loaded);
@@ -149,6 +165,36 @@ function NexusInner({ user, role }: { user: User; role: string }) {
           })}
         </nav>
         <div className="ml-auto flex items-center gap-3 text-xs text-muted-foreground">
+          {/* Skin switcher — venue register override */}
+          <div className="hidden md:flex items-center gap-1 pr-3 border-r border-border">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground/70 mr-1">Skin</span>
+            {SKIN_OPTIONS.map((opt) => {
+              const active = skin === opt.token;
+              return (
+                <button
+                  key={opt.token}
+                  onClick={() => setSkinOverride(opt.token === currentLane?.skin_token ? null : opt.token)}
+                  className={`px-2 py-0.5 text-[10px] uppercase tracking-wider rounded border transition-colors ${
+                    active
+                      ? 'bg-primary/15 border-primary/40 text-primary'
+                      : 'border-border text-muted-foreground hover:text-foreground'
+                  }`}
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+            {skinOverride && (
+              <button
+                onClick={() => setSkinOverride(null)}
+                className="text-[10px] text-muted-foreground hover:text-foreground ml-1"
+                title="Reset to lane default"
+              >
+                ×
+              </button>
+            )}
+          </div>
           <span className="hidden md:inline">{user.email}</span>
           <span className="px-2 py-0.5 rounded border border-coral/40 text-coral text-[10px] uppercase tracking-wider">{role}</span>
           <button onClick={handleSignOut} className="hover:text-foreground inline-flex items-center gap-1">
@@ -190,7 +236,7 @@ function NexusInner({ user, role }: { user: User; role: string }) {
 
         {/* Center: workspace */}
         <main className="flex-1 overflow-y-auto p-6 space-y-4">
-          {activeLane === 'reddit' && activeMode === 'outreach' ? (
+          {currentLane?.status === 'live' && activeMode === 'outreach' ? (
             <>
               <div className="text-xs text-muted-foreground">
                 {threads.length} thread{threads.length === 1 ? '' : 's'} · {Object.keys(draftByThread).length} draft{Object.keys(draftByThread).length === 1 ? '' : 's'}

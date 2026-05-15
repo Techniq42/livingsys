@@ -1,92 +1,74 @@
-# Nexus Master Surface — Fire Defense Proving Slice
+# Response to Comet's QA Pass
 
-The Nexus is the dashboard system. Inside it, each Room is a Gemma-instance expression (venue + mode). Shannon's view exposes the full spectrum; downstream operators (Walter next) get the same template with explicit, query-driven lockdowns. Fire defense + Reddit Outreach is the first end-to-end loop. Three venue skins prove the visual pattern. The Advocacy Redirect Layer ships with referrer-aware framing on day one.
+Receipts received. Plan below executes Build Order A → D in this slice. E (Whisper surfaces) and F (Triage UI) deferred to next pass per your sequencing — schema for them lands in D so they have a place to plug in.
 
-## What ships
+## Slice 1 — Build Order A: Radar substrate-meaning loop
 
-**1. Schema slice** (one migration, privilege baked in everywhere)
+The smallest unit that proves the meaning layer works end-to-end. Ships first.
 
-- `topic_verticals` — slug, name, status. Seed: `fire_defense` active.
-- `voice_templates` — slug, venue, register_notes, system_prompt_fragment, drift_guardrails jsonb, **min_privilege** (admin|operator|node). Seed: `voice.fire_defense.reddit` (peer-to-peer, receipts-not-claims, no advocacy register), `voice.fire_defense.bluesky` (gentler open, receipts-as-gift), `voice.fire_defense.telegram` (operator-direct).
-- `redirect_targets` — slug, destination_url, topic, **audience_frames jsonb** (default + per-referrer-context frame: copy, CTA label, CTA url), click_count, conversion_count, video_url (HyperFrames placeholder), **min_privilege**. Seed: `livingsys.org/fire-defense/guide/` with three frames (default / institutional / practitioner).
-- `redirect_clicks` — redirect_target_id, referrer, ua, ip_hash, clicked_at, draft_id (optional attribution).
-- `skills` — slug, name, category (composition | guardrail | redirect | voice), description, prompt_fragment, **always_loaded boolean**, **min_privilege**, sort_order. Seed: `voice.load`, `redirect.suggest`, and always-loaded guardrails `governance.86_protocol` + `governance.four_drift_check` (stubs — Shannon authors content later, the rack slot exists now).
-- `nexus_modes` — slug (outreach, triage, edit, video…), label, status (live | stub), **min_privilege**.
-- `nexus_lanes` — slug (reddit, bluesky, telegram, x, linkedin, healing, capital, ria, fls, youtube), label, skin_token, status, **min_privilege**.
+**Schema (single migration):**
+- `community_threads` add columns: `source_platform` (text: reddit|bluesky|discord|forum|other), `source_url`, `source_handle`, `source_feed_id`, `ingested_at`, `match_reason` (jsonb: `{substrate_topic, confidence, matched_phrasings[]}`), `card_type` (text: standard|reframe_opportunity), `substrate_filter_active` (bool, header indicator)
+- New `feedback_signals`: `id, thread_id, operator_id, signal_type` (up|down|reframe_flag|off_topic), `substrate_topic, note, created_at`. Architects/operators write own; architects read all.
+- New `source_kill_switches`: `source_platform` PK, `enabled` bool, `disabled_by`, `disabled_at`, `reason`. Architect-only.
+- Backfill `source_platform` from existing `platform` + handle pattern (`*.bsky.social` → bluesky).
 
-Privilege filter pattern: every config query joins `has_role()` against `min_privilege`. Walter's lockdown is a where-clause, not a parallel system.
+**UI on `/dashboard/radar` (ThreadCard + page header):**
+- Source badge on every card (platform icon + handle with correct prefix — `u/` for reddit, `@` for bluesky, `#` for discord)
+- Source filter chip row above status filters, per-source counts
+- Per-source kill switch panel (architect-only) under the global Scanner toggle
+- Expandable "Why this surfaced" panel: substrate topic, confidence bar, matched phrasings highlighted
+- Thumbs up / thumbs down buttons → write to `feedback_signals`, optimistic UI, optional one-line note
+- Reframe-opportunity card variant: amber border, "Draft Reframe" action replaces Reply/Templates
+- "Substrate filter active" badge in Radar header with click-through showing loaded substrate topics (read from `topic_verticals` for now; click opens drawer listing slug + status)
 
-**2. n8n contract update**
+## Slice 2 — Build Order B: Seed `/nexus` with Fire Defense + visible skin switcher
 
-After Gemma drafts the response body for a Radar thread, a new step calls a Supabase RPC (`select_redirect_for_draft`) that returns the best `redirect_targets` row for the topic + venue, picks the right frame, and persists `selected_redirect_id` + `selected_frame_key` on `response_drafts`. The draft body gets the chosen CTA/url appended via natural-voice handoff language. Edge function `n8n-webhook` already handles the persistence path; we add the new fields.
+- Seed `nexus_lanes` Fire Defense lane (status `active`) tied to `fire_defense` topic
+- Seed 2-3 sample threads in `community_threads` with `source_platform` set, attached to the fire_defense topic for visible content
+- Seed 1-2 `redirect_targets` rows beyond what's already there so the redirect rack has cards to render
+- Add visible **skin switcher** in Nexus top bar: pill row (Reddit / Telegram / Bluesky), toggles `data-skin` attribute on the Nexus shell, persists per-user in localStorage
+- Render Lanes rail with seeded data, populate redirect rack from `redirect_targets` filtered by active topic
 
-**3. Multi-frame redirect handler** — new edge function `r` (verify_jwt off)
+## Slice 3 — Build Order C: Five dashboard modes scaffolded
 
-`/r/:slug` resolves the slug, reads `Referer` header, matches against `audience_frames` keys (regex per frame for `worldbank|wbg`, `un.org|untreaty`, `reddit|forum`, default fallback), inserts a `redirect_clicks` row, then 302s to the destination. Conversion attribution by `?d=<draft_id>` query param when n8n includes it.
+Add routes + empty-state pages for: **Bookkeeping, HR, Field Guide Build, Triage, Agency, Brand**. Top-bar `RoomTopBar` extends from 3 buttons to 8. Each route renders `<ModeComingOnline name="…" />` with mode description + "scaffolded, not yet wired" badge. No business logic. Existing 3 (Radar / Exchange / Editing — note: spec says "Edit" so I'll align "Editing Bay" → "Edit") stay as-is.
 
-**4. Nexus surface at `/nexus`**
+(Spec lists 8: Edit, Radar, Bookkeeping, HR, Field-guide-build, Triage, Agency, Brand. Exchange isn't in that list — keeping Exchange as a 9th existing room or folding it under Agency? **Flagged as open question below.**)
 
-```text
-+------------+----------------------------------+----------------+
-| LANES      | CENTER (Room workspace)          | ACTION PANEL   |
-| Reddit  *  |  Mode: Outreach                  | Skills rack    |
-| Bluesky    |  Topic: Fire Defense             |  - voice.load  |
-| Telegram   |                                  |  - redirect.   |
-| X          |  Live thread queue (from         |    suggest     |
-| LinkedIn   |  community_threads + drafts)     |                |
-| Healing    |                                  | Guardrails     |
-| Capital    |  Selected thread:                |  (always-on)   |
-| RIA        |   - thread snippet               |  - 86 Protocol |
-| FLS        |   - draft body                   |  - four-drift  |
-| YouTube    |   - selected redirect + frame    |                |
-+------------+  - approve / edit / kill         | Redirects      |
-                                                |  candidates +  |
-                                                |  click stats   |
-+--------------------------------------------------------------+
-| Mode switcher: Outreach* | Triage | Edit | Video | ...        |
-+--------------------------------------------------------------+
-```
+## Slice 4 — Build Order D: Empty schema for next-build surfaces + pre-seeding
 
-- Lanes: Reddit live, Telegram + Bluesky live as skin demos (empty queues with placeholder copy), rest stubbed but visible.
-- Modes: Outreach live, others stubbed.
-- Center pane reads from `community_threads` joined with `response_drafts` filtered by topic + venue.
-- Action panel — Skills rack lists optional skills; Guardrails rack is read-only and always-on (visual signal that they're in every prompt assembly).
-- Floating Codex AI widget continues to render across `/nexus`.
+Single migration, no UI beyond what Slice 1-3 ship. All RLS architect-write, operator-read where appropriate.
 
-**5. Three venue skins** — CSS theme tokens per lane
+- `voice_memos` (id, operator_id, audio_url, transcript, routing_decision jsonb, source_channel, captured_at, processed_at, status)
+- `email_triage_items` (id, sender, subject, snippet, tier smallint 1|2|3, suggested_action, draft_body, status, received_at)
+- `email_triage_whitelist` (email PK, contact_name, notes, added_by, added_at) — seeded with Raksha, Walter, James Wolff, William Powell II, Jeremy Cline, Melissa, Marijah, Lionel, Edgar, Barry, Bob Genga, Oliver Aurand
+- `sender_patterns` (id, pattern_type, pattern_value, signal jsonb, created_at)
+- `predator_pattern_observations` (id, typology, vector_type, lure_language_pattern, payload_mechanism, red_flags_caught text[], where_caught, connector_diligence_score, created_at) — **CHECK constraint forbidding any column matching `*_name` to enforce names-stripped contract at schema level**
+- `telegram_channels` (id, slug, label, host_user_id, scope_config jsonb: `{default_capabilities, requires_host_approval, never_allowed, logged, handoff}`, is_active) — seeded: Sori (host: Walter), Kakuma, Big-Picture Advocacy
+- `federation_operators` (id, display_name, location, role text: architect|operator|node, status text: active|dormant, recognition_token, notes, created_at) — seeded: Shannon active+architect Thornton CO; Walter, Edgar, Lionel, Leanne, Raksha, Barry, Melissa, Moses, Marijah dormant; Austin Luce + 49 Bloom placeholders dormant with note
+- `guild_members` (id, user_id, tier_id, joined_at, status)
+- `guild_tiers` (id, slug, label, obligations jsonb, benefits jsonb) — seeded Basic / Practitioner (moderator role) / Sovereign with `free_through_ria: true` hard-coded in Sovereign obligations
+- `tool_library` (id, slug, title, description, tier_required, url, is_active)
+- `member_contributions` (id, member_id, contribution_type, payload jsonb, created_at)
+- `compliance_evidence` (id, scope, badge_state text: green|red|amber, evidence_url, audit_trail jsonb, recorded_at) — for the receipts-not-middleware pattern
 
-`src/styles/skins/` with `reddit.css` (utilitarian — sharper edges, denser type, mono-leaning labels), `telegram.css` (operator-direct — terminal-flat, monospace headers, minimal chrome), `bluesky.css` (soft-warm — rounded, lower contrast, generous whitespace, warmer hues). Theme token swap on `[data-skin]` attribute on the Nexus shell. Skins live as semantic-token overrides on top of the existing dark Living Systems palette so the design system stays coherent.
+## What's NOT in this slice (per your don't-list)
 
-**6. Migration of `/dashboard/radar` → Outreach mode in `/nexus`**
+- No compliance middleware. Compliance evidence renders as badge + link only when `compliance_evidence` UI lands (next slice)
+- No moderation UI
+- No Nexus expansion beyond Reddit Outreach + Fire Defense
+- No Whisper UI yet (schema only)
+- No Email Triage UI yet (schema + whitelist seed only)
+- No Guild UI (schema only)
+- No predator names ever — schema-level CHECK enforces
 
-`/dashboard/radar` stays live as the safety net. Sidebar gets a new top-level "Nexus" link. After one operator pass that proves the loop, we retire `/dashboard/radar` (separate slice).
+## Open questions before I start
 
-**7. Explicitly NOT in this slice**
+1. **Exchange room** — your 8-mode spec doesn't include it. Drop it, fold under Agency, or keep as 9th? It currently has working code at `/dashboard/exchange`.
+2. **Substrate definitions source** — for the "substrate filter active" indicator click-through, render from `topic_verticals` table (operator-level) or wait for Claude's substrate-meaning files to land first? I lean: render `topic_verticals` now, swap source when files arrive.
+3. **Reframe-opportunity classification** — does the upstream classifier set `card_type='reframe_opportunity'`, or does an operator promote a card to that type via UI action? Both?
+4. **Federation operator emails** — pre-seed with email addresses (so they auto-resolve when those people sign up), or display-name-only until they show up?
 
-HyperFrames generation, faceless YouTube production wiring, Whisper input adapter, RSS publishing infrastructure, Walter operator onboarding, capital/RIA/FLS modes, CAPTCHA re-enable, GHL replacement work, the actual content of 86 Protocol / four-drift check signatures (rack slot only).
+Once you answer these I run the four migrations + UI in order A → B → C → D and report back with what's wired.
 
-## Build order
-
-1. Schema migration (single file, all tables + seed rows)
-2. `select_redirect_for_draft` RPC + n8n-webhook update for the new draft fields
-3. `r` edge function (multi-frame handler + click logging)
-4. Nexus shell route + lane/mode/skill/guardrail data hooks
-5. Reddit Outreach mode wired to live data
-6. Three skins (CSS theme tokens + skin switcher on lane select)
-7. Sidebar entry, route guard, role-aware visibility filter
-8. Smoke test: thread → draft → redirect picked → click logged → conversion stat surfaces in action panel
-
-## Technical notes
-
-- All config tables use `min_privilege text` with a CHECK against `('admin','operator','node')`. RLS policies use existing `has_role()` plus a privilege comparison helper added in the same migration.
-- `audience_frames` shape: `{ "default": {copy, cta_label, cta_url}, "institutional": {...}, "practitioner": {...} }`. Frame matching is a deterministic ordered regex pass in the `r` function — first match wins, default is fallback.
-- `always_loaded` skills get pulled into the prompt assembly unconditionally by the n8n flow; the UI shows them in a separate read-only rack so the operator can see what protections are running but cannot toggle them off (service-dog pattern even at admin).
-- Skin tokens override `--background`, `--card`, `--border`, `--radius`, `--font-display`, `--font-body` via `[data-skin]` selectors in `index.css`. No new color systems — semantic tokens only.
-- Vocabulary lock applied to new tables and new code paths only. Existing `response_drafts` / `community_threads` keep their names; we'll rename in a future slice if/when the cost is justified.
-
-## Open questions deferred to next slice
-
-- Walter's onboarding flow (operator-room provisioning UI, node-vetting checklist, lockdown-release per-item interface)
-- Codex page referrer detection on the destination side (right now we route at the redirect; per-page audience-context rendering on shannondobbs.com / livingsys.org is its own slice)
-- Federation feed publishing (RSS for podcast monetization, YouTube channel feed)
-- Retiring `/dashboard/radar` after the loop is proven
+Service dog, copy that.
