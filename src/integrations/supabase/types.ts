@@ -447,6 +447,63 @@ export type Database = {
         }
         Relationships: []
       }
+      nexus_lanes: {
+        Row: {
+          id: string
+          label: string
+          min_privilege: string
+          skin_token: string
+          slug: string
+          sort_order: number
+          status: string
+        }
+        Insert: {
+          id?: string
+          label: string
+          min_privilege?: string
+          skin_token?: string
+          slug: string
+          sort_order?: number
+          status?: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          min_privilege?: string
+          skin_token?: string
+          slug?: string
+          sort_order?: number
+          status?: string
+        }
+        Relationships: []
+      }
+      nexus_modes: {
+        Row: {
+          id: string
+          label: string
+          min_privilege: string
+          slug: string
+          sort_order: number
+          status: string
+        }
+        Insert: {
+          id?: string
+          label: string
+          min_privilege?: string
+          slug: string
+          sort_order?: number
+          status?: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          min_privilege?: string
+          slug?: string
+          sort_order?: number
+          status?: string
+        }
+        Relationships: []
+      }
       operator_config: {
         Row: {
           auto_post_enabled: boolean | null
@@ -533,6 +590,100 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      redirect_clicks: {
+        Row: {
+          clicked_at: string
+          draft_id: string | null
+          frame_key: string | null
+          id: string
+          ip_hash: string | null
+          redirect_target_id: string
+          referrer: string | null
+          ua: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          draft_id?: string | null
+          frame_key?: string | null
+          id?: string
+          ip_hash?: string | null
+          redirect_target_id: string
+          referrer?: string | null
+          ua?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          draft_id?: string | null
+          frame_key?: string | null
+          id?: string
+          ip_hash?: string | null
+          redirect_target_id?: string
+          referrer?: string | null
+          ua?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redirect_clicks_redirect_target_id_fkey"
+            columns: ["redirect_target_id"]
+            isOneToOne: false
+            referencedRelation: "redirect_targets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      redirect_targets: {
+        Row: {
+          audience_frames: Json
+          click_count: number
+          conversion_count: number
+          created_at: string
+          destination_url: string
+          id: string
+          is_active: boolean
+          min_privilege: string
+          slug: string
+          topic_slug: string | null
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          audience_frames?: Json
+          click_count?: number
+          conversion_count?: number
+          created_at?: string
+          destination_url: string
+          id?: string
+          is_active?: boolean
+          min_privilege?: string
+          slug: string
+          topic_slug?: string | null
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          audience_frames?: Json
+          click_count?: number
+          conversion_count?: number
+          created_at?: string
+          destination_url?: string
+          id?: string
+          is_active?: boolean
+          min_privilege?: string
+          slug?: string
+          topic_slug?: string | null
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redirect_targets_topic_slug_fkey"
+            columns: ["topic_slug"]
+            isOneToOne: false
+            referencedRelation: "topic_verticals"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       reply_templates: {
         Row: {
@@ -629,6 +780,8 @@ export type Database = {
           reviewed_at: string | null
           reviewed_by: string | null
           safety_flags: Json | null
+          selected_frame_key: string | null
+          selected_redirect_id: string | null
           shannon_edits: string | null
           status: string
           subreddit: string | null
@@ -661,6 +814,8 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           safety_flags?: Json | null
+          selected_frame_key?: string | null
+          selected_redirect_id?: string | null
           shannon_edits?: string | null
           status?: string
           subreddit?: string | null
@@ -693,6 +848,8 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           safety_flags?: Json | null
+          selected_frame_key?: string | null
+          selected_redirect_id?: string | null
           shannon_edits?: string | null
           status?: string
           subreddit?: string | null
@@ -704,6 +861,13 @@ export type Database = {
           word_count?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "response_drafts_selected_redirect_id_fkey"
+            columns: ["selected_redirect_id"]
+            isOneToOne: false
+            referencedRelation: "redirect_targets"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "response_drafts_thread_id_fkey"
             columns: ["thread_id"]
@@ -736,6 +900,75 @@ export type Database = {
           last_checked?: string | null
           last_error?: string | null
           ssl_expiry?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      skills: {
+        Row: {
+          always_loaded: boolean
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          min_privilege: string
+          name: string
+          prompt_fragment: string | null
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          always_loaded?: boolean
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          min_privilege?: string
+          name: string
+          prompt_fragment?: string | null
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          always_loaded?: boolean
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          min_privilege?: string
+          name?: string
+          prompt_fragment?: string | null
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      topic_verticals: {
+        Row: {
+          created_at: string
+          id: string
+          min_privilege: string
+          name: string
+          slug: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          min_privilege?: string
+          name: string
+          slug: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          min_privilege?: string
+          name?: string
+          slug?: string
           status?: string
         }
         Relationships: []
@@ -820,6 +1053,53 @@ export type Database = {
         }
         Relationships: []
       }
+      voice_templates: {
+        Row: {
+          created_at: string
+          drift_guardrails: Json
+          id: string
+          min_privilege: string
+          register_notes: string | null
+          slug: string
+          system_prompt_fragment: string
+          topic_slug: string | null
+          updated_at: string
+          venue: string
+        }
+        Insert: {
+          created_at?: string
+          drift_guardrails?: Json
+          id?: string
+          min_privilege?: string
+          register_notes?: string | null
+          slug: string
+          system_prompt_fragment: string
+          topic_slug?: string | null
+          updated_at?: string
+          venue: string
+        }
+        Update: {
+          created_at?: string
+          drift_guardrails?: Json
+          id?: string
+          min_privilege?: string
+          register_notes?: string | null
+          slug?: string
+          system_prompt_fragment?: string
+          topic_slug?: string | null
+          updated_at?: string
+          venue?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_templates_topic_slug_fkey"
+            columns: ["topic_slug"]
+            isOneToOne: false
+            referencedRelation: "topic_verticals"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       webhook_errors: {
         Row: {
           created_at: string | null
@@ -882,12 +1162,26 @@ export type Database = {
     }
     Functions: {
       check_auto_post_eligible: { Args: { _draft_id: string }; Returns: Json }
+      has_min_privilege: {
+        Args: { _min: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      select_redirect_for_draft: {
+        Args: { _topic_slug: string; _venue: string }
+        Returns: {
+          audience_frames: Json
+          destination_url: string
+          id: string
+          slug: string
+          video_url: string
+        }[]
       }
     }
     Enums: {
