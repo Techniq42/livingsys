@@ -15,6 +15,7 @@ import DashboardSettings from "./pages/dashboard/DashboardSettings";
 import DashboardConstellation from "./pages/dashboard/DashboardConstellation";
 import DashboardExchange from "./pages/dashboard/DashboardExchange";
 import DashboardEditing from "./pages/dashboard/DashboardEditing";
+import DashboardComingOnline from "./pages/dashboard/DashboardComingOnline";
 import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
 import ResetPassword from "./pages/ResetPassword";
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="constellation" element={<DashboardConstellation />} />
             <Route path="exchange" element={<DashboardExchange />} />
             <Route path="editing" element={<DashboardEditing />} />
+            <Route path="mode/:mode" element={<DashboardComingOnline />} />
           </Route>
           <Route path="/nexus" element={<Nexus />} />
           <Route path="/architect-dashboard" element={<ArchitectDashboard />} />
