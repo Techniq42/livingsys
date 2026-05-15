@@ -25,6 +25,7 @@ export function AuthPage() {
 
   // Mount/unmount the forgot-password Turnstile widget when toggling modes
   useEffect(() => {
+    if (!CAPTCHA_REQUIRED) return;
     let cancelled = false;
     if (forgotMode && forgotTurnstileRef.current) {
       renderTurnstile({
