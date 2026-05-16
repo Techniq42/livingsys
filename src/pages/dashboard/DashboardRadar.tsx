@@ -103,6 +103,9 @@ export default function DashboardRadar() {
     return true;
   });
 
+  const newThreads = filteredThreads.filter((t) => t.status === 'new');
+  const movementThreads = filteredThreads.filter((t) => t.status !== 'new');
+
   const statusCounts = threads.reduce((acc, t) => {
     acc[t.status] = (acc[t.status] || 0) + 1;
     return acc;
