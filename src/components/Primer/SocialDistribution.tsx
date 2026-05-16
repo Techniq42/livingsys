@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
 
 const platforms = [
-  { name: 'Instagram', status: 'queued' },
-  { name: 'Pinterest', status: 'sent' },
+  { name: 'Bluesky', status: 'confirmed' },
   { name: 'Reddit', status: 'confirmed' },
+  { name: 'Instagram', status: 'queued' },
+  { name: 'Pinterest', status: 'queued' },
   { name: 'YouTube', status: 'queued' },
-  { name: 'LinkedIn', status: 'failed' },
+  { name: 'LinkedIn', status: 'queued' },
 ];
 
 const statusLabel: Record<string, { text: string; color: string }> = {
