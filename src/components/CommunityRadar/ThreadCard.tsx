@@ -1,4 +1,4 @@
-import { ExternalLink, MessageSquare, Archive, Flag, Eye, Clock, ThumbsUp, ThumbsDown, Info, RefreshCw } from 'lucide-react';
+import { ExternalLink, MessageSquare, Archive, Flag, Eye, Clock, ThumbsUp, ThumbsDown, Info, RefreshCw, Sparkles, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -71,7 +71,11 @@ function timeAgo(dateStr: string): string {
 export function ThreadCard({ thread, operatorId, onStatusChange, onNotesChange, onSelectTemplate, onDraftReframe }: ThreadCardProps) {
   const [showNotes, setShowNotes] = useState(false);
   const [showWhy, setShowWhy] = useState(false);
+  const [showGemmaNote, setShowGemmaNote] = useState(false);
   const [localNotes, setLocalNotes] = useState(thread.notes || '');
+  const [gemmaNote, setGemmaNote] = useState('');
+  const [wrongCategory, setWrongCategory] = useState(false);
+  const [gemmaSent, setGemmaSent] = useState(false);
   const [feedbackSent, setFeedbackSent] = useState<'up' | 'down' | null>(null);
 
   const source: SourcePlatform = (thread.source_platform as SourcePlatform) || 'other';
@@ -90,6 +94,28 @@ export function ThreadCard({ thread, operatorId, onStatusChange, onNotesChange, 
       signal_type: signal,
       substrate_topic: reason.substrate_topic || null,
     });
+  }
+
+  async function sendGemmaNote() {
+    if (!operatorId || (!gemmaNote.trim() && !wrongCategory)) return;
+    const noteBody = [
+      wrongCategory ? '[right idea, wrong category]' : null,
+      gemmaNote.trim() || null,
+    ].filter(Boolean).join(' ');
+    await (supabase as any).from('feedback_signals').insert({
+      thread_id: thread.id,
+      operator_id: operatorId,
+      signal_type: 'calibration_note',
+      substrate_topic: reason.substrate_topic || null,
+      note: noteBody,
+    });
+    setGemmaSent(true);
+    setTimeout(() => {
+      setShowGemmaNote(false);
+      setGemmaNote('');
+      setWrongCategory(false);
+      setGemmaSent(false);
+    }, 1200);
   }
 
   return (
