@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
 
 const platforms = [
-  { name: 'Instagram', status: 'queued' },
-  { name: 'Pinterest', status: 'sent' },
+  { name: 'Bluesky', status: 'confirmed' },
   { name: 'Reddit', status: 'confirmed' },
+  { name: 'Instagram', status: 'queued' },
+  { name: 'Pinterest', status: 'queued' },
   { name: 'YouTube', status: 'queued' },
-  { name: 'LinkedIn', status: 'failed' },
+  { name: 'LinkedIn', status: 'queued' },
 ];
 
 const statusLabel: Record<string, { text: string; color: string }> = {
@@ -18,7 +19,8 @@ const statusLabel: Record<string, { text: string; color: string }> = {
 export function SocialDistribution() {
   return (
     <section className="space-y-3">
-      <h2 className="text-lg font-display font-semibold text-foreground">Distribution Status</h2>
+      <h2 className="text-lg font-display font-semibold text-foreground">Outreach Channels</h2>
+      <p className="text-xs text-muted-foreground italic">Where the signal is being sent. Bluesky and Reddit are live; the rest are queued for activation.</p>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
         {platforms.map((p, i) => {
           const cfg = statusLabel[p.status] || statusLabel.queued;

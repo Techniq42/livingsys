@@ -197,6 +197,13 @@ function NexusInner({ user, role }: { user: User; role: string }) {
           </div>
           <span className="hidden md:inline">{user.email}</span>
           <span className="px-2 py-0.5 rounded border border-coral/40 text-coral text-[10px] uppercase tracking-wider">{role}</span>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="hover:text-foreground inline-flex items-center gap-1 px-2 py-0.5 border border-border rounded text-[10px] uppercase tracking-wider"
+            title="Back to The Hearth"
+          >
+            ← Hearth
+          </button>
           <button onClick={handleSignOut} className="hover:text-foreground inline-flex items-center gap-1">
             <LogOut className="w-3 h-3" /> Sign out
           </button>

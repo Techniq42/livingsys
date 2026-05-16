@@ -106,24 +106,37 @@ export function AutoResponseConfigEditor({ isArchitect }: AutoResponseConfigEdit
         <CardTitle className="text-sm font-display">Auto-Response Configuration</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Tier rules */}
+        {/* Tier rules — mutually exclusive policy */}
         <div className="space-y-3">
-          <Label className="text-xs text-muted-foreground font-medium">Tier Rules</Label>
+          <Label className="text-xs text-muted-foreground font-medium">Default Tier Policy (pick one)</Label>
+          <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+            Sets the baseline for how Gemma handles a new draft. Per-thread overrides still apply.
+          </p>
           <div className="space-y-2">
             {([
-              ['tier1_auto_post', 'T1: Auto-post without review'],
-              ['tier2_requires_review', 'T2: Require manual review'],
-              ['tier3_always_block', 'T3: Always block'],
-            ] as [keyof AutoPostConfig, string][]).map(([key, label]) => (
-              <div key={key} className="flex items-center gap-2">
-                <Checkbox
-                  id={key}
+              ['tier1_auto_post', 'T1 — Auto-post without review', 'Trust Gemma. Use only when the room is well-calibrated.'],
+              ['tier2_requires_review', 'T2 — Require manual review', 'Gemma drafts, you approve. Recommended default.'],
+              ['tier3_always_block', 'T3 — Always block', 'Surface drafts only; never let anything post automatically.'],
+            ] as [keyof AutoPostConfig, string, string][]).map(([key, label, hint]) => (
+              <label key={key} className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="tier_policy"
                   checked={config[key] as boolean}
-                  onCheckedChange={(checked) => setConfig(prev => ({ ...prev, [key]: !!checked }))}
+                  onChange={() => setConfig(prev => ({
+                    ...prev,
+                    tier1_auto_post: key === 'tier1_auto_post',
+                    tier2_requires_review: key === 'tier2_requires_review',
+                    tier3_always_block: key === 'tier3_always_block',
+                  }))}
                   disabled={disabled}
+                  className="mt-0.5 accent-primary"
                 />
-                <Label htmlFor={key} className="text-xs">{label}</Label>
-              </div>
+                <div>
+                  <div className="text-xs">{label}</div>
+                  <div className="text-[10px] text-muted-foreground">{hint}</div>
+                </div>
+              </label>
             ))}
           </div>
         </div>
@@ -157,8 +170,11 @@ export function AutoResponseConfigEditor({ isArchitect }: AutoResponseConfigEdit
               onCheckedChange={(checked) => setConfig(prev => ({ ...prev, require_keyword_match: !!checked }))}
               disabled={disabled}
             />
-            <Label htmlFor="require_keyword_match" className="text-xs">Require keyword match</Label>
+            <Label htmlFor="require_keyword_match" className="text-xs">Require keyword match (narrow gate)</Label>
           </div>
+          <p className="text-[10px] text-muted-foreground/70 leading-relaxed -mt-1">
+            When on, a thread must hit a saved keyword before Gemma is even allowed to draft. Leave <strong>off</strong> to let Gemma's semantic read decide — recommended once the room is calibrated. Keywords are a coarse trip-wire, not a substitute for AI judgment.
+          </p>
         </div>
 
         {/* Disallowed topics */}
@@ -194,7 +210,10 @@ export function AutoResponseConfigEditor({ isArchitect }: AutoResponseConfigEdit
 
         {/* Disallowed patterns */}
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground font-medium">Disallowed Patterns</Label>
+          <Label className="text-xs text-muted-foreground font-medium">Disallowed Patterns <span className="text-[9px] font-normal opacity-60">(advanced — regex)</span></Label>
+          <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+            Regex = a tiny text-matching language for catching <em>shapes</em> of phrasing rather than exact words (e.g. <code className="text-[9px]">buy.*now</code> catches "buy now", "buy it right now", "buy this now"). Skip unless you know what you're typing — disallowed topics above are usually enough.
+          </p>
           <div className="flex flex-wrap gap-1.5 mb-2">
             {config.disallowed_patterns.map((p, i) => (
               <Badge key={i} variant="outline" className="text-[10px] px-2 py-0.5 font-mono gap-1">
