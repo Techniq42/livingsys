@@ -1,4 +1,4 @@
-import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil, Network } from 'lucide-react';
+import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil, Network, BookOpen } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +11,7 @@ interface DashboardSidebarProps {
 const topNavItems = [
   { to: '/dashboard', label: 'The Room', icon: Home, end: true },
   { to: '/nexus', label: 'Nexus', icon: Network, end: false },
+  { to: '/dashboard/canon', label: 'Canon Registry', icon: BookOpen, end: false },
 ];
 
 const exchangeItems = [

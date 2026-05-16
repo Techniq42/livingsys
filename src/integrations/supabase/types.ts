@@ -92,6 +92,54 @@ export type Database = {
         }
         Relationships: []
       }
+      canon_pages: {
+        Row: {
+          audience: string | null
+          created_at: string
+          id: string
+          methodology_tags: string[] | null
+          navigation_notes: string | null
+          slug: string
+          sort_order: number
+          status: string
+          substrate_topics: string[] | null
+          summary: string | null
+          title: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          audience?: string | null
+          created_at?: string
+          id?: string
+          methodology_tags?: string[] | null
+          navigation_notes?: string | null
+          slug: string
+          sort_order?: number
+          status?: string
+          substrate_topics?: string[] | null
+          summary?: string | null
+          title: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          audience?: string | null
+          created_at?: string
+          id?: string
+          methodology_tags?: string[] | null
+          navigation_notes?: string | null
+          slug?: string
+          sort_order?: number
+          status?: string
+          substrate_topics?: string[] | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       codex_conversations: {
         Row: {
           content: string
