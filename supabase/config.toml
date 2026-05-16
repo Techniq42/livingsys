@@ -1,4 +1,13 @@
 project_id = "spoiizdwriqfspehbcwp"
 
+[functions.n8n-webhook]
+verify_jwt = false
+
+[functions.bluesky-ingest]
+verify_jwt = false
+
 [functions.submit-optin]
+verify_jwt = false
+
+[functions.r]
 verify_jwt = false
