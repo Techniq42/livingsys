@@ -170,7 +170,10 @@ export function AutoResponseConfigEditor({ isArchitect }: AutoResponseConfigEdit
               onCheckedChange={(checked) => setConfig(prev => ({ ...prev, require_keyword_match: !!checked }))}
               disabled={disabled}
             />
-            <Label htmlFor="require_keyword_match" className="text-xs">Require keyword match</Label>
+            <Label htmlFor="require_keyword_match" className="text-xs">Require keyword match (narrow gate)</Label>
+          </div>
+          <p className="text-[10px] text-muted-foreground/70 leading-relaxed -mt-1">
+            When on, a thread must hit a saved keyword before Gemma is even allowed to draft. Leave <strong>off</strong> to let Gemma's semantic read decide — recommended once the room is calibrated. Keywords are a coarse trip-wire, not a substitute for AI judgment.
           </div>
         </div>
 
