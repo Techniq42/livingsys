@@ -146,6 +146,35 @@ serve(async (req) => {
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
+    // === LOAD CANON REGISTRY AS SUBSTRATE CONTEXT ===
+    // The canon_pages table is the source-of-truth catalog of canonical web pages.
+    // Architects edit navigation_notes per page; we inject those notes so the model
+    // knows when to recommend each door. No fetching — registry IS the skill.
+    let canonContext = "";
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL");
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+      if (supabaseUrl && serviceKey) {
+        const canonRes = await fetch(
+          `${supabaseUrl}/rest/v1/canon_pages?status=eq.active&select=title,url,audience,methodology_tags,summary,navigation_notes&order=sort_order.asc`,
+          { headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` } }
+        );
+        if (canonRes.ok) {
+          const pages = await canonRes.json();
+          if (Array.isArray(pages) && pages.length > 0) {
+            canonContext = "\n\n=== CANON PAGE REGISTRY (source-of-truth doors) ===\n" +
+              "When a user's question maps to one of these audiences or topics, recommend the matching URL. " +
+              "Use the navigation notes to decide IF and HOW to recommend each door.\n\n" +
+              pages.map((p: { title: string; url: string; audience: string | null; methodology_tags: string[] | null; summary: string | null; navigation_notes: string | null }) =>
+                `## ${p.title}\nURL: ${p.url}\nAudience: ${p.audience || "—"}\nMethodology: ${(p.methodology_tags || []).join(", ") || "—"}\nSummary: ${p.summary || "—"}\nNavigation notes: ${p.navigation_notes || "—"}`
+              ).join("\n\n");
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("canon registry fetch failed (non-fatal):", err);
+    }
+
     // Convert messages to Gemini format
     const geminiContents = recentMessages
       .filter((m: { role: string }) => m.role !== "system")
