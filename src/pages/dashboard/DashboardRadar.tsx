@@ -121,6 +121,7 @@ export default function DashboardRadar() {
           <div className="lg:w-auto space-y-3">
             <AutoResponseKillSwitch isArchitect={isArchitect} />
             <SourceKillSwitches isArchitect={isArchitect} />
+            <BadActorVisibilityToggle isArchitect={isArchitect} />
           </div>
         )}
       </div>
