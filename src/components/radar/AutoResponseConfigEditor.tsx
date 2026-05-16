@@ -106,24 +106,37 @@ export function AutoResponseConfigEditor({ isArchitect }: AutoResponseConfigEdit
         <CardTitle className="text-sm font-display">Auto-Response Configuration</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Tier rules */}
+        {/* Tier rules — mutually exclusive policy */}
         <div className="space-y-3">
-          <Label className="text-xs text-muted-foreground font-medium">Tier Rules</Label>
+          <Label className="text-xs text-muted-foreground font-medium">Default Tier Policy (pick one)</Label>
+          <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+            Sets the baseline for how Gemma handles a new draft. Per-thread overrides still apply.
+          </p>
           <div className="space-y-2">
             {([
-              ['tier1_auto_post', 'T1: Auto-post without review'],
-              ['tier2_requires_review', 'T2: Require manual review'],
-              ['tier3_always_block', 'T3: Always block'],
-            ] as [keyof AutoPostConfig, string][]).map(([key, label]) => (
-              <div key={key} className="flex items-center gap-2">
-                <Checkbox
-                  id={key}
+              ['tier1_auto_post', 'T1 — Auto-post without review', 'Trust Gemma. Use only when the room is well-calibrated.'],
+              ['tier2_requires_review', 'T2 — Require manual review', 'Gemma drafts, you approve. Recommended default.'],
+              ['tier3_always_block', 'T3 — Always block', 'Surface drafts only; never let anything post automatically.'],
+            ] as [keyof AutoPostConfig, string, string][]).map(([key, label, hint]) => (
+              <label key={key} className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="tier_policy"
                   checked={config[key] as boolean}
-                  onCheckedChange={(checked) => setConfig(prev => ({ ...prev, [key]: !!checked }))}
+                  onChange={() => setConfig(prev => ({
+                    ...prev,
+                    tier1_auto_post: key === 'tier1_auto_post',
+                    tier2_requires_review: key === 'tier2_requires_review',
+                    tier3_always_block: key === 'tier3_always_block',
+                  }))}
                   disabled={disabled}
+                  className="mt-0.5 accent-primary"
                 />
-                <Label htmlFor={key} className="text-xs">{label}</Label>
-              </div>
+                <div>
+                  <div className="text-xs">{label}</div>
+                  <div className="text-[10px] text-muted-foreground">{hint}</div>
+                </div>
+              </label>
             ))}
           </div>
         </div>
