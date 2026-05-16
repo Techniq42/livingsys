@@ -16,10 +16,10 @@ export default function DashboardHome() {
     <div className="p-6 md:p-8 space-y-8">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold font-display text-foreground mb-1">
-          The Primer
+          The Hearth
         </h1>
         <p className="text-sm text-muted-foreground italic font-body">
-          Hey. Ria here. What are we building today?
+          Hey. Ria here. Warm yourself by the fire — what are we building today?
         </p>
       </div>
       <PortalHub />

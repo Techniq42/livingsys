@@ -11,8 +11,15 @@ import { SourceKillSwitches } from '@/components/radar/SourceKillSwitches';
 import { SubstrateFilterIndicator } from '@/components/radar/SubstrateFilterIndicator';
 import { BadActorVisibilityToggle } from '@/components/radar/BadActorVisibilityToggle';
 import { Button } from '@/components/ui/button';
-import { Radar, Filter, Settings2 } from 'lucide-react';
+import { Radar, Filter, Settings2, Sunrise, Sparkles } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
+import '@/styles/skins.css';
+
+// Which source slugs have a matching [data-skin] in skins.css
+const SKIN_FOR_SOURCE: Partial<Record<string, string>> = {
+  reddit: 'reddit',
+  bluesky: 'bluesky',
+};
 
 type FilterStatus = ThreadStatus | 'all';
 type FilterSource = SourcePlatform | 'all';
@@ -96,6 +103,9 @@ export default function DashboardRadar() {
     return true;
   });
 
+  const newThreads = filteredThreads.filter((t) => t.status === 'new');
+  const movementThreads = filteredThreads.filter((t) => t.status !== 'new');
+
   const statusCounts = threads.reduce((acc, t) => {
     acc[t.status] = (acc[t.status] || 0) + 1;
     return acc;
@@ -145,8 +155,8 @@ export default function DashboardRadar() {
       </div>
 
       {activeTab === 'threads' && (
-        <>
-          {/* Source filter chips */}
+        <div data-skin={SKIN_FOR_SOURCE[filterSource] || undefined}>
+          {/* Source filter chips — also swap the room skin when a platform is selected */}
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-display mr-1">Source</span>
             {sourceFilters.map((s) => (
@@ -156,6 +166,7 @@ export default function DashboardRadar() {
                 variant={filterSource === s ? 'default' : 'outline'}
                 className="h-7 text-xs px-3"
                 onClick={() => setFilterSource(s)}
+                title={SKIN_FOR_SOURCE[s] ? `Switch room skin → ${SOURCE_LABELS[s]}` : undefined}
               >
                 {SOURCE_LABELS[s]}
                 {s === 'all' ? ` (${threads.length})` : sourceCounts[s] ? ` (${sourceCounts[s]})` : ''}
@@ -181,19 +192,70 @@ export default function DashboardRadar() {
             ))}
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredThreads.map((thread) => (
-              <ThreadCard
-                key={thread.id}
-                thread={thread}
-                operatorId={user?.id}
-                onStatusChange={handleStatusChange}
-                onNotesChange={handleNotesChange}
-                onSelectTemplate={(t) => setSelectedThread(t)}
-                onDraftReframe={handleDraftReframe}
-              />
-            ))}
+          {/* Overnight summary — Gemma briefing stub */}
+          <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Sunrise className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-display font-semibold text-foreground">Since you were last here</h3>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-display ml-auto">Gemma briefing · coming online</span>
+            </div>
+            <p className="text-xs text-muted-foreground italic font-body leading-relaxed">
+              {newThreads.length > 0
+                ? `${newThreads.length} new thread${newThreads.length === 1 ? '' : 's'} surfaced. ${movementThreads.length > 0 ? `${movementThreads.length} with movement worth a second look.` : ''}`
+                : 'Nothing new overnight. The radar is quiet.'}
+            </p>
+            <p className="text-[10px] text-muted-foreground/50 mt-2">
+              Pattern read coming next: "this one looks promising · this petered out · someone watching #3 dropped something intriguing."
+            </p>
           </div>
+
+          {/* Section: New */}
+          {newThreads.length > 0 && (
+            <section className="mb-8">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+                <h2 className="text-xs uppercase tracking-[0.2em] font-display text-emerald-300/80">New</h2>
+                <span className="text-[10px] text-muted-foreground">{newThreads.length}</span>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {newThreads.map((thread) => (
+                  <ThreadCard
+                    key={thread.id}
+                    thread={thread}
+                    operatorId={user?.id}
+                    onStatusChange={handleStatusChange}
+                    onNotesChange={handleNotesChange}
+                    onSelectTemplate={(t) => setSelectedThread(t)}
+                    onDraftReframe={handleDraftReframe}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Section: Movement */}
+          {movementThreads.length > 0 && (
+            <section className="mb-8">
+              <div className="flex items-center gap-2 mb-3">
+                <Radar className="h-3.5 w-3.5 text-primary" />
+                <h2 className="text-xs uppercase tracking-[0.2em] font-display text-primary/80">Threads with movement</h2>
+                <span className="text-[10px] text-muted-foreground">{movementThreads.length}</span>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {movementThreads.map((thread) => (
+                  <ThreadCard
+                    key={thread.id}
+                    thread={thread}
+                    operatorId={user?.id}
+                    onStatusChange={handleStatusChange}
+                    onNotesChange={handleNotesChange}
+                    onSelectTemplate={(t) => setSelectedThread(t)}
+                    onDraftReframe={handleDraftReframe}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
           {filteredThreads.length === 0 && (
             <div className="text-center py-16">
@@ -206,7 +268,7 @@ export default function DashboardRadar() {
               </p>
             </div>
           )}
-        </>
+        </div>
       )}
 
       {activeTab === 'drafts' && (

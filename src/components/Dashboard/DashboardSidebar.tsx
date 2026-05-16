@@ -9,7 +9,7 @@ interface DashboardSidebarProps {
 }
 
 const topNavItems = [
-  { to: '/dashboard', label: 'The Room', icon: Home, end: true },
+  { to: '/dashboard', label: 'The Hearth', icon: Home, end: true },
   { to: '/nexus', label: 'Nexus', icon: Network, end: false },
   { to: '/dashboard/canon', label: 'Canon Registry', icon: BookOpen, end: false },
 ];
@@ -53,7 +53,7 @@ export function DashboardSidebar({ email, role }: DashboardSidebarProps) {
     <aside className="w-64 border-r border-border bg-card flex flex-col h-full">
       <div className="p-6 border-b border-border">
         <p className="text-xs tracking-[0.25em] uppercase text-muted-foreground font-display mb-1">
-          The Primer
+          The Hearth
         </p>
         <p className="text-foreground font-display text-sm">Sovereign OS</p>
       </div>

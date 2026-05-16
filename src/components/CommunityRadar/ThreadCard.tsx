@@ -1,4 +1,4 @@
-import { ExternalLink, MessageSquare, Archive, Flag, Eye, Clock, ThumbsUp, ThumbsDown, Info, RefreshCw } from 'lucide-react';
+import { ExternalLink, MessageSquare, Archive, Flag, Eye, Clock, ThumbsUp, ThumbsDown, Info, RefreshCw, Sparkles, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -71,7 +71,11 @@ function timeAgo(dateStr: string): string {
 export function ThreadCard({ thread, operatorId, onStatusChange, onNotesChange, onSelectTemplate, onDraftReframe }: ThreadCardProps) {
   const [showNotes, setShowNotes] = useState(false);
   const [showWhy, setShowWhy] = useState(false);
+  const [showGemmaNote, setShowGemmaNote] = useState(false);
   const [localNotes, setLocalNotes] = useState(thread.notes || '');
+  const [gemmaNote, setGemmaNote] = useState('');
+  const [wrongCategory, setWrongCategory] = useState(false);
+  const [gemmaSent, setGemmaSent] = useState(false);
   const [feedbackSent, setFeedbackSent] = useState<'up' | 'down' | null>(null);
 
   const source: SourcePlatform = (thread.source_platform as SourcePlatform) || 'other';
@@ -90,6 +94,28 @@ export function ThreadCard({ thread, operatorId, onStatusChange, onNotesChange, 
       signal_type: signal,
       substrate_topic: reason.substrate_topic || null,
     });
+  }
+
+  async function sendGemmaNote() {
+    if (!operatorId || (!gemmaNote.trim() && !wrongCategory)) return;
+    const noteBody = [
+      wrongCategory ? '[right idea, wrong category]' : null,
+      gemmaNote.trim() || null,
+    ].filter(Boolean).join(' ');
+    await (supabase as any).from('feedback_signals').insert({
+      thread_id: thread.id,
+      operator_id: operatorId,
+      signal_type: 'calibration_note',
+      substrate_topic: reason.substrate_topic || null,
+      note: noteBody,
+    });
+    setGemmaSent(true);
+    setTimeout(() => {
+      setShowGemmaNote(false);
+      setGemmaNote('');
+      setWrongCategory(false);
+      setGemmaSent(false);
+    }, 1200);
   }
 
   return (
@@ -197,7 +223,18 @@ export function ThreadCard({ thread, operatorId, onStatusChange, onNotesChange, 
           </div>
         )}
 
-        <div className="flex items-center gap-1 flex-wrap">
+        {/* Primary action row: Visit + workflow */}
+        <div className="flex items-center gap-1 flex-wrap mb-1">
+          <Button
+            size="sm"
+            variant="default"
+            className="h-7 text-xs px-3"
+            asChild
+          >
+            <a href={thread.post_url} target="_blank" rel="noopener noreferrer" title="Open the source discussion in a new tab">
+              <ExternalLink className="h-3 w-3 mr-1" /> Visit discussion
+            </a>
+          </Button>
           {isReframe && onDraftReframe ? (
             <Button
               size="sm"
@@ -231,42 +268,93 @@ export function ThreadCard({ thread, operatorId, onStatusChange, onNotesChange, 
             onClick={() => onStatusChange(thread.id, 'archived')} title="Archive">
             <Archive className="h-3 w-3" />
           </Button>
-
-          {/* Thumbs */}
-          <div className="ml-auto flex items-center gap-1">
-            <Button
-              size="sm"
-              variant="ghost"
-              disabled={!operatorId || feedbackSent !== null}
-              className={`h-7 text-xs px-2 ${feedbackSent === 'up' ? 'text-emerald-300 bg-emerald-500/10' : 'hover:text-emerald-300'}`}
-              onClick={() => sendFeedback('up')}
-              title="Relevant — helps the substrate-meaning model learn"
-            >
-              <ThumbsUp className="h-3 w-3" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              disabled={!operatorId || feedbackSent !== null}
-              className={`h-7 text-xs px-2 ${feedbackSent === 'down' ? 'text-rose-300 bg-rose-500/10' : 'hover:text-rose-300'}`}
-              onClick={() => sendFeedback('down')}
-              title="Off-topic — corrects the keyword-match drift"
-            >
-              <ThumbsDown className="h-3 w-3" />
-            </Button>
-            <Button size="sm" variant="ghost" className="h-7 text-xs px-2"
-              onClick={() => setShowNotes(!showNotes)}>
-              Notes
-            </Button>
-          </div>
         </div>
+
+        {/* Secondary row: calibration signals */}
+        <div className="flex items-center gap-1 flex-wrap pt-1 border-t border-border/30">
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={!operatorId || feedbackSent !== null}
+            className={`h-7 text-xs px-2 ${feedbackSent === 'up' ? 'text-emerald-300 bg-emerald-500/10' : 'hover:text-emerald-300'}`}
+            onClick={() => sendFeedback('up')}
+            title="Relevant — helps Gemma learn what you want"
+          >
+            <ThumbsUp className="h-3 w-3" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={!operatorId || feedbackSent !== null}
+            className={`h-7 text-xs px-2 ${feedbackSent === 'down' ? 'text-rose-300 bg-rose-500/10' : 'hover:text-rose-300'}`}
+            onClick={() => sendFeedback('down')}
+            title="Off-topic — corrects keyword-match drift"
+          >
+            <ThumbsDown className="h-3 w-3" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className={`h-7 text-xs px-2 ${showGemmaNote ? 'text-primary bg-primary/10' : 'hover:text-primary'}`}
+            onClick={() => setShowGemmaNote(!showGemmaNote)}
+            title="Send a calibration note to Gemma about this surfacing"
+          >
+            <Sparkles className="h-3 w-3 mr-1" /> Note for Gemma
+          </Button>
+          <Button size="sm" variant="ghost" className="h-7 text-xs px-2 ml-auto"
+            onClick={() => setShowNotes(!showNotes)}
+            title="Private notes on this thread (architect-only)">
+            Notes
+          </Button>
+        </div>
+
+        {showGemmaNote && (
+          <div className="mt-2 p-2 rounded border border-primary/20 bg-primary/5 space-y-2">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-display">
+              Calibration for Gemma · trains future surfacings
+            </p>
+            <Textarea
+              value={gemmaNote}
+              onChange={(e) => setGemmaNote(e.target.value)}
+              placeholder="What's off about this surfacing? Or what should I see more of?"
+              className="text-xs h-16 bg-background/50"
+              disabled={gemmaSent}
+            />
+            <div className="flex items-center justify-between gap-2">
+              <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={wrongCategory}
+                  onChange={(e) => setWrongCategory(e.target.checked)}
+                  className="h-3 w-3 accent-primary"
+                  disabled={gemmaSent}
+                />
+                right idea, wrong category
+              </label>
+              <Button
+                size="sm"
+                variant="default"
+                className="h-6 text-[11px] px-2"
+                disabled={gemmaSent || (!gemmaNote.trim() && !wrongCategory)}
+                onClick={sendGemmaNote}
+              >
+                {gemmaSent ? (
+                  <><Check className="h-3 w-3 mr-1" /> sent</>
+                ) : (
+                  'Send to Gemma'
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {showNotes && (
           <div className="mt-2">
             <Textarea
               value={localNotes}
               onChange={(e) => setLocalNotes(e.target.value)}
               onBlur={() => onNotesChange(thread.id, localNotes)}
-              placeholder="Add notes about this thread..."
+              placeholder="Private notes on this thread..."
               className="text-xs h-16 bg-background/50"
             />
           </div>
