@@ -17,6 +17,14 @@ export function HeroFork({ onSelectPath }: HeroForkProps) {
         Fellowship of Living Systems
       </a>
 
+      {/* Returning-operator bypass — skip the funnel, go straight to login */}
+      <a
+        href="/architect-login"
+        className="absolute top-8 right-6 md:right-12 lg:right-16 text-xs tracking-[0.25em] uppercase text-foreground/60 font-display hover:text-primary transition-colors z-10 border border-border/60 hover:border-primary/60 rounded-sm px-3 py-2"
+      >
+        Log in →
+      </a>
+
       <div className="min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-16 pt-20 pb-12">
         <div className="grid lg:grid-cols-[1fr_400px] gap-12 items-center mb-12">
           {/* Top: Pre-headline + Headline */}
