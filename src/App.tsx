@@ -21,6 +21,7 @@ import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
 import ResetPassword from "./pages/ResetPassword";
 import Nexus from "./pages/Nexus";
+import Canon from "./pages/Canon";
 
 import NotFound from "./pages/NotFound";
 
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="mode/:mode" element={<DashboardComingOnline />} />
           </Route>
           <Route path="/nexus" element={<Nexus />} />
+          <Route path="/canon" element={<Canon />} />
           <Route path="/architect-dashboard" element={<ArchitectDashboard />} />
           <Route path="/architect-login" element={<ArchitectLogin />} />
           <Route path="/auth/reset-password" element={<ResetPassword />} />
