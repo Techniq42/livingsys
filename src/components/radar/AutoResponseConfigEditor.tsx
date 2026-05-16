@@ -176,7 +176,6 @@ export function AutoResponseConfigEditor({ isArchitect }: AutoResponseConfigEdit
             When on, a thread must hit a saved keyword before Gemma is even allowed to draft. Leave <strong>off</strong> to let Gemma's semantic read decide — recommended once the room is calibrated. Keywords are a coarse trip-wire, not a substitute for AI judgment.
           </p>
         </div>
-        </div>
 
         {/* Disallowed topics */}
         <div className="space-y-2">
