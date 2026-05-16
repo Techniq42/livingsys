@@ -11,8 +11,15 @@ import { SourceKillSwitches } from '@/components/radar/SourceKillSwitches';
 import { SubstrateFilterIndicator } from '@/components/radar/SubstrateFilterIndicator';
 import { BadActorVisibilityToggle } from '@/components/radar/BadActorVisibilityToggle';
 import { Button } from '@/components/ui/button';
-import { Radar, Filter, Settings2 } from 'lucide-react';
+import { Radar, Filter, Settings2, Sunrise, Sparkles } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
+import '@/styles/skins.css';
+
+// Which source slugs have a matching [data-skin] in skins.css
+const SKIN_FOR_SOURCE: Partial<Record<string, string>> = {
+  reddit: 'reddit',
+  bluesky: 'bluesky',
+};
 
 type FilterStatus = ThreadStatus | 'all';
 type FilterSource = SourcePlatform | 'all';
