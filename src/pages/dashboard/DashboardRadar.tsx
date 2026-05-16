@@ -9,6 +9,7 @@ import { AutoResponseConfigEditor } from '@/components/radar/AutoResponseConfigE
 import { ShadowLogDrawer } from '@/components/radar/ShadowLogDrawer';
 import { SourceKillSwitches } from '@/components/radar/SourceKillSwitches';
 import { SubstrateFilterIndicator } from '@/components/radar/SubstrateFilterIndicator';
+import { BadActorVisibilityToggle } from '@/components/radar/BadActorVisibilityToggle';
 import { Button } from '@/components/ui/button';
 import { Radar, Filter, Settings2 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
@@ -120,6 +121,7 @@ export default function DashboardRadar() {
           <div className="lg:w-auto space-y-3">
             <AutoResponseKillSwitch isArchitect={isArchitect} />
             <SourceKillSwitches isArchitect={isArchitect} />
+            <BadActorVisibilityToggle isArchitect={isArchitect} />
           </div>
         )}
       </div>
