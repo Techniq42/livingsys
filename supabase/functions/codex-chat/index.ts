@@ -191,7 +191,7 @@ serve(async (req) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           system_instruction: {
-            parts: [{ text: SYSTEM_PROMPT }],
+            parts: [{ text: SYSTEM_PROMPT + canonContext }],
           },
           contents: geminiContents,
           tools: [
