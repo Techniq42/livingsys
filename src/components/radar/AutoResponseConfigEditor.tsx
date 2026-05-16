@@ -210,7 +210,10 @@ export function AutoResponseConfigEditor({ isArchitect }: AutoResponseConfigEdit
 
         {/* Disallowed patterns */}
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground font-medium">Disallowed Patterns</Label>
+          <Label className="text-xs text-muted-foreground font-medium">Disallowed Patterns <span className="text-[9px] font-normal opacity-60">(advanced — regex)</span></Label>
+          <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+            Regex = a tiny text-matching language for catching <em>shapes</em> of phrasing rather than exact words (e.g. <code className="text-[9px]">buy.*now</code> catches "buy now", "buy it right now", "buy this now"). Skip unless you know what you're typing — disallowed topics above are usually enough.
+          </p>
           <div className="flex flex-wrap gap-1.5 mb-2">
             {config.disallowed_patterns.map((p, i) => (
               <Badge key={i} variant="outline" className="text-[10px] px-2 py-0.5 font-mono gap-1">
