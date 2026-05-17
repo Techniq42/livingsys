@@ -420,6 +420,45 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_briefings: {
+        Row: {
+          briefing_date: string
+          confidence: number | null
+          created_at: string
+          generated_by: string | null
+          highlights: Json
+          id: string
+          mode: string
+          recommended_action: string | null
+          source_thread_ids: string[] | null
+          summary: string
+        }
+        Insert: {
+          briefing_date?: string
+          confidence?: number | null
+          created_at?: string
+          generated_by?: string | null
+          highlights?: Json
+          id?: string
+          mode: string
+          recommended_action?: string | null
+          source_thread_ids?: string[] | null
+          summary: string
+        }
+        Update: {
+          briefing_date?: string
+          confidence?: number | null
+          created_at?: string
+          generated_by?: string | null
+          highlights?: Json
+          id?: string
+          mode?: string
+          recommended_action?: string | null
+          source_thread_ids?: string[] | null
+          summary?: string
+        }
+        Relationships: []
+      }
       email_triage_items: {
         Row: {
           draft_body: string | null
