@@ -23,6 +23,7 @@ export default function DashboardHome() {
           Hey. Ria here. Warm yourself by the fire — what are we building today?
         </p>
       </div>
+      <HearthBriefingStrip />
       <PortalHub />
       <SocialDistribution />
       <CoordinationHealth />
