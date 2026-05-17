@@ -2,6 +2,7 @@ import { useOutletContext } from 'react-router-dom';
 import { PortalHub } from '@/components/Primer/PortalHub';
 import { SocialDistribution } from '@/components/Primer/SocialDistribution';
 import { CoordinationHealth } from '@/components/Primer/CoordinationHealth';
+import { HearthBriefingStrip } from '@/components/Primer/HearthBriefingStrip';
 import type { User } from '@supabase/supabase-js';
 
 interface DashboardContext {
