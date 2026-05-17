@@ -2,6 +2,7 @@ import { useOutletContext } from 'react-router-dom';
 import { PortalHub } from '@/components/Primer/PortalHub';
 import { SocialDistribution } from '@/components/Primer/SocialDistribution';
 import { CoordinationHealth } from '@/components/Primer/CoordinationHealth';
+import { HearthBriefingStrip } from '@/components/Primer/HearthBriefingStrip';
 import type { User } from '@supabase/supabase-js';
 
 interface DashboardContext {
@@ -22,6 +23,7 @@ export default function DashboardHome() {
           Hey. Ria here. Warm yourself by the fire — what are we building today?
         </p>
       </div>
+      <HearthBriefingStrip />
       <PortalHub />
       <SocialDistribution />
       <CoordinationHealth />

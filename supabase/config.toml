@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.r]
 verify_jwt = false
+
+[functions.gemma-brief]
+verify_jwt = false
