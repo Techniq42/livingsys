@@ -99,15 +99,15 @@ Deno.serve(async (req: Request) => {
   // Pull recent context (last 24h)
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const [{ data: threads }, { data: drafts }, { data: signals }] = await Promise.all([
-    supabase.from("community_threads").select("id,title,source_platform,status,relevance_score,created_at").gte("created_at", since).limit(50),
-    supabase.from("response_drafts").select("id,thread_id,status,confidence,created_at").gte("created_at", since).limit(50),
+    supabase.from("community_threads").select("id,post_title,source_platform,status,relevance_score,created_at").gte("created_at", since).limit(50),
+    supabase.from("response_drafts").select("id,thread_id,status,classifier_tier,created_at").gte("created_at", since).limit(50),
     supabase.from("feedback_signals").select("signal_type,note,created_at").gte("created_at", since).limit(50),
   ]);
 
   const contexts: Record<Mode, string> = {
-    listen: `Recent threads (${threads?.length ?? 0}):\n${(threads ?? []).map((t: any) => `- [${t.source_platform}] ${t.title} (status:${t.status}, score:${t.relevance_score})`).join("\n")}\n\nOperator feedback signals:\n${(signals ?? []).map((s: any) => `- ${s.signal_type}: ${s.note ?? ""}`).join("\n")}`,
-    engage: `Pending response drafts (${drafts?.length ?? 0}):\n${(drafts ?? []).map((d: any) => `- draft ${d.id} status:${d.status} confidence:${d.confidence ?? "n/a"}`).join("\n")}`,
-    seed: `Recent thread surface for outbound seeding opportunities:\n${(threads ?? []).slice(0, 20).map((t: any) => `- [${t.source_platform}] ${t.title}`).join("\n")}`,
+    listen: `Recent threads (${threads?.length ?? 0}):\n${(threads ?? []).map((t: any) => `- [${t.source_platform}] ${t.post_title} (status:${t.status}, score:${t.relevance_score})`).join("\n")}\n\nOperator feedback signals:\n${(signals ?? []).map((s: any) => `- ${s.signal_type}: ${s.note ?? ""}`).join("\n")}`,
+    engage: `Pending response drafts (${drafts?.length ?? 0}):\n${(drafts ?? []).map((d: any) => `- draft ${d.id} status:${d.status} tier:${d.classifier_tier ?? "n/a"}`).join("\n")}`,
+    seed: `Recent thread surface for outbound seeding opportunities:\n${(threads ?? []).slice(0, 20).map((t: any) => `- [${t.source_platform}] ${t.post_title}`).join("\n")}`,
   };
 
   const results: Record<string, unknown> = {};
