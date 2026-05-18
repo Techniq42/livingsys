@@ -799,6 +799,8 @@ export type Database = {
       local_events: {
         Row: {
           amplify: boolean
+          amplify_to: Json
+          audience_hint: string | null
           created_at: string
           description: string | null
           ends_at: string | null
@@ -806,6 +808,7 @@ export type Database = {
           host_person_id: string | null
           id: string
           lens_slug: string
+          region: string | null
           source_url: string | null
           starts_at: string | null
           status: string
@@ -816,6 +819,8 @@ export type Database = {
         }
         Insert: {
           amplify?: boolean
+          amplify_to?: Json
+          audience_hint?: string | null
           created_at?: string
           description?: string | null
           ends_at?: string | null
@@ -823,6 +828,7 @@ export type Database = {
           host_person_id?: string | null
           id?: string
           lens_slug: string
+          region?: string | null
           source_url?: string | null
           starts_at?: string | null
           status?: string
@@ -833,6 +839,8 @@ export type Database = {
         }
         Update: {
           amplify?: boolean
+          amplify_to?: Json
+          audience_hint?: string | null
           created_at?: string
           description?: string | null
           ends_at?: string | null
@@ -840,6 +848,7 @@ export type Database = {
           host_person_id?: string | null
           id?: string
           lens_slug?: string
+          region?: string | null
           source_url?: string | null
           starts_at?: string | null
           status?: string
@@ -1741,10 +1750,13 @@ export type Database = {
           host_person_id: string | null
           id: string
           is_active: boolean
+          latitude: number | null
           lens_slug: string
+          longitude: number | null
           name: string
           notes: string | null
           region: string | null
+          service_radius_miles: number | null
           website: string | null
         }
         Insert: {
@@ -1755,10 +1767,13 @@ export type Database = {
           host_person_id?: string | null
           id?: string
           is_active?: boolean
+          latitude?: number | null
           lens_slug: string
+          longitude?: number | null
           name: string
           notes?: string | null
           region?: string | null
+          service_radius_miles?: number | null
           website?: string | null
         }
         Update: {
@@ -1769,10 +1784,13 @@ export type Database = {
           host_person_id?: string | null
           id?: string
           is_active?: boolean
+          latitude?: number | null
           lens_slug?: string
+          longitude?: number | null
           name?: string
           notes?: string | null
           region?: string | null
+          service_radius_miles?: number | null
           website?: string | null
         }
         Relationships: [
