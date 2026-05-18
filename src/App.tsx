@@ -18,6 +18,7 @@ import DashboardEditing from "./pages/dashboard/DashboardEditing";
 import DashboardComingOnline from "./pages/dashboard/DashboardComingOnline";
 import DashboardCanon from "./pages/dashboard/DashboardCanon";
 import DashboardEvents from "./pages/dashboard/DashboardEvents";
+import DashboardSwitchboard from "./pages/dashboard/DashboardSwitchboard";
 import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
 import ResetPassword from "./pages/ResetPassword";
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="editing" element={<DashboardEditing />} />
             <Route path="canon" element={<DashboardCanon />} />
             <Route path="events" element={<DashboardEvents />} />
+            <Route path="switchboard" element={<DashboardSwitchboard />} />
             <Route path="mode/:mode" element={<DashboardComingOnline />} />
           </Route>
           <Route path="/nexus" element={<Nexus />} />

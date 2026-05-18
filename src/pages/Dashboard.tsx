@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AuthPage } from '@/components/Auth/AuthPage';
 import { DashboardSidebar } from '@/components/Dashboard/DashboardSidebar';
 import { RoomTopBar } from '@/components/Dashboard/RoomTopBar';
-import { CodexFloatingWidget } from '@/components/ArchitectDashboard/CodexFloatingWidget';
+import { GemmaDrawer } from '@/components/Gemma/GemmaDrawer';
 import { ReduceMotionProvider } from '@/hooks/use-reduce-motion';
 import { RoomProvider, useRoom } from '@/contexts/RoomContext';
 import type { User } from '@supabase/supabase-js';
@@ -40,7 +40,7 @@ function DashboardMain({ user, userRole }: { user: User; userRole: string }) {
           <Outlet context={{ user, userRole }} />
         </div>
       </main>
-      <CodexFloatingWidget />
+      <GemmaDrawer userId={user.id} userRole={userRole} />
     </div>
   );
 }

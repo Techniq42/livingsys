@@ -602,6 +602,95 @@ export type Database = {
         }
         Relationships: []
       }
+      gemma_feedback: {
+        Row: {
+          created_at: string
+          decision_id: string | null
+          id: string
+          message_excerpt: string | null
+          mode_slug: string | null
+          note: string | null
+          signal: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          decision_id?: string | null
+          id?: string
+          message_excerpt?: string | null
+          mode_slug?: string | null
+          note?: string | null
+          signal: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          decision_id?: string | null
+          id?: string
+          message_excerpt?: string | null
+          mode_slug?: string | null
+          note?: string | null
+          signal?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gemma_feedback_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "switchboard_decisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gemma_modes: {
+        Row: {
+          allowed_tools: string[]
+          created_at: string
+          default_lens: string | null
+          icon: string | null
+          id: string
+          is_enabled: boolean
+          label: string
+          slug: string
+          sort_order: number
+          system_prompt_addendum: string
+          tagline: string | null
+          updated_at: string
+          voice_register: string | null
+        }
+        Insert: {
+          allowed_tools?: string[]
+          created_at?: string
+          default_lens?: string | null
+          icon?: string | null
+          id?: string
+          is_enabled?: boolean
+          label: string
+          slug: string
+          sort_order?: number
+          system_prompt_addendum: string
+          tagline?: string | null
+          updated_at?: string
+          voice_register?: string | null
+        }
+        Update: {
+          allowed_tools?: string[]
+          created_at?: string
+          default_lens?: string | null
+          icon?: string | null
+          id?: string
+          is_enabled?: boolean
+          label?: string
+          slug?: string
+          sort_order?: number
+          system_prompt_addendum?: string
+          tagline?: string | null
+          updated_at?: string
+          voice_register?: string | null
+        }
+        Relationships: []
+      }
       guild_members: {
         Row: {
           id: string
@@ -1499,6 +1588,48 @@ export type Database = {
         }
         Relationships: []
       }
+      skill_files: {
+        Row: {
+          applies_to_modes: string[]
+          applies_to_tools: string[]
+          body_markdown: string
+          created_at: string
+          id: string
+          is_enabled: boolean
+          slug: string
+          sort_order: number
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          applies_to_modes?: string[]
+          applies_to_tools?: string[]
+          body_markdown: string
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          slug: string
+          sort_order?: number
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          applies_to_modes?: string[]
+          applies_to_tools?: string[]
+          body_markdown?: string
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          slug?: string
+          sort_order?: number
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       skills: {
         Row: {
           always_loaded: boolean
@@ -1568,6 +1699,45 @@ export type Database = {
         }
         Relationships: []
       }
+      switchboard_decisions: {
+        Row: {
+          confidence: number | null
+          context: Json
+          created_at: string
+          id: string
+          mode_slug: string
+          outcome: string | null
+          reasoning: string | null
+          tool_chosen: string | null
+          tools_considered: string[]
+          user_id: string
+        }
+        Insert: {
+          confidence?: number | null
+          context?: Json
+          created_at?: string
+          id?: string
+          mode_slug: string
+          outcome?: string | null
+          reasoning?: string | null
+          tool_chosen?: string | null
+          tools_considered?: string[]
+          user_id: string
+        }
+        Update: {
+          confidence?: number | null
+          context?: Json
+          created_at?: string
+          id?: string
+          mode_slug?: string
+          outcome?: string | null
+          reasoning?: string | null
+          tool_chosen?: string | null
+          tools_considered?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
       telegram_channels: {
         Row: {
           created_at: string
@@ -1631,6 +1801,51 @@ export type Database = {
           tier_required?: string | null
           title?: string
           url?: string | null
+        }
+        Relationships: []
+      }
+      tool_registry: {
+        Row: {
+          confidence_threshold: number
+          config: Json
+          created_at: string
+          description: string | null
+          id: string
+          is_enabled: boolean
+          kind: string
+          label: string
+          skill_summary: string | null
+          slug: string
+          surface: string
+          updated_at: string
+        }
+        Insert: {
+          confidence_threshold?: number
+          config?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_enabled?: boolean
+          kind: string
+          label: string
+          skill_summary?: string | null
+          slug: string
+          surface?: string
+          updated_at?: string
+        }
+        Update: {
+          confidence_threshold?: number
+          config?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_enabled?: boolean
+          kind?: string
+          label?: string
+          skill_summary?: string | null
+          slug?: string
+          surface?: string
+          updated_at?: string
         }
         Relationships: []
       }

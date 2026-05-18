@@ -1,4 +1,4 @@
-import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil, Network, BookOpen, CalendarPlus } from 'lucide-react';
+import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil, Network, BookOpen, CalendarPlus, Cable } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,6 +33,7 @@ const bottomNavItems = [
   { to: '/dashboard/health', label: 'Health', icon: Activity, end: false },
   { to: '/dashboard/funnels', label: 'Funnels', icon: BarChart3, end: false },
   { to: '/dashboard/sorting-hat', label: 'Sorting Hat', icon: GitFork, end: false },
+  { to: '/dashboard/switchboard', label: 'Switchboard', icon: Cable, end: false, architectOnly: true },
   { to: '/dashboard/settings', label: 'Settings', icon: Settings, end: false },
 ];
 
@@ -138,18 +139,20 @@ export function DashboardSidebar({ email, role }: DashboardSidebarProps) {
             System
           </p>
         </div>
-        {bottomNavItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.end}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50"
-            activeClassName="bg-accent text-primary"
-          >
-            <item.icon className="w-4 h-4" />
-            {item.label}
-          </NavLink>
-        ))}
+        {bottomNavItems
+          .filter((item) => !item.architectOnly || role === 'architect')
+          .map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              activeClassName="bg-accent text-primary"
+            >
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </NavLink>
+          ))}
       </nav>
 
       <div className="p-4 border-t border-border space-y-3">
