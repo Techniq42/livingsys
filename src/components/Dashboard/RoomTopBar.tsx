@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import { SubAccountSwitcher } from '@/components/ghl/SubAccountSwitcher';
 
 // Spec: Edit, Radar, Bookkeeping, HR, Field-guide-build, Triage, Agency, Brand
 // Plus Exchange (kept as a 9th existing room — flagged in plan).
@@ -41,6 +42,9 @@ export function RoomTopBar() {
             </button>
           );
         })}
+      </div>
+      <div className="flex-shrink-0">
+        <SubAccountSwitcher />
       </div>
     </div>
   );
