@@ -428,6 +428,7 @@ export type Database = {
           generated_by: string | null
           highlights: Json
           id: string
+          lens_slug: string | null
           mode: string
           recommended_action: string | null
           source_thread_ids: string[] | null
@@ -440,6 +441,7 @@ export type Database = {
           generated_by?: string | null
           highlights?: Json
           id?: string
+          lens_slug?: string | null
           mode: string
           recommended_action?: string | null
           source_thread_ids?: string[] | null
@@ -452,12 +454,21 @@ export type Database = {
           generated_by?: string | null
           highlights?: Json
           id?: string
+          lens_slug?: string | null
           mode?: string
           recommended_action?: string | null
           source_thread_ids?: string[] | null
           summary?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "daily_briefings_lens_slug_fkey"
+            columns: ["lens_slug"]
+            isOneToOne: false
+            referencedRelation: "lenses"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       email_triage_items: {
         Row: {
@@ -749,6 +760,118 @@ export type Database = {
         }
         Relationships: []
       }
+      lenses: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          posture: string
+          skin_token: string
+          slug: string
+          sort_order: number
+          tagline: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          posture?: string
+          skin_token?: string
+          slug: string
+          sort_order?: number
+          tagline?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          posture?: string
+          skin_token?: string
+          slug?: string
+          sort_order?: number
+          tagline?: string | null
+        }
+        Relationships: []
+      }
+      local_events: {
+        Row: {
+          amplify: boolean
+          created_at: string
+          description: string | null
+          ends_at: string | null
+          event_type: string | null
+          host_person_id: string | null
+          id: string
+          lens_slug: string
+          source_url: string | null
+          starts_at: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          venue_id: string | null
+        }
+        Insert: {
+          amplify?: boolean
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          event_type?: string | null
+          host_person_id?: string | null
+          id?: string
+          lens_slug: string
+          source_url?: string | null
+          starts_at?: string | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          venue_id?: string | null
+        }
+        Update: {
+          amplify?: boolean
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          event_type?: string | null
+          host_person_id?: string | null
+          id?: string
+          lens_slug?: string
+          source_url?: string | null
+          starts_at?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          venue_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "local_events_host_person_id_fkey"
+            columns: ["host_person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "local_events_lens_slug_fkey"
+            columns: ["lens_slug"]
+            isOneToOne: false
+            referencedRelation: "lenses"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "local_events_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_contributions: {
         Row: {
           contribution_type: string
@@ -898,6 +1021,53 @@ export type Database = {
           value?: Json
         }
         Relationships: []
+      }
+      people: {
+        Row: {
+          capacity: string | null
+          created_at: string
+          display_name: string
+          handles: Json
+          id: string
+          lens_slug: string
+          notes: string | null
+          opt_in_level: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: string | null
+          created_at?: string
+          display_name: string
+          handles?: Json
+          id?: string
+          lens_slug: string
+          notes?: string | null
+          opt_in_level?: string
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: string | null
+          created_at?: string
+          display_name?: string
+          handles?: Json
+          id?: string
+          lens_slug?: string
+          notes?: string | null
+          opt_in_level?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "people_lens_slug_fkey"
+            columns: ["lens_slug"]
+            isOneToOne: false
+            referencedRelation: "lenses"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       pipeline_status: {
         Row: {
@@ -1561,6 +1731,66 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      venues: {
+        Row: {
+          address: string | null
+          calendar_url: string | null
+          city: string | null
+          created_at: string
+          host_person_id: string | null
+          id: string
+          is_active: boolean
+          lens_slug: string
+          name: string
+          notes: string | null
+          region: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          calendar_url?: string | null
+          city?: string | null
+          created_at?: string
+          host_person_id?: string | null
+          id?: string
+          is_active?: boolean
+          lens_slug: string
+          name: string
+          notes?: string | null
+          region?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          calendar_url?: string | null
+          city?: string | null
+          created_at?: string
+          host_person_id?: string | null
+          id?: string
+          is_active?: boolean
+          lens_slug?: string
+          name?: string
+          notes?: string | null
+          region?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venues_host_person_id_fkey"
+            columns: ["host_person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venues_lens_slug_fkey"
+            columns: ["lens_slug"]
+            isOneToOne: false
+            referencedRelation: "lenses"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       voice_memos: {
         Row: {
