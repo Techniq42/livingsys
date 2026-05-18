@@ -2396,6 +2396,10 @@ export type Database = {
           video_url: string
         }[]
       }
+      user_can_read_skill: {
+        Args: { _scope: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "practitioner" | "healer" | "administrator" | "architect"
