@@ -33,3 +33,16 @@
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
 }
+
+[data-skin="healing"] {
+  /* Healing Community — warm rose-amber glow, soft edges, generous breath */
+  --background: 18 22% 9%;
+  --card: 20 26% 14%;
+  --border: 18 22% 24%;
+  --radius: 1.5rem;
+  --primary: 14 78% 64%;
+  --primary-foreground: 20 30% 10%;
+  --accent: 340 50% 60%;
+  --font-display: 'Outfit', 'Space Grotesk', sans-serif;
+  --font-body: 'Figtree', 'Inter', sans-serif;
+}
