@@ -7,6 +7,7 @@ import { RoomTopBar } from '@/components/Dashboard/RoomTopBar';
 import { GemmaDrawer } from '@/components/Gemma/GemmaDrawer';
 import { ReduceMotionProvider } from '@/hooks/use-reduce-motion';
 import { RoomProvider, useRoom } from '@/contexts/RoomContext';
+import { SubAccountProvider } from '@/contexts/SubAccountContext';
 import type { User } from '@supabase/supabase-js';
 
 const ROOM_THEMES: Record<string, { bg: string; accent: string; text: string }> = {
@@ -99,9 +100,11 @@ export default function Dashboard() {
 
   return (
     <ReduceMotionProvider>
-      <RoomProvider>
-        <DashboardMain user={user} userRole={userRole} />
-      </RoomProvider>
+      <SubAccountProvider>
+        <RoomProvider>
+          <DashboardMain user={user} userRole={userRole} />
+        </RoomProvider>
+      </SubAccountProvider>
     </ReduceMotionProvider>
   );
 }
