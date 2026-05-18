@@ -1,4 +1,4 @@
-import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil, Network, BookOpen } from 'lucide-react';
+import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil, Network, BookOpen, CalendarPlus } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,6 +26,7 @@ const radarRoomItems = [
 
 const editingBayItems = [
   { to: '/dashboard/editing', label: 'Editing', icon: Pencil, end: false },
+  { to: '/dashboard/events', label: 'Local Events', icon: CalendarPlus, end: false },
 ];
 
 const bottomNavItems = [
