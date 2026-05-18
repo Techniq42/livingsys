@@ -691,6 +691,154 @@ export type Database = {
         }
         Relationships: []
       }
+      ghl_action_log: {
+        Row: {
+          action_kind: string
+          approved_by: string | null
+          created_at: string
+          decision_id: string | null
+          error_message: string | null
+          id: string
+          payload: Json
+          proposed_by: string | null
+          result: Json | null
+          status: string
+          sub_account_slug: string
+          updated_at: string
+          via: string
+        }
+        Insert: {
+          action_kind: string
+          approved_by?: string | null
+          created_at?: string
+          decision_id?: string | null
+          error_message?: string | null
+          id?: string
+          payload?: Json
+          proposed_by?: string | null
+          result?: Json | null
+          status?: string
+          sub_account_slug: string
+          updated_at?: string
+          via?: string
+        }
+        Update: {
+          action_kind?: string
+          approved_by?: string | null
+          created_at?: string
+          decision_id?: string | null
+          error_message?: string | null
+          id?: string
+          payload?: Json
+          proposed_by?: string | null
+          result?: Json | null
+          status?: string
+          sub_account_slug?: string
+          updated_at?: string
+          via?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ghl_action_log_sub_account_slug_fkey"
+            columns: ["sub_account_slug"]
+            isOneToOne: false
+            referencedRelation: "ghl_sub_accounts"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      ghl_inventory: {
+        Row: {
+          created_at: string
+          ghl_object_id: string
+          id: string
+          last_synced_at: string
+          metadata: Json
+          name: string
+          object_kind: string
+          status: string | null
+          sub_account_slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ghl_object_id: string
+          id?: string
+          last_synced_at?: string
+          metadata?: Json
+          name: string
+          object_kind: string
+          status?: string | null
+          sub_account_slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ghl_object_id?: string
+          id?: string
+          last_synced_at?: string
+          metadata?: Json
+          name?: string
+          object_kind?: string
+          status?: string | null
+          sub_account_slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ghl_inventory_sub_account_slug_fkey"
+            columns: ["sub_account_slug"]
+            isOneToOne: false
+            referencedRelation: "ghl_sub_accounts"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      ghl_sub_accounts: {
+        Row: {
+          agency_role: string
+          created_at: string
+          ghl_location_id: string | null
+          id: string
+          is_active: boolean
+          label: string
+          lens_binding: string | null
+          notes: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+          voice_register: string
+        }
+        Insert: {
+          agency_role?: string
+          created_at?: string
+          ghl_location_id?: string | null
+          id?: string
+          is_active?: boolean
+          label: string
+          lens_binding?: string | null
+          notes?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          voice_register?: string
+        }
+        Update: {
+          agency_role?: string
+          created_at?: string
+          ghl_location_id?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string
+          lens_binding?: string | null
+          notes?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          voice_register?: string
+        }
+        Relationships: []
+      }
       guild_members: {
         Row: {
           id: string
@@ -1194,6 +1342,41 @@ export type Database = {
         }
         Relationships: []
       }
+      practitioner_sub_account_bindings: {
+        Row: {
+          can_approve: boolean
+          can_propose: boolean
+          created_at: string
+          id: string
+          sub_account_slug: string
+          user_id: string
+        }
+        Insert: {
+          can_approve?: boolean
+          can_propose?: boolean
+          created_at?: string
+          id?: string
+          sub_account_slug: string
+          user_id: string
+        }
+        Update: {
+          can_approve?: boolean
+          can_propose?: boolean
+          created_at?: string
+          id?: string
+          sub_account_slug?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practitioner_sub_account_bindings_sub_account_slug_fkey"
+            columns: ["sub_account_slug"]
+            isOneToOne: false
+            referencedRelation: "ghl_sub_accounts"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       predator_pattern_observations: {
         Row: {
           connector_diligence_score: number | null
@@ -1596,6 +1779,7 @@ export type Database = {
           created_at: string
           id: string
           is_enabled: boolean
+          scoped_to_sub_account: string | null
           slug: string
           sort_order: number
           summary: string | null
@@ -1609,6 +1793,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_enabled?: boolean
+          scoped_to_sub_account?: string | null
           slug: string
           sort_order?: number
           summary?: string | null
@@ -1622,13 +1807,22 @@ export type Database = {
           created_at?: string
           id?: string
           is_enabled?: boolean
+          scoped_to_sub_account?: string | null
           slug?: string
           sort_order?: number
           summary?: string | null
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "skill_files_scoped_to_sub_account_fkey"
+            columns: ["scoped_to_sub_account"]
+            isOneToOne: false
+            referencedRelation: "ghl_sub_accounts"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       skills: {
         Row: {
@@ -1708,6 +1902,7 @@ export type Database = {
           mode_slug: string
           outcome: string | null
           reasoning: string | null
+          sub_account_slug: string | null
           tool_chosen: string | null
           tools_considered: string[]
           user_id: string
@@ -1720,6 +1915,7 @@ export type Database = {
           mode_slug: string
           outcome?: string | null
           reasoning?: string | null
+          sub_account_slug?: string | null
           tool_chosen?: string | null
           tools_considered?: string[]
           user_id: string
@@ -1732,11 +1928,20 @@ export type Database = {
           mode_slug?: string
           outcome?: string | null
           reasoning?: string | null
+          sub_account_slug?: string | null
           tool_chosen?: string | null
           tools_considered?: string[]
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "switchboard_decisions_sub_account_slug_fkey"
+            columns: ["sub_account_slug"]
+            isOneToOne: false
+            referencedRelation: "ghl_sub_accounts"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       telegram_channels: {
         Row: {
