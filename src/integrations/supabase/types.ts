@@ -95,6 +95,7 @@ export type Database = {
       canon_pages: {
         Row: {
           audience: string | null
+          audience_cohorts: Json
           created_at: string
           id: string
           methodology_tags: string[] | null
@@ -112,6 +113,7 @@ export type Database = {
         }
         Insert: {
           audience?: string | null
+          audience_cohorts?: Json
           created_at?: string
           id?: string
           methodology_tags?: string[] | null
@@ -129,6 +131,7 @@ export type Database = {
         }
         Update: {
           audience?: string | null
+          audience_cohorts?: Json
           created_at?: string
           id?: string
           methodology_tags?: string[] | null
@@ -635,6 +638,81 @@ export type Database = {
           signal_type?: string
           substrate_topic?: string | null
           thread_id?: string
+        }
+        Relationships: []
+      }
+      funder_targets: {
+        Row: {
+          apollo_org_id: string | null
+          apollo_person_id: string | null
+          brief_generated_at: string | null
+          brief_markdown: string | null
+          canon_slugs_matched: string[] | null
+          created_at: string
+          emails: Json | null
+          estimated_check_range: string | null
+          geo: string | null
+          id: string
+          last_public_move: string | null
+          last_public_move_at: string | null
+          last_public_move_url: string | null
+          notes: string | null
+          org_kind: string | null
+          org_name: string | null
+          person_name: string | null
+          socials: Json | null
+          status: string
+          thesis_match: Json
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          apollo_org_id?: string | null
+          apollo_person_id?: string | null
+          brief_generated_at?: string | null
+          brief_markdown?: string | null
+          canon_slugs_matched?: string[] | null
+          created_at?: string
+          emails?: Json | null
+          estimated_check_range?: string | null
+          geo?: string | null
+          id?: string
+          last_public_move?: string | null
+          last_public_move_at?: string | null
+          last_public_move_url?: string | null
+          notes?: string | null
+          org_kind?: string | null
+          org_name?: string | null
+          person_name?: string | null
+          socials?: Json | null
+          status?: string
+          thesis_match?: Json
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          apollo_org_id?: string | null
+          apollo_person_id?: string | null
+          brief_generated_at?: string | null
+          brief_markdown?: string | null
+          canon_slugs_matched?: string[] | null
+          created_at?: string
+          emails?: Json | null
+          estimated_check_range?: string | null
+          geo?: string | null
+          id?: string
+          last_public_move?: string | null
+          last_public_move_at?: string | null
+          last_public_move_url?: string | null
+          notes?: string | null
+          org_kind?: string | null
+          org_name?: string | null
+          person_name?: string | null
+          socials?: Json | null
+          status?: string
+          thesis_match?: Json
+          title?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1301,6 +1379,134 @@ export type Database = {
           responder_enabled?: boolean | null
           scanner_enabled?: boolean | null
           value?: Json
+        }
+        Relationships: []
+      }
+      outreach_drafts: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          body: string
+          canon_slug: string | null
+          created_at: string
+          draft_kind: string
+          generated_by: string | null
+          id: string
+          rationale: string | null
+          send_result: Json | null
+          sent_at: string | null
+          status: string
+          target_id: string
+          updated_at: string
+          voice_register: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          body: string
+          canon_slug?: string | null
+          created_at?: string
+          draft_kind: string
+          generated_by?: string | null
+          id?: string
+          rationale?: string | null
+          send_result?: Json | null
+          sent_at?: string | null
+          status?: string
+          target_id: string
+          updated_at?: string
+          voice_register?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          body?: string
+          canon_slug?: string | null
+          created_at?: string
+          draft_kind?: string
+          generated_by?: string | null
+          id?: string
+          rationale?: string | null
+          send_result?: Json | null
+          sent_at?: string | null
+          status?: string
+          target_id?: string
+          updated_at?: string
+          voice_register?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outreach_drafts_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "outreach_targets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outreach_targets: {
+        Row: {
+          canon_slug: string | null
+          channel: string
+          cohort: string | null
+          created_at: string
+          discovered_at: string
+          id: string
+          last_touched_at: string | null
+          notes: string | null
+          org_name: string | null
+          signal_reason: Json
+          signal_score: number
+          snippet: string | null
+          source: string
+          source_run_id: string | null
+          status: string
+          target_handle: string | null
+          target_name: string | null
+          target_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          canon_slug?: string | null
+          channel: string
+          cohort?: string | null
+          created_at?: string
+          discovered_at?: string
+          id?: string
+          last_touched_at?: string | null
+          notes?: string | null
+          org_name?: string | null
+          signal_reason?: Json
+          signal_score?: number
+          snippet?: string | null
+          source: string
+          source_run_id?: string | null
+          status?: string
+          target_handle?: string | null
+          target_name?: string | null
+          target_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          canon_slug?: string | null
+          channel?: string
+          cohort?: string | null
+          created_at?: string
+          discovered_at?: string
+          id?: string
+          last_touched_at?: string | null
+          notes?: string | null
+          org_name?: string | null
+          signal_reason?: Json
+          signal_score?: number
+          snippet?: string | null
+          source?: string
+          source_run_id?: string | null
+          status?: string
+          target_handle?: string | null
+          target_name?: string | null
+          target_url?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
