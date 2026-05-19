@@ -20,6 +20,7 @@ import DashboardCanon from "./pages/dashboard/DashboardCanon";
 import DashboardEvents from "./pages/dashboard/DashboardEvents";
 import DashboardSwitchboard from "./pages/dashboard/DashboardSwitchboard";
 import DashboardGhlCockpit from "./pages/dashboard/DashboardGhlCockpit";
+import DashboardOutreach from "./pages/dashboard/DashboardOutreach";
 import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
 import ResetPassword from "./pages/ResetPassword";
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="events" element={<DashboardEvents />} />
             <Route path="switchboard" element={<DashboardSwitchboard />} />
             <Route path="ghl" element={<DashboardGhlCockpit />} />
+            <Route path="outreach" element={<DashboardOutreach />} />
             <Route path="mode/:mode" element={<DashboardComingOnline />} />
           </Route>
           <Route path="/nexus" element={<Nexus />} />
