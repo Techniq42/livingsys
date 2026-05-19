@@ -84,7 +84,32 @@ export default function DashboardOutreach() {
     });
     setBusy(null);
     if (error) { toast({ title: 'Blast failed', description: error.message, variant: 'destructive' }); return; }
-    toast({ title: 'Blast complete', description: `${data?.targets_surfaced ?? 0} targets, ${data?.drafts_generated ?? 0} drafts` });
+    // Detect silent failures: every stem errored inside results_summary
+    const summary = data?.summary ?? {};
+    const stemErrors: string[] = [];
+    let stemTotal = 0;
+    for (const c of Object.values(summary) as any[]) {
+      for (const [stem, val] of Object.entries(c?.stems ?? {})) {
+        stemTotal++;
+        if (val && typeof val === 'object' && (val as any).error) stemErrors.push(`${stem}: ${(val as any).error}`);
+      }
+    }
+    const surfaced = data?.targets_surfaced ?? 0;
+    const drafts = data?.drafts_generated ?? 0;
+    if (surfaced === 0 && stemErrors.length > 0) {
+      toast({
+        title: 'Blast ran but every search errored',
+        description: `${stemErrors.length}/${stemTotal} stems failed. First error: ${stemErrors[0].slice(0, 160)}. Run id: ${data?.run_id ?? '—'}`,
+        variant: 'destructive',
+      });
+    } else if (surfaced === 0) {
+      toast({
+        title: 'Blast complete — no matches',
+        description: `Searched ${stemTotal} stems across ${Object.keys(summary).length} cohorts. Nothing scored above the relevance threshold. Run id: ${data?.run_id ?? '—'}`,
+      });
+    } else {
+      toast({ title: 'Blast complete', description: `${surfaced} targets, ${drafts} drafts` });
+    }
     refresh();
   }
 
