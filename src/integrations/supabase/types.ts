@@ -146,6 +146,36 @@ export type Database = {
         }
         Relationships: []
       }
+      canon_search_runs: {
+        Row: {
+          canon_slug: string | null
+          created_at: string
+          id: string
+          query: string
+          region_count: number
+          results_summary: Json
+          tbs: string | null
+        }
+        Insert: {
+          canon_slug?: string | null
+          created_at?: string
+          id?: string
+          query: string
+          region_count?: number
+          results_summary?: Json
+          tbs?: string | null
+        }
+        Update: {
+          canon_slug?: string | null
+          created_at?: string
+          id?: string
+          query?: string
+          region_count?: number
+          results_summary?: Json
+          tbs?: string | null
+        }
+        Relationships: []
+      }
       codex_conversations: {
         Row: {
           content: string

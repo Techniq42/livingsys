@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.edge-runner-gateway]
 verify_jwt = false
+
+[functions.firecrawl-search]
+verify_jwt = false
