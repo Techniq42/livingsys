@@ -20,6 +20,7 @@ import DashboardCanon from "./pages/dashboard/DashboardCanon";
 import DashboardEvents from "./pages/dashboard/DashboardEvents";
 import DashboardSwitchboard from "./pages/dashboard/DashboardSwitchboard";
 import DashboardGhlCockpit from "./pages/dashboard/DashboardGhlCockpit";
+import DashboardOutreach from "./pages/dashboard/DashboardOutreach";
 import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
 import ResetPassword from "./pages/ResetPassword";
