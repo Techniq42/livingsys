@@ -99,6 +99,8 @@ export type Database = {
           id: string
           methodology_tags: string[] | null
           navigation_notes: string | null
+          primary_regions: string[]
+          secondary_regions: string[]
           slug: string
           sort_order: number
           status: string
@@ -114,6 +116,8 @@ export type Database = {
           id?: string
           methodology_tags?: string[] | null
           navigation_notes?: string | null
+          primary_regions?: string[]
+          secondary_regions?: string[]
           slug: string
           sort_order?: number
           status?: string
@@ -129,6 +133,8 @@ export type Database = {
           id?: string
           methodology_tags?: string[] | null
           navigation_notes?: string | null
+          primary_regions?: string[]
+          secondary_regions?: string[]
           slug?: string
           sort_order?: number
           status?: string
