@@ -132,7 +132,12 @@ Deno.serve(async (req: Request) => {
       const q = siteScoped(stem, cohort.channel);
       try {
         const r = await firecrawlSearch(q, limitPerStem);
-        const items = (r?.data ?? r?.web ?? []).slice(0, limitPerStem);
+        // Firecrawl v2 returns { data: { web: [...], news: [...], images: [...] } }
+        // Older shapes also possible: { data: [...] } or { web: [...] }
+        const rawItems = Array.isArray(r?.data)
+          ? r.data
+          : (r?.data?.web ?? r?.data?.news ?? r?.web ?? []);
+        const items = (Array.isArray(rawItems) ? rawItems : []).slice(0, limitPerStem);
         runSummary[cohort.cohort].stems[stem] = items.length;
         for (const it of items) {
           if (!it?.url) continue;
