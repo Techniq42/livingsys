@@ -61,9 +61,16 @@ export default function Dashboard() {
           .from('user_roles')
           .select('role')
           .eq('user_id', session.user.id)
-          .single()
           .then(({ data }) => {
-            if (data) setUserRole(data.role);
+            if (data && data.length > 0) {
+              const roles = data.map((r: any) => r.role);
+              const best = roles.includes('administrator')
+                ? 'administrator'
+                : roles.includes('architect')
+                ? 'architect'
+                : roles[0];
+              setUserRole(best);
+            }
           });
       }
     });
@@ -76,9 +83,16 @@ export default function Dashboard() {
           .from('user_roles')
           .select('role')
           .eq('user_id', session.user.id)
-          .single()
           .then(({ data }) => {
-            if (data) setUserRole(data.role);
+            if (data && data.length > 0) {
+              const roles = data.map((r: any) => r.role);
+              const best = roles.includes('administrator')
+                ? 'administrator'
+                : roles.includes('architect')
+                ? 'architect'
+                : roles[0];
+              setUserRole(best);
+            }
           });
       }
     });
