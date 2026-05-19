@@ -54,6 +54,7 @@ const App = () => (
             <Route path="events" element={<DashboardEvents />} />
             <Route path="switchboard" element={<DashboardSwitchboard />} />
             <Route path="ghl" element={<DashboardGhlCockpit />} />
+            <Route path="outreach" element={<DashboardOutreach />} />
             <Route path="mode/:mode" element={<DashboardComingOnline />} />
           </Route>
           <Route path="/nexus" element={<Nexus />} />
