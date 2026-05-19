@@ -50,11 +50,17 @@ async function buildContext(supabase: any, lens: string, mode: Mode): Promise<st
   const horizon = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString();
 
   // Lens-scoped substrate
-  const [{ data: people }, { data: venues }, { data: events }] = await Promise.all([
+  const [{ data: people }, { data: venues }, { data: events }, { data: canon }] = await Promise.all([
     supabase.from("people").select("display_name,role,capacity,opt_in_level,notes").eq("lens_slug", lens).limit(50),
     supabase.from("venues").select("name,city,calendar_url,website,notes").eq("lens_slug", lens).eq("is_active", true).limit(50),
     supabase.from("local_events").select("title,event_type,status,starts_at,source_url,amplify").eq("lens_slug", lens).gte("starts_at", since).lte("starts_at", horizon).order("starts_at").limit(50),
+    supabase.from("canon_pages").select("slug,title,audience,primary_regions,secondary_regions").eq("status", "active"),
   ]);
+
+  const canonGeo = (canon ?? [])
+    .filter((c: any) => (c.primary_regions?.length ?? 0) + (c.secondary_regions?.length ?? 0) > 0)
+    .map((c: any) => `- ${c.slug} (${c.title}) → primary: [${(c.primary_regions ?? []).join(",")}] secondary: [${(c.secondary_regions ?? []).join(",")}] audience: ${c.audience ?? "—"}`)
+    .join("\n");
 
   const substrate = [
     `People (${people?.length ?? 0}):`,
@@ -63,6 +69,7 @@ async function buildContext(supabase: any, lens: string, mode: Mode): Promise<st
     ...(venues ?? []).map((v: any) => `- ${v.name} ${v.city ?? ""} cal:${v.calendar_url ?? "n/a"} — ${v.notes ?? ""}`),
     `\nUpcoming local events (${events?.length ?? 0}):`,
     ...(events ?? []).map((e: any) => `- [${e.event_type}] ${e.title} @ ${e.starts_at ?? "TBD"} ${e.amplify ? "(AMPLIFY)" : ""} ${e.source_url ?? ""}`),
+    canonGeo ? `\nGeo-prioritized canon pages:\n${canonGeo}\n(When MODE=engage/seed, prefer outreach grounded in these regions for the matching canon.)` : "",
   ].join("\n");
 
   // FLS-only: also sweep community radar tables (those don't have a lens column yet)
