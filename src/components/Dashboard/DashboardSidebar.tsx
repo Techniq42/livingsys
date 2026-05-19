@@ -34,6 +34,7 @@ const bottomNavItems = [
   { to: '/dashboard/funnels', label: 'Funnels', icon: BarChart3, end: false },
   { to: '/dashboard/sorting-hat', label: 'Sorting Hat', icon: GitFork, end: false },
   { to: '/dashboard/switchboard', label: 'Switchboard', icon: Cable, end: false, architectOnly: true },
+  { to: '/dashboard/outreach', label: 'Outreach', icon: Target, end: false, architectOnly: true },
   { to: '/dashboard/settings', label: 'Settings', icon: Settings, end: false },
 ];
 
