@@ -77,39 +77,20 @@ export default function DashboardOutreach() {
     refresh();
   }
 
-  async function runBlast(slug: string) {
+  async function runScoutEdges(slug: string) {
     setBusy(`blast-${slug}`);
     const { data, error } = await (supabase as any).functions.invoke('canon-blast', {
-      body: { canon_slug: slug, generate_drafts: true, limit_per_stem: 5 },
+      body: { canon_slug: slug, generate_drafts: false, limit_per_stem: 5 },
     });
     setBusy(null);
-    if (error) { toast({ title: 'Blast failed', description: error.message, variant: 'destructive' }); return; }
-    // Detect silent failures: every stem errored inside results_summary
-    const summary = data?.summary ?? {};
-    const stemErrors: string[] = [];
-    let stemTotal = 0;
-    for (const c of Object.values(summary) as any[]) {
-      for (const [stem, val] of Object.entries(c?.stems ?? {})) {
-        stemTotal++;
-        if (val && typeof val === 'object' && (val as any).error) stemErrors.push(`${stem}: ${(val as any).error}`);
-      }
-    }
+    if (error) { toast({ title: 'Scout failed', description: error.message, variant: 'destructive' }); return; }
     const surfaced = data?.targets_surfaced ?? 0;
-    const drafts = data?.drafts_generated ?? 0;
-    if (surfaced === 0 && stemErrors.length > 0) {
-      toast({
-        title: 'Blast ran but every search errored',
-        description: `${stemErrors.length}/${stemTotal} stems failed. First error: ${stemErrors[0].slice(0, 160)}. Run id: ${data?.run_id ?? '—'}`,
-        variant: 'destructive',
-      });
-    } else if (surfaced === 0) {
-      toast({
-        title: 'Blast complete — no matches',
-        description: `Searched ${stemTotal} stems across ${Object.keys(summary).length} cohorts. Nothing scored above the relevance threshold. Run id: ${data?.run_id ?? '—'}`,
-      });
-    } else {
-      toast({ title: 'Blast complete', description: `${surfaced} targets, ${drafts} drafts` });
-    }
+    toast({
+      title: surfaced > 0 ? 'Edge scout complete' : 'Edge scout — no matches',
+      description: surfaced > 0
+        ? `${surfaced} targets surfaced. Confirm in Surfaced targets tab to draft.`
+        : `Run id: ${data?.run_id ?? '—'}`,
+    });
     refresh();
   }
 
@@ -120,7 +101,28 @@ export default function DashboardOutreach() {
     });
     setBusy(null);
     if (error) { toast({ title: 'Scout failed', description: error.message, variant: 'destructive' }); return; }
-    toast({ title: 'Scout complete', description: `${data?.funders_surfaced ?? 0} funders, ${data?.briefs_generated ?? 0} briefs` });
+    toast({ title: 'Funder scout complete', description: `${data?.funders_surfaced ?? 0} funders, ${data?.briefs_generated ?? 0} briefs` });
+    refresh();
+  }
+
+  async function draftForTarget(targetId: string, canonSlug?: string) {
+    setBusy(`draft-${targetId}`);
+    const { data, error } = await (supabase as any).functions.invoke('outreach-draft-target', {
+      body: { target_id: targetId, canon_slug: canonSlug },
+    });
+    setBusy(null);
+    if (error) { toast({ title: 'Draft failed', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'Draft ready', description: 'Review in Drafts tab.' });
+    setTab('drafts');
+    refresh();
+  }
+
+  async function runDailySweep() {
+    setBusy('daily-sweep');
+    const { data, error } = await (supabase as any).functions.invoke('outreach-daily-sweep', { body: {} });
+    setBusy(null);
+    if (error) { toast({ title: 'Sweep failed', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'Daily sweep complete', description: `Scanned ${data?.canon_pages ?? 0} canon pages.` });
     refresh();
   }
 
