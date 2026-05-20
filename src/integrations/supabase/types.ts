@@ -371,6 +371,39 @@ export type Database = {
         }
         Relationships: []
       }
+      conversation_routes: {
+        Row: {
+          created_at: string
+          description: string | null
+          handoff_notes: string | null
+          is_active: boolean
+          label: string
+          slug: string
+          sort_order: number | null
+          sub_account_slug: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          handoff_notes?: string | null
+          is_active?: boolean
+          label: string
+          slug: string
+          sort_order?: number | null
+          sub_account_slug?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          handoff_notes?: string | null
+          is_active?: boolean
+          label?: string
+          slug?: string
+          sort_order?: number | null
+          sub_account_slug?: string | null
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           created_at: string
@@ -1382,6 +1415,87 @@ export type Database = {
         }
         Relationships: []
       }
+      outreach_conversations: {
+        Row: {
+          assigned_to: string | null
+          canon_slug: string | null
+          channel: string
+          counterpart_display_name: string | null
+          counterpart_handle: string | null
+          created_at: string
+          external_thread_url: string | null
+          id: string
+          last_inbound_at: string | null
+          last_outbound_at: string | null
+          message_count: number
+          metadata: Json | null
+          notes: string | null
+          route_slug: string | null
+          routed_at: string | null
+          status: string
+          tags: string[] | null
+          target_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          canon_slug?: string | null
+          channel: string
+          counterpart_display_name?: string | null
+          counterpart_handle?: string | null
+          created_at?: string
+          external_thread_url?: string | null
+          id?: string
+          last_inbound_at?: string | null
+          last_outbound_at?: string | null
+          message_count?: number
+          metadata?: Json | null
+          notes?: string | null
+          route_slug?: string | null
+          routed_at?: string | null
+          status?: string
+          tags?: string[] | null
+          target_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          canon_slug?: string | null
+          channel?: string
+          counterpart_display_name?: string | null
+          counterpart_handle?: string | null
+          created_at?: string
+          external_thread_url?: string | null
+          id?: string
+          last_inbound_at?: string | null
+          last_outbound_at?: string | null
+          message_count?: number
+          metadata?: Json | null
+          notes?: string | null
+          route_slug?: string | null
+          routed_at?: string | null
+          status?: string
+          tags?: string[] | null
+          target_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outreach_conversations_route_slug_fkey"
+            columns: ["route_slug"]
+            isOneToOne: false
+            referencedRelation: "conversation_routes"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outreach_conversations_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "outreach_targets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       outreach_drafts: {
         Row: {
           approved_at: string | null
@@ -1440,6 +1554,66 @@ export type Database = {
             columns: ["target_id"]
             isOneToOne: false
             referencedRelation: "outreach_targets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outreach_messages: {
+        Row: {
+          author_handle: string | null
+          body: string
+          conversation_id: string
+          created_at: string
+          direction: string
+          draft_id: string | null
+          external_message_id: string | null
+          external_message_url: string | null
+          id: string
+          metadata: Json | null
+          received_at: string | null
+          sent_at: string | null
+        }
+        Insert: {
+          author_handle?: string | null
+          body: string
+          conversation_id: string
+          created_at?: string
+          direction: string
+          draft_id?: string | null
+          external_message_id?: string | null
+          external_message_url?: string | null
+          id?: string
+          metadata?: Json | null
+          received_at?: string | null
+          sent_at?: string | null
+        }
+        Update: {
+          author_handle?: string | null
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          direction?: string
+          draft_id?: string | null
+          external_message_id?: string | null
+          external_message_url?: string | null
+          id?: string
+          metadata?: Json | null
+          received_at?: string | null
+          sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outreach_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "outreach_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outreach_messages_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "outreach_drafts"
             referencedColumns: ["id"]
           },
         ]
@@ -2132,6 +2306,57 @@ export type Database = {
           reason?: string | null
           source_platform?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      subreddit_discoveries: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          description: string | null
+          id: string
+          member_count_hint: string | null
+          notes: string | null
+          relevance_reason: Json | null
+          relevance_score: number | null
+          seed_topic: string
+          status: string
+          subreddit: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          member_count_hint?: string | null
+          notes?: string | null
+          relevance_reason?: Json | null
+          relevance_score?: number | null
+          seed_topic: string
+          status?: string
+          subreddit: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          member_count_hint?: string | null
+          notes?: string | null
+          relevance_reason?: Json | null
+          relevance_score?: number | null
+          seed_topic?: string
+          status?: string
+          subreddit?: string
+          updated_at?: string
+          url?: string | null
         }
         Relationships: []
       }
