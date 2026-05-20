@@ -107,20 +107,16 @@ export default function DashboardDiscovery() {
         desc: d.description?.slice(0, 200) ?? null,
         notes: d.notes ?? null,
       }));
-      const contextNote = `CURRENT VIEW (subreddit discovery, filter=${statusFilter}, topic=${topicFilter}):\n${JSON.stringify(snapshot, null, 2)}`;
+      const contextNote = `CURRENT DISCOVERY VIEW (filter=${statusFilter}, topic=${topicFilter}):\n${JSON.stringify(snapshot, null, 2)}\n\nHelp the operator decide which subs to approve/park, suggest stems for promising subs, and flag noise.`;
       const { data, error } = await (supabase.functions as any).invoke('gemma-switchboard', {
         body: {
           mode_slug: 'free_chat',
-          room: 'discovery',
-          messages: [
-            { role: 'system', content: 'You are Gemma in the Subreddit Discovery room. Help the operator decide which subs to approve, which to park, and what next-action (canon to blast, stems to try, sub to lateral-hop into) fits each. Be direct, no hedging. If a sub looks like noise, say so.' },
-            { role: 'system', content: contextNote },
-            ...nextHistory,
-          ],
+          context: { room: 'discovery', selection: contextNote },
+          messages: nextHistory,
         },
       });
       if (error) throw error;
-      const reply = data?.reply ?? data?.message ?? data?.content ?? '(no reply)';
+      const reply = data?.text ?? '(no reply)';
       setChatHistory(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch (e: any) {
       setChatHistory(prev => [...prev, { role: 'assistant', content: `Error: ${e.message ?? String(e)}` }]);
