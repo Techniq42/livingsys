@@ -261,15 +261,22 @@ export default function DashboardOutreach() {
                   <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{t.channel}</span>
                   {t.cohort && <span className="text-[10px] font-mono text-muted-foreground">{t.cohort}</span>}
                   <span className="text-[10px] font-mono text-primary">score {t.signal_score}</span>
+                  {t.status && <span className="text-[10px] font-mono text-muted-foreground/70">· {t.status}</span>}
                 </div>
                 <p className="text-sm text-foreground truncate">{t.target_name || t.target_handle || '(unnamed)'}</p>
                 {t.snippet && <p className="text-xs text-muted-foreground truncate">{t.snippet}</p>}
               </div>
-              {t.target_url && (
-                <a href={t.target_url} target="_blank" rel="noopener" className="text-xs text-primary hover:underline shrink-0">
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              )}
+              <div className="flex items-center gap-2 shrink-0">
+                {t.target_url && (
+                  <a href={t.target_url} target="_blank" rel="noopener" className="text-xs text-primary hover:underline">
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+                <Button size="sm" variant="outline" disabled={busy === `draft-${t.id}`}
+                  onClick={() => draftForTarget(t.id, t.canon_slug)}>
+                  {busy === `draft-${t.id}` ? 'Drafting…' : (t.status === 'drafted' ? 'Re-draft' : 'Draft')}
+                </Button>
+              </div>
             </div>
           ))}
         </div>
