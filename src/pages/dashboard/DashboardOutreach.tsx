@@ -145,32 +145,41 @@ export default function DashboardOutreach() {
 
       {/* Run actions */}
       <div className="mb-8 border border-border bg-card rounded-sm p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-display uppercase tracking-wider">Run a sweep</h2>
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-display uppercase tracking-wider">Sweep workflow</h2>
+          </div>
+          <Button size="sm" variant="default" disabled={busy === 'daily-sweep'} onClick={runDailySweep}>
+            {busy === 'daily-sweep' ? 'Sweeping…' : 'Run daily sweep now'}
+          </Button>
         </div>
+        <p className="text-[11px] text-muted-foreground/70 italic mb-3">
+          Daily sweep also runs automatically every morning. It surfaces targets + funders across every active canon page,
+          but does NOT draft replies. Confirm targets below, then click Draft per row.
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {['watershed-thesis','below-the-radar','fire-defense-guide','regenerative-gem'].map(slug => (
             <div key={slug} className="border border-border/60 rounded-sm p-3">
               <p className="text-xs font-mono text-muted-foreground mb-2">{slug}</p>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" disabled={busy === `blast-${slug}`}
-                  onClick={() => runBlast(slug)} className="flex-1">
+                  onClick={() => runScoutEdges(slug)} className="flex-1">
                   <Radar className="h-3 w-3 mr-1.5" />
-                  {busy === `blast-${slug}` ? 'Running…' : 'Blast'}
+                  {busy === `blast-${slug}` ? 'Scouting…' : 'Scout edges'}
                 </Button>
                 <Button size="sm" variant="outline" disabled={busy === `scout-${slug}`}
                   onClick={() => runScout(slug)} className="flex-1">
                   <Target className="h-3 w-3 mr-1.5" />
-                  {busy === `scout-${slug}` ? 'Running…' : 'Scout'}
+                  {busy === `scout-${slug}` ? 'Running…' : 'Scout funders'}
                 </Button>
               </div>
             </div>
           ))}
         </div>
         <p className="mt-3 text-[11px] text-muted-foreground/70 italic">
-          Blast = Firecrawl sweep across Bluesky + Reddit for people whose voice fits this canon page, with reply drafts.
-          Scout = Apollo search for funders/family offices whose thesis matches, with per-target briefs.
+          Scout edges = Firecrawl sweep across Bluesky + Reddit, surfaces targets only.
+          Scout funders = Apollo search for funders/family offices with per-target briefs.
         </p>
       </div>
 
