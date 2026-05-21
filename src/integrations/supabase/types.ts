@@ -749,6 +749,53 @@ export type Database = {
         }
         Relationships: []
       }
+      gemma_facts: {
+        Row: {
+          confidence: number
+          created_at: string
+          expires_at: string | null
+          fact: string
+          id: string
+          pinned: boolean
+          retired_at: string | null
+          scope_room: string | null
+          source_thread_id: string | null
+          user_id: string
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          expires_at?: string | null
+          fact: string
+          id?: string
+          pinned?: boolean
+          retired_at?: string | null
+          scope_room?: string | null
+          source_thread_id?: string | null
+          user_id: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          expires_at?: string | null
+          fact?: string
+          id?: string
+          pinned?: boolean
+          retired_at?: string | null
+          scope_room?: string | null
+          source_thread_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gemma_facts_source_thread_id_fkey"
+            columns: ["source_thread_id"]
+            isOneToOne: false
+            referencedRelation: "gemma_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gemma_feedback: {
         Row: {
           created_at: string
@@ -835,6 +882,83 @@ export type Database = {
           tagline?: string | null
           updated_at?: string
           voice_register?: string | null
+        }
+        Relationships: []
+      }
+      gemma_thread_messages: {
+        Row: {
+          content: string
+          created_at: string
+          decision_id: string | null
+          id: string
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          decision_id?: string | null
+          id?: string
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          decision_id?: string | null
+          id?: string
+          role?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gemma_thread_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "gemma_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gemma_threads: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          id: string
+          last_message_at: string
+          mode_slug: string
+          room: string
+          summary: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          mode_slug?: string
+          room: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          mode_slug?: string
+          room?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
