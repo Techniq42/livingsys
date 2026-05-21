@@ -161,7 +161,7 @@ serve(async (req) => {
 Room: ${ctx.room ?? "unknown"}
 Lens: ${ctx.lens ?? mode.default_lens ?? "—"}
 Voice register: ${mode.voice_register}
-${ctx.thread_id ? `Active thread id: ${ctx.thread_id}\n` : ""}${ctx.selection ? `Operator selection: ${ctx.selection}\n` : ""}${ctx.pasted_source ? `Pasted source material:\n"""\n${ctx.pasted_source.slice(0, 4000)}\n"""\n` : ""}`;
+${ctx.thread_id ? `Active thread id: ${ctx.thread_id}\n` : ""}${ctx.selection ? `Operator selection: ${ctx.selection}\n` : ""}${ctx.pasted_source ? `Pasted source material:\n"""\n${ctx.pasted_source.slice(0, 4000)}\n"""\n` : ""}${Array.isArray((ctx as any).facts) && (ctx as any).facts.length ? `\n=== WHAT GEMMA KNOWS (durable facts from prior threads) ===\n${(ctx as any).facts.map((f: string, i: number) => `${i + 1}. ${f}`).join("\n")}\n` : ""}`;
 
     const systemInstruction =
       BASE_SYSTEM +
