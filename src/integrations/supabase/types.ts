@@ -2977,6 +2977,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_email_approved: { Args: { _email: string }; Returns: boolean }
       select_redirect_for_draft: {
         Args: { _topic_slug: string; _venue: string }
         Returns: {
