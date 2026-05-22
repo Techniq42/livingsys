@@ -19,6 +19,19 @@ const ROOM_THEMES: Record<string, { bg: string; accent: string; text: string }> 
 
 function DashboardMain({ user, userRole }: { user: User; userRole: string }) {
   const { currentRoom } = useRoom();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('sovereign:sidebarCollapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('sovereign:sidebarCollapsed', String(sidebarCollapsed));
+  }, [sidebarCollapsed]);
+
+  const toggleSidebar = () => setSidebarCollapsed((c) => !c);
 
   useEffect(() => {
     const theme = ROOM_THEMES[currentRoom] ?? ROOM_THEMES.radar;
@@ -30,7 +43,12 @@ function DashboardMain({ user, userRole }: { user: User; userRole: string }) {
 
   return (
     <div className="h-screen flex bg-background">
-      <DashboardSidebar email={user.email || ''} role={userRole} />
+      <DashboardSidebar
+        email={user.email || ''}
+        role={userRole}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={toggleSidebar}
+      />
       <main
         data-room={currentRoom}
         className="flex-1 flex flex-col overflow-hidden"
