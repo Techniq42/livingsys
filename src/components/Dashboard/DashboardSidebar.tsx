@@ -42,7 +42,7 @@ const bottomNavItems = [
   { to: '/dashboard/settings', label: 'Settings', icon: Settings, end: false },
 ];
 
-export function DashboardSidebar({ email, role }: DashboardSidebarProps) {
+export function DashboardSidebar({ email, role, collapsed = false, onToggleCollapse }: DashboardSidebarProps) {
   const { reduceMotion, toggleReduceMotion } = useReduceMotion();
 
   const handleSignOut = async () => {
@@ -57,93 +57,130 @@ export function DashboardSidebar({ email, role }: DashboardSidebarProps) {
   };
 
   return (
-    <aside className="w-64 border-r border-border bg-card flex flex-col h-full">
-      <div className="p-6 border-b border-border">
-        <p className="text-xs tracking-[0.25em] uppercase text-muted-foreground font-display mb-1">
-          The Hearth
-        </p>
-        <p className="text-foreground font-display text-sm">Sovereign OS</p>
+    <aside
+      className={`border-r border-border bg-card flex flex-col h-full transition-all duration-200 ease-out ${
+        collapsed ? 'w-14' : 'w-64'
+      }`}
+    >
+      <div className="p-4 border-b border-border flex items-center justify-between min-h-[60px]">
+        {!collapsed && (
+          <div>
+            <p className="text-xs tracking-[0.25em] uppercase text-muted-foreground font-display mb-1">
+              The Hearth
+            </p>
+            <p className="text-foreground font-display text-sm">Sovereign OS</p>
+          </div>
+        )}
+        <button
+          onClick={onToggleCollapse}
+          className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors cursor-pointer"
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+        </button>
       </div>
 
-      <div className="px-6 py-4 border-b border-border">
-        <span className={`inline-block text-[10px] font-display tracking-wider uppercase border rounded-lg px-2 py-1 ${roleBadgeColor[role] || roleBadgeColor.practitioner}`}>
-          {role}
-        </span>
-      </div>
+      {!collapsed && (
+        <div className="px-6 py-4 border-b border-border">
+          <span className={`inline-block text-[10px] font-display tracking-wider uppercase border rounded-lg px-2 py-1 ${roleBadgeColor[role] || roleBadgeColor.practitioner}`}>
+            {role}
+          </span>
+        </div>
+      )}
 
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
         {topNavItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50"
+            className={`w-full flex items-center rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50 ${
+              collapsed ? 'justify-center px-2' : 'gap-3 px-3 py-2'
+            }`}
             activeClassName="bg-accent text-primary"
+            title={collapsed ? item.label : undefined}
           >
-            <item.icon className="w-4 h-4" />
-            {item.label}
+            <item.icon className="w-4 h-4 flex-shrink-0" />
+            {!collapsed && item.label}
           </NavLink>
         ))}
 
-        <div className="pt-4 pb-1 px-3">
-          <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
-            The Exchange
-          </p>
-        </div>
+        {!collapsed && (
+          <div className="pt-4 pb-1 px-3">
+            <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
+              The Exchange
+            </p>
+          </div>
+        )}
         {exchangeItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50"
+            className={`w-full flex items-center rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50 ${
+              collapsed ? 'justify-center px-2' : 'gap-3 px-3 py-2'
+            }`}
             activeClassName="bg-accent text-primary"
+            title={collapsed ? item.label : undefined}
           >
-            <item.icon className="w-4 h-4" />
-            {item.label}
+            <item.icon className="w-4 h-4 flex-shrink-0" />
+            {!collapsed && item.label}
           </NavLink>
         ))}
 
-        <div className="pt-4 pb-1 px-3">
-          <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
-            Radar Room
-          </p>
-        </div>
+        {!collapsed && (
+          <div className="pt-4 pb-1 px-3">
+            <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
+              Radar Room
+            </p>
+          </div>
+        )}
         {radarRoomItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50"
+            className={`w-full flex items-center rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50 ${
+              collapsed ? 'justify-center px-2' : 'gap-3 px-3 py-2'
+            }`}
             activeClassName="bg-accent text-primary"
+            title={collapsed ? item.label : undefined}
           >
-            <item.icon className="w-4 h-4" />
-            {item.label}
+            <item.icon className="w-4 h-4 flex-shrink-0" />
+            {!collapsed && item.label}
           </NavLink>
         ))}
 
-        <div className="pt-4 pb-1 px-3">
-          <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
-            Editing Bay
-          </p>
-        </div>
+        {!collapsed && (
+          <div className="pt-4 pb-1 px-3">
+            <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
+              Editing Bay
+            </p>
+          </div>
+        )}
         {editingBayItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50"
+            className={`w-full flex items-center rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50 ${
+              collapsed ? 'justify-center px-2' : 'gap-3 px-3 py-2'
+            }`}
             activeClassName="bg-accent text-primary"
+            title={collapsed ? item.label : undefined}
           >
-            <item.icon className="w-4 h-4" />
-            {item.label}
+            <item.icon className="w-4 h-4 flex-shrink-0" />
+            {!collapsed && item.label}
           </NavLink>
         ))}
 
-        <div className="pt-4 pb-1 px-3">
-          <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
-            System
-          </p>
-        </div>
+        {!collapsed && (
+          <div className="pt-4 pb-1 px-3">
+            <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-display">
+              System
+            </p>
+          </div>
+        )}
         {bottomNavItems
           .filter((item) => !item.architectOnly || role === 'architect')
           .map((item) => (
@@ -151,30 +188,39 @@ export function DashboardSidebar({ email, role }: DashboardSidebarProps) {
               key={item.to}
               to={item.to}
               end={item.end}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              className={`w-full flex items-center rounded-lg text-sm font-display transition-all min-h-[44px] text-muted-foreground hover:text-foreground hover:bg-accent/50 ${
+                collapsed ? 'justify-center px-2' : 'gap-3 px-3 py-2'
+              }`}
               activeClassName="bg-accent text-primary"
+              title={collapsed ? item.label : undefined}
             >
-              <item.icon className="w-4 h-4" />
-              {item.label}
+              <item.icon className="w-4 h-4 flex-shrink-0" />
+              {!collapsed && item.label}
             </NavLink>
           ))}
       </nav>
 
-      <div className="p-4 border-t border-border space-y-3">
+      <div className={`border-t border-border space-y-2 ${collapsed ? 'p-2' : 'p-4'}`}>
         <button
           onClick={toggleReduceMotion}
-          className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer font-display tracking-wider min-h-[44px] w-full"
+          className={`flex items-center text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer font-display tracking-wider min-h-[44px] w-full ${
+            collapsed ? 'justify-center' : 'gap-2'
+          }`}
+          title={collapsed ? (reduceMotion ? 'Motion: Off' : 'Motion: On') : undefined}
         >
-          <Sparkles className="w-3 h-3" />
-          {reduceMotion ? 'Motion: Off' : 'Motion: On'}
+          <Sparkles className="w-3 h-3 flex-shrink-0" />
+          {!collapsed && (reduceMotion ? 'Motion: Off' : 'Motion: On')}
         </button>
-        <p className="text-xs text-muted-foreground truncate">{email}</p>
+        {!collapsed && <p className="text-xs text-muted-foreground truncate">{email}</p>}
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer font-display tracking-wider min-h-[44px]"
+          className={`flex items-center text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer font-display tracking-wider min-h-[44px] w-full ${
+            collapsed ? 'justify-center' : 'gap-2'
+          }`}
+          title={collapsed ? 'Sign Out' : undefined}
         >
-          <LogOut className="w-3 h-3" />
-          Sign Out
+          <LogOut className="w-3 h-3 flex-shrink-0" />
+          {!collapsed && 'Sign Out'}
         </button>
       </div>
     </aside>
