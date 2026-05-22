@@ -155,12 +155,9 @@ export default function ArchitectLogin() {
     try {
       const trimmedEmail = email.trim().toLowerCase();
 
-      // Check approved_emails allowlist before signup or login
-      const { data: approved, error: lookupError } = await (supabase
-        .from('approved_emails') as any)
-        .select('email')
-        .eq('email', trimmedEmail)
-        .maybeSingle();
+      // Check approved_emails allowlist via security-definer RPC
+      const { data: approved, error: lookupError } = await (supabase as any)
+        .rpc('is_email_approved', { _email: trimmedEmail });
 
       if (lookupError) {
         throw new Error('Unable to verify access. Please try again.');
