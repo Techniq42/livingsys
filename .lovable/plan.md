@@ -72,3 +72,35 @@ Single migration, no UI beyond what Slice 1-3 ship. All RLS architect-write, ope
 Once you answer these I run the four migrations + UI in order A → B → C → D and report back with what's wired.
 
 Service dog, copy that.
+
+---
+
+## Queued: Resources room (rename of Field Guide)
+
+Captured from user message; do not build until user says go.
+
+**Scope**
+- Rename the pending `field-guide` mode → `resources` (route + label + skin).
+- Add `/dashboard/resources` with two panels:
+  1. **External Links** — GitHub repos, canon URLs, tools, docs. CRUD for architects, read for practitioners.
+  2. **Private Data Repo** — PDFs and other files (Supabase Storage bucket `resources`, private, RLS by role).
+- Sub-account scoping (Empty/FLS/BLS) so files can belong to a specific snapshot.
+
+**Data**
+- `resource_links` (id, sub_account_slug, category, title, url, description, tags[], visibility, sort_order, created_by, timestamps).
+- `resource_files` (id, sub_account_slug, storage_path, filename, mime, size_bytes, description, tags[], visibility, uploaded_by, timestamps).
+- Storage bucket `resources` (private) with RLS: architects write, practitioners read scoped to their sub-account bindings.
+
+**GHL bridge (the interesting bit)**
+- Add a "Push to GHL" action on `resource_files`:
+  - Architect selects sub-account (already in `SubAccountContext`).
+  - Edge function `ghl-asset-push` generates a short-lived signed URL from the `resources` bucket.
+  - Posts `{sub_account_slug, file_url, filename, mime, tags}` to n8n via `edge-runner-gateway`.
+  - n8n workflow uploads to GHL Media Library for that sub-account and returns the GHL asset ID.
+  - Log to `ghl_action_log` with `action_type='asset_push'`.
+- Requires new n8n workflow on Amsterdam instance — flag as a coordination item.
+
+**Open questions for later**
+- Do practitioners need upload rights, or read-only?
+- Should link categories be free-form tags or a fixed enum (repo / doc / tool / canon / snapshot)?
+- Version history on files, or overwrite-in-place?
