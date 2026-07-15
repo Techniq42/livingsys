@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 import { SubAccountSwitcher } from '@/components/ghl/SubAccountSwitcher';
 
 // Spec: Edit, Radar, Bookkeeping, HR, Field-guide-build, Triage, Agency, Brand
@@ -15,13 +16,30 @@ const MODES: Array<{ slug: string; label: string; route: string; live: boolean }
   { slug: 'brand', label: 'Brand', route: '/dashboard/mode/brand', live: false },
 ];
 
-export function RoomTopBar() {
+interface RoomTopBarProps {
+  onToggleSidebar?: () => void;
+  sidebarCollapsed?: boolean;
+}
+
+export function RoomTopBar({ onToggleSidebar, sidebarCollapsed }: RoomTopBarProps = {}) {
   const navigate = useNavigate();
   const location = useLocation();
 
+
   return (
     <div className="flex items-center justify-between gap-4 px-4 py-3 bg-gray-900/50 border-b border-white/5 overflow-x-auto">
-      <div className="flex items-center gap-1.5 flex-shrink-0">
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {onToggleSidebar && (
+          <button
+            onClick={onToggleSidebar}
+            aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className="p-1.5 rounded text-white/60 hover:text-white hover:bg-white/5 transition-colors cursor-pointer flex-shrink-0"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+        )}
+
         {MODES.map((mode) => {
           const active = location.pathname.startsWith(mode.route);
           return (

@@ -54,7 +54,7 @@ function DashboardMain({ user, userRole }: { user: User; userRole: string }) {
         className="flex-1 flex flex-col overflow-hidden"
         style={{ background: 'var(--room-bg, #0f1419)', color: 'var(--room-text, #e0e0e0)' }}
       >
-        <RoomTopBar />
+        <RoomTopBar onToggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
         <div className="flex-1 overflow-y-auto">
           <Outlet context={{ user, userRole }} />
         </div>
