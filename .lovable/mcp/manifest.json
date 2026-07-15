@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "sdk_version": "0.22.2",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://spoiizdwriqfspehbcwp.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "sovereign-os-mcp",
+      "version": "0.1.0",
+      "title": "Sovereign OS MCP"
+    },
+    "tools": [
+      {
+        "name": "echo",
+        "title": "Echo",
+        "description": "Echo the input text back. Use to verify connectivity to the Sovereign OS MCP server.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text to echo back."
+            }
+          },
+          "required": [
+            "text"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_canon_pages",
+        "title": "List canon pages",
+        "description": "List active Sovereign OS canon pages (Watershed Thesis, Fire Defense, Below the Radar, Regenerative Gem, etc.) with slugs, audiences, and navigation notes.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "description": "Filter by status. Defaults to active.",
+              "type": "string",
+              "enum": [
+                "active",
+                "draft",
+                "retired",
+                "any"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_facts",
+        "title": "List my Gemma facts",
+        "description": "List durable facts Gemma remembers about the signed-in operator (from gemma_facts). Optionally filter by room scope.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "scope_room": {
+              "description": "Optional room slug (e.g. 'outreach', 'radar') to scope facts to.",
+              "type": "string"
+            },
+            "include_retired": {
+              "description": "Include retired facts. Defaults to false.",
+              "type": "boolean"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "remember_fact",
+        "title": "Remember a fact",
+        "description": "Save a durable fact into Gemma's memory layer (gemma_facts) for the signed-in operator. Optionally scope it to a room.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "minLength": 3,
+              "description": "The fact to remember (atomic, one idea)."
+            },
+            "scope_room": {
+              "description": "Optional room slug to scope the fact (e.g. 'outreach'). Omit for global.",
+              "type": "string"
+            },
+            "pinned": {
+              "description": "Pin the fact so it always injects. Defaults to false.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "fact"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

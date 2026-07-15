@@ -28,6 +28,7 @@ import ArchitectLogin from "./pages/ArchitectLogin";
 import ResetPassword from "./pages/ResetPassword";
 import Nexus from "./pages/Nexus";
 import Canon from "./pages/Canon";
+import OAuthConsent from "./pages/OAuthConsent";
 
 import NotFound from "./pages/NotFound";
 
@@ -66,6 +67,7 @@ const App = () => (
           <Route path="/architect-dashboard" element={<ArchitectDashboard />} />
           <Route path="/architect-login" element={<ArchitectLogin />} />
           <Route path="/auth/reset-password" element={<ResetPassword />} />
+          <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
