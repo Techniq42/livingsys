@@ -27,3 +27,6 @@ verify_jwt = false
 [functions.funder-scout]
 verify_jwt = false
 
+[functions.mcp]
+verify_jwt = false
+
