@@ -405,24 +405,30 @@ export default function Nexus() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const priority = ['administrator', 'architect', 'practitioner'];
+    const pickRole = (rows: Array<{ role: string }> | null) => {
+      const roles = (rows ?? []).map((r) => r.role);
+      return priority.find((p) => roles.includes(p)) ?? roles[0] ?? null;
+    };
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
       if (session?.user) {
-        supabase.from('user_roles').select('role').eq('user_id', session.user.id).single()
-          .then(({ data }) => { if (data) setRole(data.role); });
+        supabase.from('user_roles').select('role').eq('user_id', session.user.id)
+          .then(({ data }) => { const r = pickRole(data as any); if (r) setRole(r); });
       }
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
       if (session?.user) {
-        supabase.from('user_roles').select('role').eq('user_id', session.user.id).single()
-          .then(({ data }) => { if (data) setRole(data.role); });
+        supabase.from('user_roles').select('role').eq('user_id', session.user.id)
+          .then(({ data }) => { const r = pickRole(data as any); if (r) setRole(r); });
       }
     });
     return () => subscription.unsubscribe();
   }, []);
+
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><span className="w-3 h-3 rounded-full bg-primary animate-pulse-dot" /></div>;
   if (!user) return <AuthPage />;

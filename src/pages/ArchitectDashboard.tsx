@@ -21,16 +21,19 @@ export default function ArchitectDashboardPage() {
     const { data, error } = await supabase
       .from('user_roles')
       .select('role')
-      .eq('user_id', userId)
-      .single();
+      .eq('user_id', userId);
 
-    if (error || !data || (data.role !== 'architect' && data.role !== 'administrator')) {
+    const roles = (data ?? []).map((r) => r.role);
+    const isArchitect = roles.includes('architect') || roles.includes('administrator');
+
+    if (error || !isArchitect) {
       console.warn('Access denied: user is not an architect');
       navigate('/dashboard');
       return false;
     }
     return true;
   }
+
 
   useEffect(() => {
     // Listen for auth state changes (including token recovery from email links)
