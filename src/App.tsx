@@ -61,6 +61,7 @@ const App = () => (
             <Route path="outreach" element={<DashboardOutreach />} />
             <Route path="conversations" element={<DashboardConversations />} />
             <Route path="discovery" element={<DashboardDiscovery />} />
+            <Route path="tables" element={<DashboardTables />} />
             <Route path="mode/:mode" element={<DashboardComingOnline />} />
           </Route>
           <Route path="/nexus" element={<Nexus />} />
