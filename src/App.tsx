@@ -23,6 +23,7 @@ import DashboardGhlCockpit from "./pages/dashboard/DashboardGhlCockpit";
 import DashboardOutreach from "./pages/dashboard/DashboardOutreach";
 import DashboardConversations from "./pages/dashboard/DashboardConversations";
 import DashboardDiscovery from "./pages/dashboard/DashboardDiscovery";
+import DashboardTables from "./pages/dashboard/DashboardTables";
 import ArchitectDashboard from "./pages/ArchitectDashboard";
 import ArchitectLogin from "./pages/ArchitectLogin";
 import ResetPassword from "./pages/ResetPassword";
