@@ -1,291 +1,315 @@
-// @ts-nocheck
-import { useEffect, useMemo, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-import { MessageSquare, ExternalLink, Sparkles, Send, Compass } from 'lucide-react';
-import type { User } from '@supabase/supabase-js';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
+import { CheckCircle, XCircle, Edit3, ExternalLink, RefreshCw, MessageSquare } from 'lucide-react';
 
-type Conversation = {
+type Draft = {
   id: string;
-  channel: string;
-  counterpart_handle: string | null;
-  counterpart_display_name: string | null;
-  canon_slug: string | null;
   status: string;
-  route_slug: string | null;
-  external_thread_url: string | null;
-  last_inbound_at: string | null;
-  last_outbound_at: string | null;
-  message_count: number;
-  metadata: any;
-  notes: string | null;
-};
-
-type Message = {
-  id: string;
-  conversation_id: string;
-  direction: string;
-  author_handle: string | null;
-  body: string;
-  external_message_url: string | null;
+  classifier_tier: number | null;
+  subreddit: string | null;
+  post_title: string | null;
+  draft_text: string | null;
+  thread_url: string | null;
+  shannon_notes: string | null;
+  safety_flags: string | null;
   created_at: string;
 };
 
-type Route = {
-  slug: string;
-  label: string;
-  description: string | null;
-  handoff_notes: string | null;
+const short = (id: string) => id.slice(0, 8);
+const fmt = (d: string) => new Date(d).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+const STATUS_COLORS: Record<string, string> = {
+  pending_review: 'border-amber-500/40 text-amber-500',
+  notified:       'border-amber-500/40 text-amber-500',
+  approved:       'border-emerald-500/40 text-emerald-500',
+  skipped:        'border-muted-foreground/40 text-muted-foreground',
+  reframed:       'border-blue-500/40 text-blue-500',
+  posted:         'border-emerald-500/40 text-emerald-500',
+  manual_post:    'border-secondary/40 text-secondary',
 };
 
-const STATUSES: Conversation['status'][] = ['open', 'awaiting_reply', 'routed', 'parked', 'closed'];
+const QUEUE_STATUSES = ['pending_review', 'notified'];
+const ALL_STATUSES = ['all', 'pending_review', 'notified', 'approved', 'skipped', 'reframed', 'posted', 'manual_post'];
 
 export default function DashboardConversations() {
-  const { userRole } = useOutletContext<{ user: User; userRole: string }>();
-  const isArchitect = userRole === 'architect' || userRole === 'administrator';
-  const { toast } = useToast();
+  const [drafts, setDrafts] = useState<Draft[]>([]);
+  const [selected, setSelected] = useState<Draft | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('queue');
+  const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [editText, setEditText] = useState('');
+  const [editNote, setEditNote] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [routes, setRoutes] = useState<Route[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string>('open');
-  const [draft, setDraft] = useState('');
-  const [draftRationale, setDraftRationale] = useState<string | null>(null);
-  const [drafting, setDrafting] = useState(false);
-  const [sending, setSending] = useState(false);
+  const load = async () => {
+    setLoading(true);
+    let q = supabase.from('response_drafts').select('*').order('created_at', { ascending: false }).limit(100);
+    if (statusFilter === 'queue') {
+      q = q.in('status', QUEUE_STATUSES);
+    } else if (statusFilter !== 'all') {
+      q = q.eq('status', statusFilter);
+    }
+    const { data, error } = await q;
+    if (error) toast.error(error.message);
+    const rows = (data || []) as Draft[];
+    setDrafts(rows);
+    if (selected) {
+      const refreshed = rows.find(r => r.id === selected.id);
+      setSelected(refreshed ?? null);
+    }
+    setLoading(false);
+  };
 
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => { load(); }, [statusFilter]);
+
+  // Live subscription — new drafts appear without manual refresh
   useEffect(() => {
-    if (!selectedId) { setMessages([]); return; }
-    loadMessages(selectedId);
     const channel = supabase
-      .channel(`conv_${selectedId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'outreach_messages', filter: `conversation_id=eq.${selectedId}` }, () => loadMessages(selectedId))
+      .channel('response_drafts_live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'response_drafts' }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [selectedId]);
+  }, [statusFilter]);
 
-  async function refresh() {
-    const [{ data: convs }, { data: rts }] = await Promise.all([
-      (supabase as any).from('outreach_conversations').select('*').order('last_inbound_at', { ascending: false, nullsFirst: false }),
-      (supabase as any).from('conversation_routes').select('*').eq('is_active', true).order('sort_order', { ascending: true }),
-    ]);
-    setConversations((convs ?? []) as Conversation[]);
-    setRoutes((rts ?? []) as Route[]);
-  }
+  const patch = async (id: string, update: Partial<Draft>) => {
+    const { error } = await supabase.from('response_drafts').update(update).eq('id', id);
+    if (error) { toast.error(error.message); return false; }
+    return true;
+  };
 
-  async function loadMessages(id: string) {
-    const { data } = await (supabase as any).from('outreach_messages').select('*').eq('conversation_id', id).order('created_at', { ascending: true });
-    setMessages((data ?? []) as Message[]);
-  }
+  const approve = async (draft: Draft) => {
+    if (!await patch(draft.id, { status: 'approved' })) return;
+    toast.success('Approved — n8n send worker will post.');
+    await load();
+  };
 
-  const filtered = useMemo(() => {
-    if (statusFilter === 'all') return conversations;
-    return conversations.filter(c => c.status === statusFilter);
-  }, [conversations, statusFilter]);
+  const skip = async (draft: Draft) => {
+    if (!await patch(draft.id, { status: 'skipped' })) return;
+    toast('Skipped.');
+    await load();
+  };
 
-  const selected = conversations.find(c => c.id === selectedId) ?? null;
-
-  async function updateConversation(patch: Partial<Conversation>) {
+  const saveEdit = async () => {
     if (!selected) return;
-    const { error } = await (supabase as any).from('outreach_conversations').update(patch).eq('id', selected.id);
-    if (error) { toast({ title: 'Update failed', description: error.message, variant: 'destructive' }); return; }
-    setConversations(prev => prev.map(c => c.id === selected.id ? { ...c, ...patch } : c));
-  }
+    setSaving(true);
+    // Update draft text, keep status notified (human reviewed, awaiting re-queue)
+    const ok = await patch(selected.id, { draft_text: editText, status: 'notified' });
+    if (!ok) { setSaving(false); return; }
 
-  async function generateDraft() {
-    if (!selected) return;
-    setDrafting(true);
-    setDraftRationale(null);
-    try {
-      const { data, error } = await (supabase.functions as any).invoke('conversation-draft', {
-        body: { conversation_id: selected.id, route_slug: selected.route_slug },
+    // Log guidance to danny_calibration so Danny learns from the reframe
+    if (editNote.trim()) {
+      const { error } = await supabase.from('danny_calibration').insert({
+        draft_id: selected.id,
+        feedback: editNote.trim(),
       });
-      if (error) throw error;
-      if (data?.draft) {
-        setDraft(data.draft);
-        setDraftRationale(data.rationale ?? null);
-        if (data.suggested_route && !selected.route_slug) {
-          toast({ title: 'Gemma suggests a route', description: data.suggested_route });
-        }
-      } else {
-        toast({ title: 'No draft returned', variant: 'destructive' });
-      }
-    } catch (e: any) {
-      toast({ title: 'Draft failed', description: e.message ?? String(e), variant: 'destructive' });
-    } finally {
-      setDrafting(false);
+      if (error) toast.error(`Calibration log failed: ${error.message}`);
+      else toast.success('Draft updated — guidance logged to Danny.');
+    } else {
+      toast.success('Draft updated.');
     }
-  }
 
-  async function sendOutbound() {
-    if (!selected || !draft.trim()) return;
-    setSending(true);
-    try {
-      // Log the outbound message locally; actual posting handled by n8n in a follow-up sprint.
-      const { data, error } = await (supabase.functions as any).invoke('conversation-ingest', {
-        body: {
-          channel: selected.channel,
-          direction: 'outbound',
-          body: draft,
-          counterpart_handle: selected.counterpart_handle,
-          external_thread_url: selected.external_thread_url,
-          target_id: undefined,
-          canon_slug: selected.canon_slug,
-        },
-      });
-      if (error) throw error;
-      setDraft('');
-      setDraftRationale(null);
-      await loadMessages(selected.id);
-      await refresh();
-      toast({ title: 'Logged outbound', description: 'Hand off to n8n / manual post when ready.' });
-    } catch (e: any) {
-      toast({ title: 'Log failed', description: e.message ?? String(e), variant: 'destructive' });
-    } finally {
-      setSending(false);
-    }
-  }
+    setEditMode(false);
+    setEditText('');
+    setEditNote('');
+    setSaving(false);
+    await load();
+  };
+
+  const selectDraft = (d: Draft) => {
+    setSelected(d);
+    setEditMode(false);
+    setEditText('');
+    setEditNote('');
+  };
+
+  const queueCount = drafts.filter(d => QUEUE_STATUSES.includes(d.status)).length;
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-6 max-w-[1400px] mx-auto">
+      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-display text-foreground flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-primary" /> Conversations
+          <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-display">Respond</p>
+          <h1 className="text-2xl font-display flex items-center gap-2">
+            <MessageSquare className="h-5 w-5 text-primary" />
+            Draft queue
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Threads from canon outreach. Where the signal flare becomes a discussion that routes somewhere useful.</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Approve, skip, or reframe. n8n posts approved drafts — nothing ships without your say.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="h-8 text-xs w-[160px]"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="queue">Queue ({queueCount})</SelectItem>
+              {ALL_STATUSES.slice(1).map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              <SelectItem value="all">all</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button size="sm" variant="outline" className="h-8" onClick={load}>
+            <RefreshCw className="h-3 w-3" />
+          </Button>
         </div>
       </div>
 
-      <div className="flex gap-2 mb-4 flex-wrap">
-        {['all', ...STATUSES].map(s => (
-          <Button key={s} size="sm" variant={statusFilter === s ? 'default' : 'outline'} className="h-7 text-xs" onClick={() => setStatusFilter(s)}>
-            {s} {s !== 'all' ? `(${conversations.filter(c => c.status === s).length})` : `(${conversations.length})`}
-          </Button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-4">
-        {/* Conversation list */}
-        <div className="border border-border rounded-lg bg-card divide-y divide-border max-h-[70vh] overflow-y-auto">
-          {filtered.length === 0 && (
-            <div className="p-6 text-sm text-muted-foreground text-center">No conversations.</div>
+      <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-4">
+        {/* Draft list */}
+        <div className="border border-border rounded-lg bg-card divide-y divide-border max-h-[75vh] overflow-y-auto">
+          {loading && <p className="p-4 text-xs text-muted-foreground">Loading…</p>}
+          {!loading && drafts.length === 0 && (
+            <p className="p-6 text-sm text-muted-foreground text-center">
+              {statusFilter === 'queue' ? 'Queue is clear.' : 'No drafts.'}
+            </p>
           )}
-          {filtered.map(c => (
+          {drafts.map(d => (
             <button
-              key={c.id}
-              onClick={() => setSelectedId(c.id)}
-              className={`w-full text-left p-3 hover:bg-accent/40 transition ${selectedId === c.id ? 'bg-accent/50' : ''}`}
+              key={d.id}
+              onClick={() => selectDraft(d)}
+              className={`w-full text-left p-3 hover:bg-accent/40 transition ${selected?.id === d.id ? 'bg-accent/50' : ''}`}
             >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs uppercase tracking-wider text-muted-foreground">{c.channel}</span>
-                <span className="text-[10px] text-muted-foreground">{c.message_count} msgs</span>
-              </div>
-              <div className="text-sm font-display text-foreground truncate mt-1">{c.counterpart_handle ?? c.counterpart_display_name ?? '(unknown)'}</div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground">{c.status}</span>
-                {c.route_slug && <span className="text-[10px] px-2 py-0.5 rounded-full border border-primary/40 text-primary">{c.route_slug}</span>}
-                {c.metadata?.route_hint && !c.route_slug && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full border border-coral/40 text-coral flex items-center gap-1"><Compass className="h-3 w-3" />hint: {c.metadata.route_hint}</span>
+              <div className="flex items-center gap-2 text-xs mb-1">
+                <span className={`inline-block text-[10px] font-display tracking-wider uppercase border rounded px-1.5 py-0.5 ${STATUS_COLORS[d.status] ?? 'border-border text-muted-foreground'}`}>
+                  {d.status}
+                </span>
+                {d.classifier_tier != null && (
+                  <Badge variant="outline" className="text-[10px] h-4">T{d.classifier_tier}</Badge>
                 )}
+                {d.subreddit && <span className="text-muted-foreground">r/{d.subreddit}</span>}
+                <span className="text-muted-foreground ml-auto text-[10px]">{fmt(d.created_at)}</span>
               </div>
+              <p className="text-sm font-display truncate">{d.post_title || '—'}</p>
+              {d.draft_text && (
+                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{d.draft_text}</p>
+              )}
             </button>
           ))}
         </div>
 
-        {/* Thread + composer */}
-        <div className="border border-border rounded-lg bg-card p-4 min-h-[70vh] flex flex-col">
+        {/* Detail + actions */}
+        <div className="border border-border rounded-lg bg-card p-4 min-h-[75vh] flex flex-col gap-4">
           {!selected && (
-            <div className="text-sm text-muted-foreground text-center my-auto">Select a conversation to view the thread.</div>
+            <p className="text-sm text-muted-foreground m-auto">Select a draft to review.</p>
           )}
+
           {selected && (
             <>
-              <div className="flex items-center justify-between mb-3 pb-3 border-b border-border">
-                <div>
-                  <div className="text-sm font-display text-foreground">{selected.counterpart_handle ?? '(unknown)'}</div>
-                  <div className="text-xs text-muted-foreground">{selected.channel} · canon: {selected.canon_slug ?? '—'}</div>
+              {/* Header */}
+              <div className="flex items-start justify-between gap-3 pb-3 border-b border-border">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap text-xs mb-1">
+                    <code className="text-muted-foreground">{short(selected.id)}</code>
+                    <span className={`inline-block text-[10px] font-display tracking-wider uppercase border rounded px-1.5 py-0.5 ${STATUS_COLORS[selected.status] ?? 'border-border text-muted-foreground'}`}>
+                      {selected.status}
+                    </span>
+                    {selected.classifier_tier != null && (
+                      <Badge variant="outline" className="text-[10px]">T{selected.classifier_tier}</Badge>
+                    )}
+                    {selected.subreddit && <span className="text-muted-foreground">r/{selected.subreddit}</span>}
+                    {selected.safety_flags && (
+                      <span className="text-coral text-[10px]">⚑ {selected.safety_flags}</span>
+                    )}
+                  </div>
+                  <p className="text-base font-display">{selected.post_title || '—'}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{fmt(selected.created_at)}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  {selected.external_thread_url && (
-                    <a href={selected.external_thread_url} target="_blank" rel="noreferrer" className="text-xs text-primary inline-flex items-center gap-1">
-                      thread <ExternalLink className="h-3 w-3" />
-                    </a>
-                  )}
-                </div>
+                {selected.thread_url && (
+                  <a
+                    href={selected.thread_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-primary shrink-0"
+                  >
+                    Thread <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
               </div>
 
-              {/* Status + Route */}
-              {isArchitect && (
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <select
-                    value={selected.status}
-                    onChange={(e) => updateConversation({ status: e.target.value })}
-                    className="text-xs bg-background border border-border rounded px-2 py-1"
-                  >
-                    {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                  <select
-                    value={selected.route_slug ?? ''}
-                    onChange={(e) => updateConversation({ route_slug: e.target.value || null, routed_at: e.target.value ? new Date().toISOString() : null, status: e.target.value ? 'routed' : selected.status } as any)}
-                    className="text-xs bg-background border border-border rounded px-2 py-1"
-                  >
-                    <option value="">— Route —</option>
-                    {routes.map(r => <option key={r.slug} value={r.slug}>{r.label}</option>)}
-                  </select>
-                </div>
-              )}
-
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto space-y-3 mb-3 pr-1">
-                {messages.length === 0 && <div className="text-xs text-muted-foreground">No messages yet.</div>}
-                {messages.map(m => (
-                  <div key={m.id} className={`p-3 rounded-lg text-sm ${m.direction === 'inbound' ? 'bg-muted/40 border border-border' : 'bg-primary/10 border border-primary/30 ml-8'}`}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{m.direction} · {m.author_handle ?? '—'}</span>
-                      <span className="text-[10px] text-muted-foreground">{new Date(m.created_at).toLocaleString()}</span>
+              {/* Draft text */}
+              <div className="flex-1">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Draft</p>
+                {!editMode ? (
+                  <div className="bg-muted/20 border border-border rounded p-3 text-sm whitespace-pre-wrap font-mono">
+                    {selected.draft_text || <span className="text-muted-foreground italic">No draft text.</span>}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <Textarea
+                      rows={8}
+                      value={editText}
+                      onChange={e => setEditText(e.target.value)}
+                      className="text-sm font-mono"
+                      placeholder="Edit the draft…"
+                    />
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Guidance for Danny (logged to calibration)</p>
+                      <Textarea
+                        rows={3}
+                        value={editNote}
+                        onChange={e => setEditNote(e.target.value)}
+                        className="text-xs"
+                        placeholder="What should Danny do differently? (optional)"
+                      />
                     </div>
-                    <div className="whitespace-pre-wrap text-foreground">{m.body}</div>
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={saveEdit} disabled={saving}>
+                        {saving ? 'Saving…' : 'Save edit'}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setEditMode(false)}>
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
-                ))}
+                )}
               </div>
 
-              {/* Composer */}
-              {isArchitect && (
-                <div className="border-t border-border pt-3 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Draft next reply</span>
-                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={generateDraft} disabled={drafting}>
-                      <Sparkles className="h-3 w-3 mr-1" />
-                      {drafting ? 'Drafting…' : 'Gemma draft'}
-                    </Button>
-                  </div>
-                  <Textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={4} placeholder="Write or generate a reply…" className="text-sm" />
-                  {draftRationale && <p className="text-[10px] text-muted-foreground italic">Rationale: {draftRationale}</p>}
-                  <div className="flex justify-end">
-                    <Button size="sm" onClick={sendOutbound} disabled={sending || !draft.trim()}>
-                      <Send className="h-3 w-3 mr-1" /> Log outbound
-                    </Button>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">Logging records the message in-app. n8n / manual posting handles the actual send.</p>
+              {/* Shannon notes (read) */}
+              {selected.shannon_notes && !editMode && (
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Notes</p>
+                  <p className="text-xs text-muted-foreground">{selected.shannon_notes}</p>
                 </div>
               )}
 
-              {/* Notes */}
-              {isArchitect && (
-                <div className="mt-3 pt-3 border-t border-border">
-                  <label className="text-xs text-muted-foreground">Internal notes</label>
-                  <Textarea
-                    value={selected.notes ?? ''}
-                    onChange={(e) => setConversations(prev => prev.map(c => c.id === selected.id ? { ...c, notes: e.target.value } : c))}
-                    onBlur={(e) => updateConversation({ notes: e.target.value })}
-                    rows={2}
-                    className="text-xs mt-1"
-                  />
+              {/* Action buttons */}
+              {!editMode && (
+                <div className="flex gap-2 flex-wrap pt-3 border-t border-border">
+                  <Button
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1"
+                    onClick={() => approve(selected)}
+                    disabled={selected.status === 'approved' || selected.status === 'posted'}
+                  >
+                    <CheckCircle className="h-4 w-4" /> Approve
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1"
+                    onClick={() => {
+                      setEditMode(true);
+                      setEditText(selected.draft_text ?? '');
+                    }}
+                  >
+                    <Edit3 className="h-4 w-4" /> Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="gap-1 text-muted-foreground"
+                    onClick={() => skip(selected)}
+                    disabled={selected.status === 'skipped'}
+                  >
+                    <XCircle className="h-4 w-4" /> Skip
+                  </Button>
+                  <p className="w-full text-[10px] text-muted-foreground">
+                    Approve queues for n8n send worker. Edit rewrites the draft and logs guidance to Danny. Skip removes from queue.
+                  </p>
                 </div>
               )}
             </>
