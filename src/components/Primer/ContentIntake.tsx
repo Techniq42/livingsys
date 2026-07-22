@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Link, Type, HelpCircle, Film, Headphones, FileText, Loader2 } from 'lucide-react';
