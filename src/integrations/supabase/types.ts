@@ -14,32 +14,70 @@ export type Database = {
   }
   public: {
     Tables: {
+      alert_templates: {
+        Row: {
+          body_template: string
+          channel: string
+          created_at: string | null
+          id: string
+          name: string
+          subject_template: string | null
+        }
+        Insert: {
+          body_template: string
+          channel?: string
+          created_at?: string | null
+          id?: string
+          name: string
+          subject_template?: string | null
+        }
+        Update: {
+          body_template?: string
+          channel?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          subject_template?: string | null
+        }
+        Relationships: []
+      }
       alerts: {
         Row: {
           acknowledged: boolean | null
-          alert_type: string
+          context: Json | null
           created_at: string | null
           id: string
           message: string
           severity: string
+          template_id: string | null
         }
         Insert: {
           acknowledged?: boolean | null
-          alert_type: string
+          context?: Json | null
           created_at?: string | null
           id?: string
           message: string
           severity?: string
+          template_id?: string | null
         }
         Update: {
           acknowledged?: boolean | null
-          alert_type?: string
+          context?: Json | null
           created_at?: string | null
           id?: string
           message?: string
           severity?: string
+          template_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "alerts_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "alert_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       approved_emails: {
         Row: {
@@ -68,1155 +106,791 @@ export type Database = {
         }
         Relationships: []
       }
-      auto_post_config: {
+      attestation_grants: {
         Row: {
-          config: Json
+          granted_at: string
+          grantee_scope: string
+          granter_op: string
           id: string
-          subreddit: string | null
-          updated_at: string
-          updated_by: string | null
+          predicate: Json
+          revoked_at: string | null
+          surface: string
         }
         Insert: {
-          config?: Json
+          granted_at?: string
+          grantee_scope: string
+          granter_op: string
           id?: string
-          subreddit?: string | null
-          updated_at?: string
-          updated_by?: string | null
+          predicate?: Json
+          revoked_at?: string | null
+          surface: string
         }
         Update: {
-          config?: Json
+          granted_at?: string
+          grantee_scope?: string
+          granter_op?: string
           id?: string
-          subreddit?: string | null
-          updated_at?: string
-          updated_by?: string | null
+          predicate?: Json
+          revoked_at?: string | null
+          surface?: string
         }
         Relationships: []
       }
-      canon_pages: {
+      bad_faith_patterns: {
         Row: {
-          audience: string | null
-          audience_cohorts: Json
+          canonical_md: string
+          context_tier: string
           created_at: string
-          id: string
-          methodology_tags: string[] | null
-          navigation_notes: string | null
-          primary_regions: string[]
-          secondary_regions: string[]
+          detection_hints: Json
+          display_name: string
+          pattern_kind: string
           slug: string
-          sort_order: number
-          status: string
-          substrate_topics: string[] | null
-          summary: string | null
-          title: string
-          updated_at: string
-          url: string
         }
         Insert: {
-          audience?: string | null
-          audience_cohorts?: Json
+          canonical_md: string
+          context_tier?: string
           created_at?: string
-          id?: string
-          methodology_tags?: string[] | null
-          navigation_notes?: string | null
-          primary_regions?: string[]
-          secondary_regions?: string[]
+          detection_hints?: Json
+          display_name: string
+          pattern_kind: string
           slug: string
-          sort_order?: number
-          status?: string
-          substrate_topics?: string[] | null
-          summary?: string | null
-          title: string
-          updated_at?: string
-          url: string
         }
         Update: {
-          audience?: string | null
-          audience_cohorts?: Json
+          canonical_md?: string
+          context_tier?: string
           created_at?: string
-          id?: string
-          methodology_tags?: string[] | null
-          navigation_notes?: string | null
-          primary_regions?: string[]
-          secondary_regions?: string[]
+          detection_hints?: Json
+          display_name?: string
+          pattern_kind?: string
           slug?: string
-          sort_order?: number
-          status?: string
-          substrate_topics?: string[] | null
-          summary?: string | null
-          title?: string
-          updated_at?: string
-          url?: string
         }
         Relationships: []
       }
-      canon_search_runs: {
+      codex_documents: {
         Row: {
-          canon_slug: string | null
-          created_at: string
-          id: string
-          query: string
-          region_count: number
-          results_summary: Json
-          tbs: string | null
-        }
-        Insert: {
-          canon_slug?: string | null
-          created_at?: string
-          id?: string
-          query: string
-          region_count?: number
-          results_summary?: Json
-          tbs?: string | null
-        }
-        Update: {
-          canon_slug?: string | null
-          created_at?: string
-          id?: string
-          query?: string
-          region_count?: number
-          results_summary?: Json
-          tbs?: string | null
-        }
-        Relationships: []
-      }
-      codex_conversations: {
-        Row: {
-          content: string
+          body_md: string
           created_at: string | null
+          doc_type: string
+          hwr_axes: Database["public"]["Enums"]["hwr_axis"][] | null
           id: string
-          role: string
-          session_id: string
-          sources: Json | null
-          user_id: string
+          metadata: Json | null
+          pedigree: string[] | null
+          slug: string
+          source_path: string | null
+          source_repo: string | null
+          title: string
+          updated_at: string | null
+          version: number | null
+          visibility: string
         }
         Insert: {
-          content: string
+          body_md: string
           created_at?: string | null
+          doc_type: string
+          hwr_axes?: Database["public"]["Enums"]["hwr_axis"][] | null
           id?: string
-          role: string
-          session_id: string
-          sources?: Json | null
-          user_id: string
+          metadata?: Json | null
+          pedigree?: string[] | null
+          slug: string
+          source_path?: string | null
+          source_repo?: string | null
+          title: string
+          updated_at?: string | null
+          version?: number | null
+          visibility?: string
         }
         Update: {
-          content?: string
+          body_md?: string
           created_at?: string | null
+          doc_type?: string
+          hwr_axes?: Database["public"]["Enums"]["hwr_axis"][] | null
           id?: string
-          role?: string
-          session_id?: string
-          sources?: Json | null
-          user_id?: string
+          metadata?: Json | null
+          pedigree?: string[] | null
+          slug?: string
+          source_path?: string | null
+          source_repo?: string | null
+          title?: string
+          updated_at?: string | null
+          version?: number | null
+          visibility?: string
         }
         Relationships: []
       }
       community_threads: {
         Row: {
           author: string | null
-          card_type: string
           created_at: string
           id: string
-          ingested_at: string | null
-          match_reason: Json | null
-          matched_keywords: Json
-          narrative_tracks: string[] | null
+          matched_keywords: string[] | null
           notes: string | null
-          platform: string
+          platform: Database["public"]["Enums"]["radar_platform"]
           post_id: string
           post_title: string
           post_url: string
-          reddit_id: string | null
-          relevance_score: number
+          relevance_score: number | null
           replied_at: string | null
-          response_count: number | null
-          shannon_engaged: boolean | null
           snippet: string | null
-          source_feed_id: string | null
-          source_handle: string | null
-          source_platform: string | null
-          source_url: string | null
-          status: string
+          status: Database["public"]["Enums"]["thread_status"]
           subreddit: string | null
-          substrate_filter_active: boolean | null
           updated_at: string
         }
         Insert: {
           author?: string | null
-          card_type?: string
           created_at?: string
           id?: string
-          ingested_at?: string | null
-          match_reason?: Json | null
-          matched_keywords?: Json
-          narrative_tracks?: string[] | null
+          matched_keywords?: string[] | null
           notes?: string | null
-          platform?: string
-          post_id?: string
-          post_title?: string
-          post_url?: string
-          reddit_id?: string | null
-          relevance_score?: number
+          platform?: Database["public"]["Enums"]["radar_platform"]
+          post_id: string
+          post_title: string
+          post_url: string
+          relevance_score?: number | null
           replied_at?: string | null
-          response_count?: number | null
-          shannon_engaged?: boolean | null
           snippet?: string | null
-          source_feed_id?: string | null
-          source_handle?: string | null
-          source_platform?: string | null
-          source_url?: string | null
-          status?: string
+          status?: Database["public"]["Enums"]["thread_status"]
           subreddit?: string | null
-          substrate_filter_active?: boolean | null
           updated_at?: string
         }
         Update: {
           author?: string | null
-          card_type?: string
           created_at?: string
           id?: string
-          ingested_at?: string | null
-          match_reason?: Json | null
-          matched_keywords?: Json
-          narrative_tracks?: string[] | null
+          matched_keywords?: string[] | null
           notes?: string | null
-          platform?: string
+          platform?: Database["public"]["Enums"]["radar_platform"]
           post_id?: string
           post_title?: string
           post_url?: string
-          reddit_id?: string | null
-          relevance_score?: number
+          relevance_score?: number | null
           replied_at?: string | null
-          response_count?: number | null
-          shannon_engaged?: boolean | null
           snippet?: string | null
-          source_feed_id?: string | null
-          source_handle?: string | null
-          source_platform?: string | null
-          source_url?: string | null
-          status?: string
+          status?: Database["public"]["Enums"]["thread_status"]
           subreddit?: string | null
-          substrate_filter_active?: boolean | null
           updated_at?: string
         }
         Relationships: []
       }
-      compliance_evidence: {
+      constructive_patterns: {
         Row: {
-          audit_trail: Json | null
-          badge_state: string
-          evidence_url: string | null
-          id: string
-          recorded_at: string
-          scope: string
-        }
-        Insert: {
-          audit_trail?: Json | null
-          badge_state: string
-          evidence_url?: string | null
-          id?: string
-          recorded_at?: string
-          scope: string
-        }
-        Update: {
-          audit_trail?: Json | null
-          badge_state?: string
-          evidence_url?: string | null
-          id?: string
-          recorded_at?: string
-          scope?: string
-        }
-        Relationships: []
-      }
-      content_pieces: {
-        Row: {
-          channels: Json | null
-          created_at: string
-          cta_text: string | null
-          format_type: string
-          hook: string | null
-          id: string
-          offer: string | null
-          scheduled_at: string | null
-          status: string
-          story: string | null
-          title: string
-          user_id: string
-        }
-        Insert: {
-          channels?: Json | null
-          created_at?: string
-          cta_text?: string | null
-          format_type?: string
-          hook?: string | null
-          id?: string
-          offer?: string | null
-          scheduled_at?: string | null
-          status?: string
-          story?: string | null
-          title?: string
-          user_id: string
-        }
-        Update: {
-          channels?: Json | null
-          created_at?: string
-          cta_text?: string | null
-          format_type?: string
-          hook?: string | null
-          id?: string
-          offer?: string | null
-          scheduled_at?: string | null
-          status?: string
-          story?: string | null
-          title?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      conversation_routes: {
-        Row: {
-          created_at: string
-          description: string | null
-          handoff_notes: string | null
-          is_active: boolean
-          label: string
-          slug: string
-          sort_order: number | null
-          sub_account_slug: string | null
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          handoff_notes?: string | null
-          is_active?: boolean
-          label: string
-          slug: string
-          sort_order?: number | null
-          sub_account_slug?: string | null
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          handoff_notes?: string | null
-          is_active?: boolean
-          label?: string
-          slug?: string
-          sort_order?: number | null
-          sub_account_slug?: string | null
-        }
-        Relationships: []
-      }
-      conversations: {
-        Row: {
-          created_at: string
-          external_id: string | null
-          id: string
-          metadata: Json
-          participant_handle: string | null
-          platform: string
-          source_draft_id: string | null
-          status: string
-          thread_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string
-          external_id?: string | null
-          id?: string
-          metadata?: Json
-          participant_handle?: string | null
-          platform: string
-          source_draft_id?: string | null
-          status?: string
-          thread_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string
-          external_id?: string | null
-          id?: string
-          metadata?: Json
-          participant_handle?: string | null
-          platform?: string
-          source_draft_id?: string | null
-          status?: string
-          thread_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "conversations_source_draft_id_fkey"
-            columns: ["source_draft_id"]
-            isOneToOne: false
-            referencedRelation: "response_drafts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "conversations_source_draft_id_fkey"
-            columns: ["source_draft_id"]
-            isOneToOne: false
-            referencedRelation: "shadow_log"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "conversations_thread_id_fkey"
-            columns: ["thread_id"]
-            isOneToOne: false
-            referencedRelation: "community_threads"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      course_modules: {
-        Row: {
-          created_at: string
-          description: string
-          id: string
-          is_locked: boolean
-          sort_order: number
-          title: string
-        }
-        Insert: {
-          created_at?: string
-          description: string
-          id?: string
-          is_locked?: boolean
-          sort_order?: number
-          title: string
-        }
-        Update: {
-          created_at?: string
-          description?: string
-          id?: string
-          is_locked?: boolean
-          sort_order?: number
-          title?: string
-        }
-        Relationships: []
-      }
-      daily_briefings: {
-        Row: {
-          briefing_date: string
-          confidence: number | null
-          created_at: string
-          generated_by: string | null
-          highlights: Json
-          id: string
-          lens_slug: string | null
-          mode: string
-          recommended_action: string | null
-          source_thread_ids: string[] | null
-          summary: string
-        }
-        Insert: {
-          briefing_date?: string
-          confidence?: number | null
-          created_at?: string
-          generated_by?: string | null
-          highlights?: Json
-          id?: string
-          lens_slug?: string | null
-          mode: string
-          recommended_action?: string | null
-          source_thread_ids?: string[] | null
-          summary: string
-        }
-        Update: {
-          briefing_date?: string
-          confidence?: number | null
-          created_at?: string
-          generated_by?: string | null
-          highlights?: Json
-          id?: string
-          lens_slug?: string | null
-          mode?: string
-          recommended_action?: string | null
-          source_thread_ids?: string[] | null
-          summary?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "daily_briefings_lens_slug_fkey"
-            columns: ["lens_slug"]
-            isOneToOne: false
-            referencedRelation: "lenses"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
-      email_triage_items: {
-        Row: {
-          draft_body: string | null
-          id: string
-          processed_at: string | null
-          received_at: string
-          sender: string
-          snippet: string | null
-          status: string
-          subject: string | null
-          suggested_action: string | null
-          tier: number
-        }
-        Insert: {
-          draft_body?: string | null
-          id?: string
-          processed_at?: string | null
-          received_at?: string
-          sender: string
-          snippet?: string | null
-          status?: string
-          subject?: string | null
-          suggested_action?: string | null
-          tier?: number
-        }
-        Update: {
-          draft_body?: string | null
-          id?: string
-          processed_at?: string | null
-          received_at?: string
-          sender?: string
-          snippet?: string | null
-          status?: string
-          subject?: string | null
-          suggested_action?: string | null
-          tier?: number
-        }
-        Relationships: []
-      }
-      email_triage_whitelist: {
-        Row: {
-          added_at: string
-          added_by: string | null
-          contact_name: string | null
-          email: string
-          notes: string | null
-        }
-        Insert: {
-          added_at?: string
-          added_by?: string | null
-          contact_name?: string | null
-          email: string
-          notes?: string | null
-        }
-        Update: {
-          added_at?: string
-          added_by?: string | null
-          contact_name?: string | null
-          email?: string
-          notes?: string | null
-        }
-        Relationships: []
-      }
-      federation_operators: {
-        Row: {
+          canonical_md: string
+          context_tier: string
           created_at: string
           display_name: string
-          email: string | null
-          id: string
-          location: string | null
-          notes: string | null
-          recognition_token: string | null
-          role: string
-          status: string
-          user_id: string | null
+          slug: string
         }
         Insert: {
+          canonical_md: string
+          context_tier?: string
           created_at?: string
           display_name: string
-          email?: string | null
-          id?: string
-          location?: string | null
-          notes?: string | null
-          recognition_token?: string | null
-          role?: string
-          status?: string
-          user_id?: string | null
+          slug: string
         }
         Update: {
+          canonical_md?: string
+          context_tier?: string
           created_at?: string
           display_name?: string
-          email?: string | null
-          id?: string
-          location?: string | null
-          notes?: string | null
-          recognition_token?: string | null
-          role?: string
-          status?: string
-          user_id?: string | null
+          slug?: string
         }
         Relationships: []
       }
-      feedback_signals: {
+      content_hooks: {
         Row: {
+          body_md: string
+          context_tier: Database["public"]["Enums"]["context_tier"]
           created_at: string
+          format: string
+          hook_slug: string
+          hwr_lean: Database["public"]["Enums"]["hwr_axis"][]
           id: string
-          note: string | null
-          operator_id: string
-          signal_type: string
-          substrate_topic: string | null
-          thread_id: string
+          intended_outcome: string | null
+          source_chunk_id: string | null
+          source_document_id: string | null
+          status: string
+          surface: string
+          updated_at: string
         }
         Insert: {
+          body_md: string
+          context_tier?: Database["public"]["Enums"]["context_tier"]
           created_at?: string
+          format: string
+          hook_slug: string
+          hwr_lean?: Database["public"]["Enums"]["hwr_axis"][]
           id?: string
-          note?: string | null
-          operator_id: string
-          signal_type: string
-          substrate_topic?: string | null
-          thread_id: string
+          intended_outcome?: string | null
+          source_chunk_id?: string | null
+          source_document_id?: string | null
+          status?: string
+          surface: string
+          updated_at?: string
         }
         Update: {
+          body_md?: string
+          context_tier?: Database["public"]["Enums"]["context_tier"]
           created_at?: string
+          format?: string
+          hook_slug?: string
+          hwr_lean?: Database["public"]["Enums"]["hwr_axis"][]
           id?: string
-          note?: string | null
-          operator_id?: string
-          signal_type?: string
-          substrate_topic?: string | null
-          thread_id?: string
+          intended_outcome?: string | null
+          source_chunk_id?: string | null
+          source_document_id?: string | null
+          status?: string
+          surface?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_hooks_source_chunk_id_fkey"
+            columns: ["source_chunk_id"]
+            isOneToOne: false
+            referencedRelation: "library_chunks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_hooks_source_document_id_fkey"
+            columns: ["source_document_id"]
+            isOneToOne: false
+            referencedRelation: "context_envelope"
+            referencedColumns: ["document_id"]
+          },
+          {
+            foreignKeyName: "content_hooks_source_document_id_fkey"
+            columns: ["source_document_id"]
+            isOneToOne: false
+            referencedRelation: "library_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      danny_calibration: {
+        Row: {
+          created_at: string | null
+          draft_id: string | null
+          feedback: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          draft_id?: string | null
+          feedback: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          draft_id?: string | null
+          feedback?: string
+          id?: string
         }
         Relationships: []
       }
-      funder_targets: {
+      danny_chat_log: {
         Row: {
-          apollo_org_id: string | null
-          apollo_person_id: string | null
-          brief_generated_at: string | null
-          brief_markdown: string | null
-          canon_slugs_matched: string[] | null
-          created_at: string
-          emails: Json | null
-          estimated_check_range: string | null
-          geo: string | null
+          chat_id: string
+          content: string
+          created_at: string | null
           id: string
-          last_public_move: string | null
-          last_public_move_at: string | null
-          last_public_move_url: string | null
-          notes: string | null
-          org_kind: string | null
-          org_name: string | null
-          person_name: string | null
-          socials: Json | null
+          role: string
+        }
+        Insert: {
+          chat_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          role: string
+        }
+        Update: {
+          chat_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+        }
+        Relationships: []
+      }
+      danny_conversations: {
+        Row: {
+          channel: string
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          mode_slug: string | null
+          role: string
+        }
+        Insert: {
+          channel?: string
+          chat_id: string
+          content: string
+          created_at?: string
+          id?: string
+          mode_slug?: string | null
+          role: string
+        }
+        Update: {
+          channel?: string
+          chat_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          mode_slug?: string | null
+          role?: string
+        }
+        Relationships: []
+      }
+      danny_durable_facts: {
+        Row: {
+          approved_at: string | null
+          created_at: string
+          fact: string
+          id: string
+          scope: string | null
+          source: string | null
+          source_chat: string | null
           status: string
-          thesis_match: Json
+        }
+        Insert: {
+          approved_at?: string | null
+          created_at?: string
+          fact: string
+          id?: string
+          scope?: string | null
+          source?: string | null
+          source_chat?: string | null
+          status?: string
+        }
+        Update: {
+          approved_at?: string | null
+          created_at?: string
+          fact?: string
+          id?: string
+          scope?: string | null
+          source?: string | null
+          source_chat?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      distribution_queue: {
+        Row: {
+          confirmed_at: string | null
+          content_piece_id: string | null
+          content_url: string | null
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          id: string
+          job_id: string | null
+          narrative_track: string | null
+          platform: string
+          retry_count: number | null
+          scheduled_at: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["distribution_status"]
           title: string | null
           updated_at: string
         }
         Insert: {
-          apollo_org_id?: string | null
-          apollo_person_id?: string | null
-          brief_generated_at?: string | null
-          brief_markdown?: string | null
-          canon_slugs_matched?: string[] | null
+          confirmed_at?: string | null
+          content_piece_id?: string | null
+          content_url?: string | null
           created_at?: string
-          emails?: Json | null
-          estimated_check_range?: string | null
-          geo?: string | null
+          created_by?: string | null
+          error_message?: string | null
           id?: string
-          last_public_move?: string | null
-          last_public_move_at?: string | null
-          last_public_move_url?: string | null
-          notes?: string | null
-          org_kind?: string | null
-          org_name?: string | null
-          person_name?: string | null
-          socials?: Json | null
-          status?: string
-          thesis_match?: Json
+          job_id?: string | null
+          narrative_track?: string | null
+          platform: string
+          retry_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["distribution_status"]
           title?: string | null
           updated_at?: string
         }
         Update: {
-          apollo_org_id?: string | null
-          apollo_person_id?: string | null
-          brief_generated_at?: string | null
-          brief_markdown?: string | null
-          canon_slugs_matched?: string[] | null
+          confirmed_at?: string | null
+          content_piece_id?: string | null
+          content_url?: string | null
           created_at?: string
-          emails?: Json | null
-          estimated_check_range?: string | null
-          geo?: string | null
+          created_by?: string | null
+          error_message?: string | null
           id?: string
-          last_public_move?: string | null
-          last_public_move_at?: string | null
-          last_public_move_url?: string | null
-          notes?: string | null
-          org_kind?: string | null
-          org_name?: string | null
-          person_name?: string | null
-          socials?: Json | null
-          status?: string
-          thesis_match?: Json
+          job_id?: string | null
+          narrative_track?: string | null
+          platform?: string
+          retry_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["distribution_status"]
           title?: string | null
           updated_at?: string
         }
         Relationships: []
       }
-      gemma_facts: {
+      escalation_log: {
         Row: {
-          confidence: number
+          caller: string
+          context_tier: Database["public"]["Enums"]["context_tier"]
+          cost_usd: number | null
           created_at: string
-          expires_at: string | null
-          fact: string
+          decision: string | null
+          decision_meta: Json | null
+          document_id: string | null
+          document_slug: string | null
+          envelope: Json
+          error: string | null
           id: string
-          pinned: boolean
-          retired_at: string | null
-          scope_room: string | null
-          source_thread_id: string | null
-          user_id: string
+          latency_ms: number | null
+          prompt: string | null
+          reason_code: string
+          response: string | null
+          response_tokens: number | null
+          target_model: string
         }
         Insert: {
-          confidence?: number
+          caller: string
+          context_tier: Database["public"]["Enums"]["context_tier"]
+          cost_usd?: number | null
           created_at?: string
-          expires_at?: string | null
-          fact: string
+          decision?: string | null
+          decision_meta?: Json | null
+          document_id?: string | null
+          document_slug?: string | null
+          envelope: Json
+          error?: string | null
           id?: string
-          pinned?: boolean
-          retired_at?: string | null
-          scope_room?: string | null
-          source_thread_id?: string | null
-          user_id: string
+          latency_ms?: number | null
+          prompt?: string | null
+          reason_code: string
+          response?: string | null
+          response_tokens?: number | null
+          target_model: string
         }
         Update: {
-          confidence?: number
+          caller?: string
+          context_tier?: Database["public"]["Enums"]["context_tier"]
+          cost_usd?: number | null
           created_at?: string
-          expires_at?: string | null
-          fact?: string
+          decision?: string | null
+          decision_meta?: Json | null
+          document_id?: string | null
+          document_slug?: string | null
+          envelope?: Json
+          error?: string | null
           id?: string
-          pinned?: boolean
-          retired_at?: string | null
-          scope_room?: string | null
-          source_thread_id?: string | null
-          user_id?: string
+          latency_ms?: number | null
+          prompt?: string | null
+          reason_code?: string
+          response?: string | null
+          response_tokens?: number | null
+          target_model?: string
         }
         Relationships: [
           {
-            foreignKeyName: "gemma_facts_source_thread_id_fkey"
-            columns: ["source_thread_id"]
+            foreignKeyName: "escalation_log_document_id_fkey"
+            columns: ["document_id"]
             isOneToOne: false
-            referencedRelation: "gemma_threads"
+            referencedRelation: "context_envelope"
+            referencedColumns: ["document_id"]
+          },
+          {
+            foreignKeyName: "escalation_log_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "library_documents"
             referencedColumns: ["id"]
           },
         ]
       }
-      gemma_feedback: {
+      fulfillment_rules: {
         Row: {
+          bundle_id: string | null
+          context_tier: Database["public"]["Enums"]["context_tier"]
           created_at: string
-          decision_id: string | null
+          document_id: string | null
           id: string
-          message_excerpt: string | null
-          mode_slug: string | null
-          note: string | null
-          signal: string
-          user_id: string
+          match_axis: string
+          match_value: string
+          notes_md: string | null
+          posture: string
+          priority: number
+          rule_slug: string
         }
         Insert: {
+          bundle_id?: string | null
+          context_tier?: Database["public"]["Enums"]["context_tier"]
           created_at?: string
-          decision_id?: string | null
+          document_id?: string | null
           id?: string
-          message_excerpt?: string | null
-          mode_slug?: string | null
-          note?: string | null
-          signal: string
-          user_id: string
+          match_axis: string
+          match_value: string
+          notes_md?: string | null
+          posture: string
+          priority?: number
+          rule_slug: string
         }
         Update: {
+          bundle_id?: string | null
+          context_tier?: Database["public"]["Enums"]["context_tier"]
           created_at?: string
-          decision_id?: string | null
+          document_id?: string | null
           id?: string
-          message_excerpt?: string | null
-          mode_slug?: string | null
-          note?: string | null
-          signal?: string
-          user_id?: string
+          match_axis?: string
+          match_value?: string
+          notes_md?: string | null
+          posture?: string
+          priority?: number
+          rule_slug?: string
         }
         Relationships: [
           {
-            foreignKeyName: "gemma_feedback_decision_id_fkey"
-            columns: ["decision_id"]
+            foreignKeyName: "fulfillment_rules_bundle_id_fkey"
+            columns: ["bundle_id"]
             isOneToOne: false
-            referencedRelation: "switchboard_decisions"
+            referencedRelation: "notebook_bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillment_rules_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "context_envelope"
+            referencedColumns: ["document_id"]
+          },
+          {
+            foreignKeyName: "fulfillment_rules_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "library_documents"
             referencedColumns: ["id"]
           },
         ]
       }
-      gemma_modes: {
+      hwr_classifications: {
         Row: {
-          allowed_tools: string[]
-          created_at: string
-          default_lens: string | null
-          icon: string | null
-          id: string
-          is_enabled: boolean
-          label: string
-          slug: string
-          sort_order: number
-          system_prompt_addendum: string
-          tagline: string | null
-          updated_at: string
-          voice_register: string | null
-        }
-        Insert: {
-          allowed_tools?: string[]
-          created_at?: string
-          default_lens?: string | null
-          icon?: string | null
-          id?: string
-          is_enabled?: boolean
-          label: string
-          slug: string
-          sort_order?: number
-          system_prompt_addendum: string
-          tagline?: string | null
-          updated_at?: string
-          voice_register?: string | null
-        }
-        Update: {
-          allowed_tools?: string[]
-          created_at?: string
-          default_lens?: string | null
-          icon?: string | null
-          id?: string
-          is_enabled?: boolean
-          label?: string
-          slug?: string
-          sort_order?: number
-          system_prompt_addendum?: string
-          tagline?: string | null
-          updated_at?: string
-          voice_register?: string | null
-        }
-        Relationships: []
-      }
-      gemma_thread_messages: {
-        Row: {
-          content: string
-          created_at: string
-          decision_id: string | null
-          id: string
-          role: string
-          thread_id: string
-          user_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          decision_id?: string | null
-          id?: string
-          role: string
-          thread_id: string
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          decision_id?: string | null
-          id?: string
-          role?: string
-          thread_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "gemma_thread_messages_thread_id_fkey"
-            columns: ["thread_id"]
-            isOneToOne: false
-            referencedRelation: "gemma_threads"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      gemma_threads: {
-        Row: {
-          archived_at: string | null
-          created_at: string
-          id: string
-          last_message_at: string
-          mode_slug: string
-          room: string
-          summary: string | null
-          title: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          archived_at?: string | null
-          created_at?: string
-          id?: string
-          last_message_at?: string
-          mode_slug?: string
-          room: string
-          summary?: string | null
-          title?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          archived_at?: string | null
-          created_at?: string
-          id?: string
-          last_message_at?: string
-          mode_slug?: string
-          room?: string
-          summary?: string | null
-          title?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      ghl_action_log: {
-        Row: {
-          action_kind: string
-          approved_by: string | null
-          created_at: string
-          decision_id: string | null
-          error_message: string | null
-          id: string
-          payload: Json
-          proposed_by: string | null
-          result: Json | null
-          status: string
-          sub_account_slug: string
-          updated_at: string
-          via: string
-        }
-        Insert: {
-          action_kind: string
-          approved_by?: string | null
-          created_at?: string
-          decision_id?: string | null
-          error_message?: string | null
-          id?: string
-          payload?: Json
-          proposed_by?: string | null
-          result?: Json | null
-          status?: string
-          sub_account_slug: string
-          updated_at?: string
-          via?: string
-        }
-        Update: {
-          action_kind?: string
-          approved_by?: string | null
-          created_at?: string
-          decision_id?: string | null
-          error_message?: string | null
-          id?: string
-          payload?: Json
-          proposed_by?: string | null
-          result?: Json | null
-          status?: string
-          sub_account_slug?: string
-          updated_at?: string
-          via?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ghl_action_log_sub_account_slug_fkey"
-            columns: ["sub_account_slug"]
-            isOneToOne: false
-            referencedRelation: "ghl_sub_accounts"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
-      ghl_inventory: {
-        Row: {
-          created_at: string
-          ghl_object_id: string
-          id: string
-          last_synced_at: string
-          metadata: Json
-          name: string
-          object_kind: string
-          status: string | null
-          sub_account_slug: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          ghl_object_id: string
-          id?: string
-          last_synced_at?: string
-          metadata?: Json
-          name: string
-          object_kind: string
-          status?: string | null
-          sub_account_slug: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          ghl_object_id?: string
-          id?: string
-          last_synced_at?: string
-          metadata?: Json
-          name?: string
-          object_kind?: string
-          status?: string | null
-          sub_account_slug?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ghl_inventory_sub_account_slug_fkey"
-            columns: ["sub_account_slug"]
-            isOneToOne: false
-            referencedRelation: "ghl_sub_accounts"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
-      ghl_sub_accounts: {
-        Row: {
-          agency_role: string
-          created_at: string
-          ghl_location_id: string | null
-          id: string
-          is_active: boolean
-          label: string
-          lens_binding: string | null
-          notes: string | null
-          slug: string
-          sort_order: number
-          updated_at: string
-          voice_register: string
-        }
-        Insert: {
-          agency_role?: string
-          created_at?: string
-          ghl_location_id?: string | null
-          id?: string
-          is_active?: boolean
-          label: string
-          lens_binding?: string | null
-          notes?: string | null
-          slug: string
-          sort_order?: number
-          updated_at?: string
-          voice_register?: string
-        }
-        Update: {
-          agency_role?: string
-          created_at?: string
-          ghl_location_id?: string | null
-          id?: string
-          is_active?: boolean
-          label?: string
-          lens_binding?: string | null
-          notes?: string | null
-          slug?: string
-          sort_order?: number
-          updated_at?: string
-          voice_register?: string
-        }
-        Relationships: []
-      }
-      guild_members: {
-        Row: {
-          id: string
-          joined_at: string
-          status: string
-          tier_id: string
-          user_id: string
-        }
-        Insert: {
-          id?: string
-          joined_at?: string
-          status?: string
-          tier_id: string
-          user_id: string
-        }
-        Update: {
-          id?: string
-          joined_at?: string
-          status?: string
-          tier_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "guild_members_tier_id_fkey"
-            columns: ["tier_id"]
-            isOneToOne: false
-            referencedRelation: "guild_tiers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      guild_tiers: {
-        Row: {
-          benefits: Json
-          created_at: string
-          id: string
-          label: string
-          obligations: Json
-          slug: string
-          sort_order: number
-        }
-        Insert: {
-          benefits?: Json
-          created_at?: string
-          id?: string
-          label: string
-          obligations?: Json
-          slug: string
-          sort_order?: number
-        }
-        Update: {
-          benefits?: Json
-          created_at?: string
-          id?: string
-          label?: string
-          obligations?: Json
-          slug?: string
-          sort_order?: number
-        }
-        Relationships: []
-      }
-      jobs: {
-        Row: {
-          completed_at: string | null
+          axis: Database["public"]["Enums"]["hwr_axis"]
           created_at: string | null
-          distribution_status: Json | null
-          error_message: string | null
+          description: string | null
           id: string
-          input_file: string | null
-          input_type: string
-          input_url: string | null
-          outputs: Json | null
-          selected_options: Json
-          status: string
-          template_id: string | null
-          user_id: string
+          inference_signals: Json | null
+          sub_label: string
         }
         Insert: {
-          completed_at?: string | null
+          axis: Database["public"]["Enums"]["hwr_axis"]
           created_at?: string | null
-          distribution_status?: Json | null
-          error_message?: string | null
+          description?: string | null
           id?: string
-          input_file?: string | null
-          input_type: string
-          input_url?: string | null
-          outputs?: Json | null
-          selected_options?: Json
-          status?: string
-          template_id?: string | null
-          user_id: string
+          inference_signals?: Json | null
+          sub_label: string
         }
         Update: {
-          completed_at?: string | null
+          axis?: Database["public"]["Enums"]["hwr_axis"]
           created_at?: string | null
-          distribution_status?: Json | null
-          error_message?: string | null
+          description?: string | null
           id?: string
-          input_file?: string | null
-          input_type?: string
-          input_url?: string | null
-          outputs?: Json | null
-          selected_options?: Json
+          inference_signals?: Json | null
+          sub_label?: string
+        }
+        Relationships: []
+      }
+      incident_events: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          affected_surfaces: Json | null
+          auto_resolved: boolean | null
+          auto_retry_safe: boolean | null
+          classification: string | null
+          confidence: number | null
+          constellation_state: Json | null
+          constellation_state_notes: string | null
+          context_payload: Json | null
+          created_at: string | null
+          diagnosed_by: string | null
+          diagnosis: string | null
+          error_message: string | null
+          error_name: string | null
+          error_stack: string | null
+          execution_id: string | null
+          handler_version: string | null
+          id: string
+          inserted_at: string | null
+          likely_root_cause: string | null
+          node_name: string | null
+          node_type: string | null
+          occurred_at: string | null
+          raw_diagnosis: Json | null
+          raw_execution: Json | null
+          raw_response: string | null
+          recommended_action: string | null
+          resolution_action: string | null
+          resolved_at: string | null
+          severity: string | null
+          suggested_fix: string | null
+          summary: string | null
+          trust_level: string | null
+          workflow_id: string
+          workflow_name: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          affected_surfaces?: Json | null
+          auto_resolved?: boolean | null
+          auto_retry_safe?: boolean | null
+          classification?: string | null
+          confidence?: number | null
+          constellation_state?: Json | null
+          constellation_state_notes?: string | null
+          context_payload?: Json | null
+          created_at?: string | null
+          diagnosed_by?: string | null
+          diagnosis?: string | null
+          error_message?: string | null
+          error_name?: string | null
+          error_stack?: string | null
+          execution_id?: string | null
+          handler_version?: string | null
+          id?: string
+          inserted_at?: string | null
+          likely_root_cause?: string | null
+          node_name?: string | null
+          node_type?: string | null
+          occurred_at?: string | null
+          raw_diagnosis?: Json | null
+          raw_execution?: Json | null
+          raw_response?: string | null
+          recommended_action?: string | null
+          resolution_action?: string | null
+          resolved_at?: string | null
+          severity?: string | null
+          suggested_fix?: string | null
+          summary?: string | null
+          trust_level?: string | null
+          workflow_id: string
+          workflow_name?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          affected_surfaces?: Json | null
+          auto_resolved?: boolean | null
+          auto_retry_safe?: boolean | null
+          classification?: string | null
+          confidence?: number | null
+          constellation_state?: Json | null
+          constellation_state_notes?: string | null
+          context_payload?: Json | null
+          created_at?: string | null
+          diagnosed_by?: string | null
+          diagnosis?: string | null
+          error_message?: string | null
+          error_name?: string | null
+          error_stack?: string | null
+          execution_id?: string | null
+          handler_version?: string | null
+          id?: string
+          inserted_at?: string | null
+          likely_root_cause?: string | null
+          node_name?: string | null
+          node_type?: string | null
+          occurred_at?: string | null
+          raw_diagnosis?: Json | null
+          raw_execution?: Json | null
+          raw_response?: string | null
+          recommended_action?: string | null
+          resolution_action?: string | null
+          resolved_at?: string | null
+          severity?: string | null
+          suggested_fix?: string | null
+          summary?: string | null
+          trust_level?: string | null
+          workflow_id?: string
+          workflow_name?: string | null
+        }
+        Relationships: []
+      }
+      job_queue: {
+        Row: {
+          attempts: number | null
+          created_at: string | null
+          id: string
+          job_type: string
+          last_error: string | null
+          max_attempts: number | null
+          payload: Json
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          attempts?: number | null
+          created_at?: string | null
+          id?: string
+          job_type: string
+          last_error?: string | null
+          max_attempts?: number | null
+          payload?: Json
           status?: string
-          template_id?: string | null
-          user_id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          attempts?: number | null
+          created_at?: string | null
+          id?: string
+          job_type?: string
+          last_error?: string | null
+          max_attempts?: number | null
+          payload?: Json
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      l2_autofix_rules: {
+        Row: {
+          action: string
+          affected_surface: string | null
+          auto_retry_safe: boolean
+          backoff_seconds: number
+          classification: string
+          created_at: string
+          enabled: boolean
+          match_pattern: string | null
+          max_attempts: number
+          notes: string | null
+          requires_human: boolean
+          rule_id: string
+        }
+        Insert: {
+          action: string
+          affected_surface?: string | null
+          auto_retry_safe?: boolean
+          backoff_seconds?: number
+          classification: string
+          created_at?: string
+          enabled?: boolean
+          match_pattern?: string | null
+          max_attempts?: number
+          notes?: string | null
+          requires_human?: boolean
+          rule_id: string
+        }
+        Update: {
+          action?: string
+          affected_surface?: string | null
+          auto_retry_safe?: boolean
+          backoff_seconds?: number
+          classification?: string
+          created_at?: string
+          enabled?: boolean
+          match_pattern?: string | null
+          max_attempts?: number
+          notes?: string | null
+          requires_human?: boolean
+          rule_id?: string
         }
         Relationships: []
       }
@@ -1234,6 +908,7 @@ export type Database = {
           path: string
           phone: string | null
           referrer: string | null
+          source: string | null
           user_agent: string | null
         }
         Insert: {
@@ -1249,6 +924,7 @@ export type Database = {
           path: string
           phone?: string | null
           referrer?: string | null
+          source?: string | null
           user_agent?: string | null
         }
         Update: {
@@ -1264,593 +940,470 @@ export type Database = {
           path?: string
           phone?: string | null
           referrer?: string | null
+          source?: string | null
           user_agent?: string | null
         }
         Relationships: []
       }
-      lenses: {
+      library_chunks: {
         Row: {
+          body_md: string
+          chunk_index: number
+          context_tier: Database["public"]["Enums"]["context_tier"]
           created_at: string
+          document_id: string
+          heading_path: string | null
+          hwr_lean: Database["public"]["Enums"]["hwr_axis"][]
           id: string
-          is_active: boolean
-          label: string
-          posture: string
-          skin_token: string
-          slug: string
-          sort_order: number
-          tagline: string | null
+          tags: string[]
+          token_estimate: number | null
         }
         Insert: {
+          body_md: string
+          chunk_index: number
+          context_tier?: Database["public"]["Enums"]["context_tier"]
           created_at?: string
+          document_id: string
+          heading_path?: string | null
+          hwr_lean?: Database["public"]["Enums"]["hwr_axis"][]
           id?: string
-          is_active?: boolean
-          label: string
-          posture?: string
-          skin_token?: string
-          slug: string
-          sort_order?: number
-          tagline?: string | null
+          tags?: string[]
+          token_estimate?: number | null
         }
         Update: {
+          body_md?: string
+          chunk_index?: number
+          context_tier?: Database["public"]["Enums"]["context_tier"]
           created_at?: string
+          document_id?: string
+          heading_path?: string | null
+          hwr_lean?: Database["public"]["Enums"]["hwr_axis"][]
           id?: string
-          is_active?: boolean
-          label?: string
-          posture?: string
-          skin_token?: string
-          slug?: string
-          sort_order?: number
-          tagline?: string | null
-        }
-        Relationships: []
-      }
-      local_events: {
-        Row: {
-          amplify: boolean
-          amplify_to: Json
-          audience_hint: string | null
-          created_at: string
-          description: string | null
-          ends_at: string | null
-          event_type: string | null
-          host_person_id: string | null
-          id: string
-          lens_slug: string
-          region: string | null
-          source_url: string | null
-          starts_at: string | null
-          status: string
-          tags: string[] | null
-          title: string
-          updated_at: string
-          venue_id: string | null
-        }
-        Insert: {
-          amplify?: boolean
-          amplify_to?: Json
-          audience_hint?: string | null
-          created_at?: string
-          description?: string | null
-          ends_at?: string | null
-          event_type?: string | null
-          host_person_id?: string | null
-          id?: string
-          lens_slug: string
-          region?: string | null
-          source_url?: string | null
-          starts_at?: string | null
-          status?: string
-          tags?: string[] | null
-          title: string
-          updated_at?: string
-          venue_id?: string | null
-        }
-        Update: {
-          amplify?: boolean
-          amplify_to?: Json
-          audience_hint?: string | null
-          created_at?: string
-          description?: string | null
-          ends_at?: string | null
-          event_type?: string | null
-          host_person_id?: string | null
-          id?: string
-          lens_slug?: string
-          region?: string | null
-          source_url?: string | null
-          starts_at?: string | null
-          status?: string
-          tags?: string[] | null
-          title?: string
-          updated_at?: string
-          venue_id?: string | null
+          tags?: string[]
+          token_estimate?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "local_events_host_person_id_fkey"
-            columns: ["host_person_id"]
+            foreignKeyName: "library_chunks_document_id_fkey"
+            columns: ["document_id"]
             isOneToOne: false
-            referencedRelation: "people"
-            referencedColumns: ["id"]
+            referencedRelation: "context_envelope"
+            referencedColumns: ["document_id"]
           },
           {
-            foreignKeyName: "local_events_lens_slug_fkey"
-            columns: ["lens_slug"]
+            foreignKeyName: "library_chunks_document_id_fkey"
+            columns: ["document_id"]
             isOneToOne: false
-            referencedRelation: "lenses"
-            referencedColumns: ["slug"]
-          },
-          {
-            foreignKeyName: "local_events_venue_id_fkey"
-            columns: ["venue_id"]
-            isOneToOne: false
-            referencedRelation: "venues"
+            referencedRelation: "library_documents"
             referencedColumns: ["id"]
           },
         ]
       }
-      member_contributions: {
+      library_classifications: {
         Row: {
-          contribution_type: string
+          axis: string
+          context_tier: Database["public"]["Enums"]["context_tier"]
           created_at: string
+          document_id: string
           id: string
-          member_id: string
-          payload: Json | null
+          rationale: string | null
+          value: string
+          weight: number
         }
         Insert: {
-          contribution_type: string
+          axis: string
+          context_tier?: Database["public"]["Enums"]["context_tier"]
           created_at?: string
+          document_id: string
           id?: string
-          member_id: string
-          payload?: Json | null
+          rationale?: string | null
+          value: string
+          weight?: number
         }
         Update: {
-          contribution_type?: string
+          axis?: string
+          context_tier?: Database["public"]["Enums"]["context_tier"]
           created_at?: string
+          document_id?: string
           id?: string
-          member_id?: string
-          payload?: Json | null
+          rationale?: string | null
+          value?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "library_classifications_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "context_envelope"
+            referencedColumns: ["document_id"]
+          },
+          {
+            foreignKeyName: "library_classifications_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "library_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      library_documents: {
+        Row: {
+          attribution_text: string | null
+          audience: string[]
+          body_md: string
+          canonical_url: string | null
+          coke_vault: boolean | null
+          companion_role: string | null
+          context_tier: Database["public"]["Enums"]["context_tier"]
+          contributor_op: string | null
+          created_at: string
+          cta_mode: string
+          doc_type: string
+          fulfillment_posture: string
+          hwr_lean: Database["public"]["Enums"]["hwr_axis"][]
+          id: string
+          interests: string[]
+          jurisdiction: string | null
+          notes_md: string | null
+          pains: string[]
+          publication_year: number | null
+          sectors: string[]
+          slug: string
+          source_format: string | null
+          source_slug: string | null
+          status: string
+          substrate_category: number | null
+          summary_md: string | null
+          title: string
+          updated_at: string
+          visibility: string
+          withdrawn_at: string | null
+        }
+        Insert: {
+          attribution_text?: string | null
+          audience?: string[]
+          body_md: string
+          canonical_url?: string | null
+          coke_vault?: boolean | null
+          companion_role?: string | null
+          context_tier?: Database["public"]["Enums"]["context_tier"]
+          contributor_op?: string | null
+          created_at?: string
+          cta_mode: string
+          doc_type: string
+          fulfillment_posture: string
+          hwr_lean?: Database["public"]["Enums"]["hwr_axis"][]
+          id?: string
+          interests?: string[]
+          jurisdiction?: string | null
+          notes_md?: string | null
+          pains?: string[]
+          publication_year?: number | null
+          sectors?: string[]
+          slug: string
+          source_format?: string | null
+          source_slug?: string | null
+          status?: string
+          substrate_category?: number | null
+          summary_md?: string | null
+          title: string
+          updated_at?: string
+          visibility?: string
+          withdrawn_at?: string | null
+        }
+        Update: {
+          attribution_text?: string | null
+          audience?: string[]
+          body_md?: string
+          canonical_url?: string | null
+          coke_vault?: boolean | null
+          companion_role?: string | null
+          context_tier?: Database["public"]["Enums"]["context_tier"]
+          contributor_op?: string | null
+          created_at?: string
+          cta_mode?: string
+          doc_type?: string
+          fulfillment_posture?: string
+          hwr_lean?: Database["public"]["Enums"]["hwr_axis"][]
+          id?: string
+          interests?: string[]
+          jurisdiction?: string | null
+          notes_md?: string | null
+          pains?: string[]
+          publication_year?: number | null
+          sectors?: string[]
+          slug?: string
+          source_format?: string | null
+          source_slug?: string | null
+          status?: string
+          substrate_category?: number | null
+          summary_md?: string | null
+          title?: string
+          updated_at?: string
+          visibility?: string
+          withdrawn_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "library_documents_source_slug_fkey"
+            columns: ["source_slug"]
+            isOneToOne: false
+            referencedRelation: "substrate_sources"
+            referencedColumns: ["source_slug"]
+          },
+        ]
+      }
+      local_cache_manifest: {
+        Row: {
+          context_tier: string
+          created_at: string
+          device_label: string | null
+          domain_tags: string[]
+          id: string
+          included_doc_ids: string[]
+          last_synced_at: string | null
+          operator_op: string
+        }
+        Insert: {
+          context_tier?: string
+          created_at?: string
+          device_label?: string | null
+          domain_tags?: string[]
+          id?: string
+          included_doc_ids?: string[]
+          last_synced_at?: string | null
+          operator_op: string
+        }
+        Update: {
+          context_tier?: string
+          created_at?: string
+          device_label?: string | null
+          domain_tags?: string[]
+          id?: string
+          included_doc_ids?: string[]
+          last_synced_at?: string | null
+          operator_op?: string
         }
         Relationships: []
       }
-      module_access: {
+      membership_assignments: {
+        Row: {
+          email: string
+          granted_at: string | null
+          id: string
+          notes: string | null
+          status: string | null
+          tier_slug: string | null
+        }
+        Insert: {
+          email: string
+          granted_at?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          tier_slug?: string | null
+        }
+        Update: {
+          email?: string
+          granted_at?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          tier_slug?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "membership_assignments_tier_slug_fkey"
+            columns: ["tier_slug"]
+            isOneToOne: false
+            referencedRelation: "value_ladder_tiers"
+            referencedColumns: ["tier_slug"]
+          },
+        ]
+      }
+      metrics_events: {
         Row: {
           created_at: string | null
-          display_name: string
+          event_type: string
           id: string
-          is_enabled: boolean | null
-          is_public: boolean | null
-          module_key: string
-          requires_role: string | null
+          item_count: number | null
+          payload: Json | null
+          time_saved_minutes_est: number | null
+          user_context: string | null
+          workflow_id: string | null
+          workflow_name: string | null
         }
         Insert: {
           created_at?: string | null
-          display_name: string
+          event_type: string
           id?: string
-          is_enabled?: boolean | null
-          is_public?: boolean | null
-          module_key: string
-          requires_role?: string | null
+          item_count?: number | null
+          payload?: Json | null
+          time_saved_minutes_est?: number | null
+          user_context?: string | null
+          workflow_id?: string | null
+          workflow_name?: string | null
         }
         Update: {
           created_at?: string | null
+          event_type?: string
+          id?: string
+          item_count?: number | null
+          payload?: Json | null
+          time_saved_minutes_est?: number | null
+          user_context?: string | null
+          workflow_id?: string | null
+          workflow_name?: string | null
+        }
+        Relationships: []
+      }
+      notebook_bundle_documents: {
+        Row: {
+          bundle_id: string
+          context_tier: Database["public"]["Enums"]["context_tier"]
+          document_id: string
+          position: number
+          role: string | null
+        }
+        Insert: {
+          bundle_id: string
+          context_tier?: Database["public"]["Enums"]["context_tier"]
+          document_id: string
+          position?: number
+          role?: string | null
+        }
+        Update: {
+          bundle_id?: string
+          context_tier?: Database["public"]["Enums"]["context_tier"]
+          document_id?: string
+          position?: number
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notebook_bundle_documents_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "notebook_bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notebook_bundle_documents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "context_envelope"
+            referencedColumns: ["document_id"]
+          },
+          {
+            foreignKeyName: "notebook_bundle_documents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "library_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notebook_bundles: {
+        Row: {
+          audience: string[]
+          created_at: string
+          display_name: string
+          external_url: string | null
+          id: string
+          notes_md: string | null
+          purpose: string
+          slug: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          audience?: string[]
+          created_at?: string
+          display_name: string
+          external_url?: string | null
+          id?: string
+          notes_md?: string | null
+          purpose: string
+          slug: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          audience?: string[]
+          created_at?: string
           display_name?: string
+          external_url?: string | null
           id?: string
-          is_enabled?: boolean | null
-          is_public?: boolean | null
-          module_key?: string
-          requires_role?: string | null
-        }
-        Relationships: []
-      }
-      nexus_lanes: {
-        Row: {
-          id: string
-          label: string
-          min_privilege: string
-          skin_token: string
-          slug: string
-          sort_order: number
-          status: string
-        }
-        Insert: {
-          id?: string
-          label: string
-          min_privilege?: string
-          skin_token?: string
-          slug: string
-          sort_order?: number
-          status?: string
-        }
-        Update: {
-          id?: string
-          label?: string
-          min_privilege?: string
-          skin_token?: string
+          notes_md?: string | null
+          purpose?: string
           slug?: string
-          sort_order?: number
-          status?: string
-        }
-        Relationships: []
-      }
-      nexus_modes: {
-        Row: {
-          id: string
-          label: string
-          min_privilege: string
-          slug: string
-          sort_order: number
-          status: string
-        }
-        Insert: {
-          id?: string
-          label: string
-          min_privilege?: string
-          slug: string
-          sort_order?: number
-          status?: string
-        }
-        Update: {
-          id?: string
-          label?: string
-          min_privilege?: string
-          slug?: string
-          sort_order?: number
-          status?: string
+          updated_at?: string
+          visibility?: string
         }
         Relationships: []
       }
       operator_config: {
         Row: {
-          auto_post_enabled: boolean | null
           created_at: string
           id: string
           key: string
-          last_killed_at: string | null
-          last_killed_by: string | null
-          last_killed_reason: string | null
-          responder_enabled: boolean | null
-          scanner_enabled: boolean | null
           value: Json
         }
         Insert: {
-          auto_post_enabled?: boolean | null
           created_at?: string
           id?: string
           key: string
-          last_killed_at?: string | null
-          last_killed_by?: string | null
-          last_killed_reason?: string | null
-          responder_enabled?: boolean | null
-          scanner_enabled?: boolean | null
           value?: Json
         }
         Update: {
-          auto_post_enabled?: boolean | null
           created_at?: string
           id?: string
           key?: string
-          last_killed_at?: string | null
-          last_killed_by?: string | null
-          last_killed_reason?: string | null
-          responder_enabled?: boolean | null
-          scanner_enabled?: boolean | null
           value?: Json
         }
         Relationships: []
       }
-      outreach_conversations: {
+      pattern_observations: {
         Row: {
-          assigned_to: string | null
-          canon_slug: string | null
-          channel: string
-          counterpart_display_name: string | null
-          counterpart_handle: string | null
-          created_at: string
-          external_thread_url: string | null
+          context_tier: string
+          evidence_md: string | null
           id: string
-          last_inbound_at: string | null
-          last_outbound_at: string | null
-          message_count: number
-          metadata: Json | null
-          notes: string | null
-          route_slug: string | null
-          routed_at: string | null
-          status: string
-          tags: string[] | null
-          target_id: string | null
-          updated_at: string
+          observed_at: string
+          observer_op: string
+          pattern_slug: string
+          revoked_at: string | null
+          stance: number
+          subject_ref: string
         }
         Insert: {
-          assigned_to?: string | null
-          canon_slug?: string | null
-          channel: string
-          counterpart_display_name?: string | null
-          counterpart_handle?: string | null
-          created_at?: string
-          external_thread_url?: string | null
+          context_tier?: string
+          evidence_md?: string | null
           id?: string
-          last_inbound_at?: string | null
-          last_outbound_at?: string | null
-          message_count?: number
-          metadata?: Json | null
-          notes?: string | null
-          route_slug?: string | null
-          routed_at?: string | null
-          status?: string
-          tags?: string[] | null
-          target_id?: string | null
-          updated_at?: string
+          observed_at?: string
+          observer_op: string
+          pattern_slug: string
+          revoked_at?: string | null
+          stance: number
+          subject_ref: string
         }
         Update: {
-          assigned_to?: string | null
-          canon_slug?: string | null
-          channel?: string
-          counterpart_display_name?: string | null
-          counterpart_handle?: string | null
-          created_at?: string
-          external_thread_url?: string | null
+          context_tier?: string
+          evidence_md?: string | null
           id?: string
-          last_inbound_at?: string | null
-          last_outbound_at?: string | null
-          message_count?: number
-          metadata?: Json | null
-          notes?: string | null
-          route_slug?: string | null
-          routed_at?: string | null
-          status?: string
-          tags?: string[] | null
-          target_id?: string | null
-          updated_at?: string
+          observed_at?: string
+          observer_op?: string
+          pattern_slug?: string
+          revoked_at?: string | null
+          stance?: number
+          subject_ref?: string
         }
         Relationships: [
           {
-            foreignKeyName: "outreach_conversations_route_slug_fkey"
-            columns: ["route_slug"]
+            foreignKeyName: "pattern_observations_pattern_slug_fkey"
+            columns: ["pattern_slug"]
             isOneToOne: false
-            referencedRelation: "conversation_routes"
-            referencedColumns: ["slug"]
-          },
-          {
-            foreignKeyName: "outreach_conversations_target_id_fkey"
-            columns: ["target_id"]
-            isOneToOne: false
-            referencedRelation: "outreach_targets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      outreach_drafts: {
-        Row: {
-          approved_at: string | null
-          approved_by: string | null
-          body: string
-          canon_slug: string | null
-          created_at: string
-          draft_kind: string
-          generated_by: string | null
-          id: string
-          rationale: string | null
-          send_result: Json | null
-          sent_at: string | null
-          status: string
-          target_id: string
-          updated_at: string
-          voice_register: string | null
-        }
-        Insert: {
-          approved_at?: string | null
-          approved_by?: string | null
-          body: string
-          canon_slug?: string | null
-          created_at?: string
-          draft_kind: string
-          generated_by?: string | null
-          id?: string
-          rationale?: string | null
-          send_result?: Json | null
-          sent_at?: string | null
-          status?: string
-          target_id: string
-          updated_at?: string
-          voice_register?: string | null
-        }
-        Update: {
-          approved_at?: string | null
-          approved_by?: string | null
-          body?: string
-          canon_slug?: string | null
-          created_at?: string
-          draft_kind?: string
-          generated_by?: string | null
-          id?: string
-          rationale?: string | null
-          send_result?: Json | null
-          sent_at?: string | null
-          status?: string
-          target_id?: string
-          updated_at?: string
-          voice_register?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "outreach_drafts_target_id_fkey"
-            columns: ["target_id"]
-            isOneToOne: false
-            referencedRelation: "outreach_targets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      outreach_messages: {
-        Row: {
-          author_handle: string | null
-          body: string
-          conversation_id: string
-          created_at: string
-          direction: string
-          draft_id: string | null
-          external_message_id: string | null
-          external_message_url: string | null
-          id: string
-          metadata: Json | null
-          received_at: string | null
-          sent_at: string | null
-        }
-        Insert: {
-          author_handle?: string | null
-          body: string
-          conversation_id: string
-          created_at?: string
-          direction: string
-          draft_id?: string | null
-          external_message_id?: string | null
-          external_message_url?: string | null
-          id?: string
-          metadata?: Json | null
-          received_at?: string | null
-          sent_at?: string | null
-        }
-        Update: {
-          author_handle?: string | null
-          body?: string
-          conversation_id?: string
-          created_at?: string
-          direction?: string
-          draft_id?: string | null
-          external_message_id?: string | null
-          external_message_url?: string | null
-          id?: string
-          metadata?: Json | null
-          received_at?: string | null
-          sent_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "outreach_messages_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "outreach_conversations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "outreach_messages_draft_id_fkey"
-            columns: ["draft_id"]
-            isOneToOne: false
-            referencedRelation: "outreach_drafts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      outreach_targets: {
-        Row: {
-          canon_slug: string | null
-          channel: string
-          cohort: string | null
-          created_at: string
-          discovered_at: string
-          id: string
-          last_touched_at: string | null
-          notes: string | null
-          org_name: string | null
-          signal_reason: Json
-          signal_score: number
-          snippet: string | null
-          source: string
-          source_run_id: string | null
-          status: string
-          target_handle: string | null
-          target_name: string | null
-          target_url: string | null
-          updated_at: string
-        }
-        Insert: {
-          canon_slug?: string | null
-          channel: string
-          cohort?: string | null
-          created_at?: string
-          discovered_at?: string
-          id?: string
-          last_touched_at?: string | null
-          notes?: string | null
-          org_name?: string | null
-          signal_reason?: Json
-          signal_score?: number
-          snippet?: string | null
-          source: string
-          source_run_id?: string | null
-          status?: string
-          target_handle?: string | null
-          target_name?: string | null
-          target_url?: string | null
-          updated_at?: string
-        }
-        Update: {
-          canon_slug?: string | null
-          channel?: string
-          cohort?: string | null
-          created_at?: string
-          discovered_at?: string
-          id?: string
-          last_touched_at?: string | null
-          notes?: string | null
-          org_name?: string | null
-          signal_reason?: Json
-          signal_score?: number
-          snippet?: string | null
-          source?: string
-          source_run_id?: string | null
-          status?: string
-          target_handle?: string | null
-          target_name?: string | null
-          target_url?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      people: {
-        Row: {
-          capacity: string | null
-          created_at: string
-          display_name: string
-          handles: Json
-          id: string
-          lens_slug: string
-          notes: string | null
-          opt_in_level: string
-          role: string
-          updated_at: string
-        }
-        Insert: {
-          capacity?: string | null
-          created_at?: string
-          display_name: string
-          handles?: Json
-          id?: string
-          lens_slug: string
-          notes?: string | null
-          opt_in_level?: string
-          role?: string
-          updated_at?: string
-        }
-        Update: {
-          capacity?: string | null
-          created_at?: string
-          display_name?: string
-          handles?: Json
-          id?: string
-          lens_slug?: string
-          notes?: string | null
-          opt_in_level?: string
-          role?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "people_lens_slug_fkey"
-            columns: ["lens_slug"]
-            isOneToOne: false
-            referencedRelation: "lenses"
+            referencedRelation: "bad_faith_patterns"
             referencedColumns: ["slug"]
           },
         ]
@@ -1882,192 +1435,6 @@ export type Database = {
         }
         Relationships: []
       }
-      practitioner_sub_account_bindings: {
-        Row: {
-          can_approve: boolean
-          can_propose: boolean
-          created_at: string
-          id: string
-          sub_account_slug: string
-          user_id: string
-        }
-        Insert: {
-          can_approve?: boolean
-          can_propose?: boolean
-          created_at?: string
-          id?: string
-          sub_account_slug: string
-          user_id: string
-        }
-        Update: {
-          can_approve?: boolean
-          can_propose?: boolean
-          created_at?: string
-          id?: string
-          sub_account_slug?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "practitioner_sub_account_bindings_sub_account_slug_fkey"
-            columns: ["sub_account_slug"]
-            isOneToOne: false
-            referencedRelation: "ghl_sub_accounts"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
-      predator_pattern_observations: {
-        Row: {
-          connector_diligence_score: number | null
-          created_at: string
-          id: string
-          lure_language_pattern: string | null
-          payload_mechanism: string | null
-          red_flags_caught: string[] | null
-          typology: string
-          vector_type: string | null
-          where_caught: string | null
-        }
-        Insert: {
-          connector_diligence_score?: number | null
-          created_at?: string
-          id?: string
-          lure_language_pattern?: string | null
-          payload_mechanism?: string | null
-          red_flags_caught?: string[] | null
-          typology: string
-          vector_type?: string | null
-          where_caught?: string | null
-        }
-        Update: {
-          connector_diligence_score?: number | null
-          created_at?: string
-          id?: string
-          lure_language_pattern?: string | null
-          payload_mechanism?: string | null
-          red_flags_caught?: string[] | null
-          typology?: string
-          vector_type?: string | null
-          where_caught?: string | null
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          created_at: string | null
-          display_name: string | null
-          email: string | null
-          id: string
-        }
-        Insert: {
-          created_at?: string | null
-          display_name?: string | null
-          email?: string | null
-          id: string
-        }
-        Update: {
-          created_at?: string | null
-          display_name?: string | null
-          email?: string | null
-          id?: string
-        }
-        Relationships: []
-      }
-      redirect_clicks: {
-        Row: {
-          clicked_at: string
-          draft_id: string | null
-          frame_key: string | null
-          id: string
-          ip_hash: string | null
-          redirect_target_id: string
-          referrer: string | null
-          ua: string | null
-        }
-        Insert: {
-          clicked_at?: string
-          draft_id?: string | null
-          frame_key?: string | null
-          id?: string
-          ip_hash?: string | null
-          redirect_target_id: string
-          referrer?: string | null
-          ua?: string | null
-        }
-        Update: {
-          clicked_at?: string
-          draft_id?: string | null
-          frame_key?: string | null
-          id?: string
-          ip_hash?: string | null
-          redirect_target_id?: string
-          referrer?: string | null
-          ua?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "redirect_clicks_redirect_target_id_fkey"
-            columns: ["redirect_target_id"]
-            isOneToOne: false
-            referencedRelation: "redirect_targets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      redirect_targets: {
-        Row: {
-          audience_frames: Json
-          click_count: number
-          conversion_count: number
-          created_at: string
-          destination_url: string
-          id: string
-          is_active: boolean
-          min_privilege: string
-          slug: string
-          topic_slug: string | null
-          updated_at: string
-          video_url: string | null
-        }
-        Insert: {
-          audience_frames?: Json
-          click_count?: number
-          conversion_count?: number
-          created_at?: string
-          destination_url: string
-          id?: string
-          is_active?: boolean
-          min_privilege?: string
-          slug: string
-          topic_slug?: string | null
-          updated_at?: string
-          video_url?: string | null
-        }
-        Update: {
-          audience_frames?: Json
-          click_count?: number
-          conversion_count?: number
-          created_at?: string
-          destination_url?: string
-          id?: string
-          is_active?: boolean
-          min_privilege?: string
-          slug?: string
-          topic_slug?: string | null
-          updated_at?: string
-          video_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "redirect_targets_topic_slug_fkey"
-            columns: ["topic_slug"]
-            isOneToOne: false
-            referencedRelation: "topic_verticals"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
       reply_templates: {
         Row: {
           category: string
@@ -2075,21 +1442,23 @@ export type Database = {
           funnel_url: string | null
           id: string
           is_active: boolean
-          keywords: Json
+          keywords: string[] | null
           scaffold: string
           sort_order: number
           title: string
+          updated_at: string
         }
         Insert: {
-          category?: string
+          category: string
           created_at?: string
           funnel_url?: string | null
           id?: string
           is_active?: boolean
-          keywords?: Json
-          scaffold?: string
+          keywords?: string[] | null
+          scaffold: string
           sort_order?: number
-          title?: string
+          title: string
+          updated_at?: string
         }
         Update: {
           category?: string
@@ -2097,158 +1466,259 @@ export type Database = {
           funnel_url?: string | null
           id?: string
           is_active?: boolean
-          keywords?: Json
+          keywords?: string[] | null
           scaffold?: string
           sort_order?: number
           title?: string
+          updated_at?: string
         }
         Relationships: []
       }
-      resources: {
+      resource_matches: {
         Row: {
+          context_tier: string
+          contribution_obs: string | null
           created_at: string
-          description: string
-          icon: string
+          fulfilled_at: string | null
           id: string
-          is_active: boolean
-          resource_type: string
-          sort_order: number
-          title: string
-          url: string | null
+          offer_id: string
+          request_id: string
+          state: string
         }
         Insert: {
+          context_tier?: string
+          contribution_obs?: string | null
           created_at?: string
-          description: string
-          icon?: string
+          fulfilled_at?: string | null
           id?: string
-          is_active?: boolean
-          resource_type?: string
-          sort_order?: number
-          title: string
-          url?: string | null
+          offer_id: string
+          request_id: string
+          state?: string
         }
         Update: {
+          context_tier?: string
+          contribution_obs?: string | null
           created_at?: string
-          description?: string
-          icon?: string
+          fulfilled_at?: string | null
           id?: string
-          is_active?: boolean
-          resource_type?: string
-          sort_order?: number
+          offer_id?: string
+          request_id?: string
+          state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_matches_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "mesh_public_offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_matches_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "resource_offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_matches_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "resource_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resource_offers: {
+        Row: {
+          body_md: string | null
+          context_tier: string
+          created_at: string
+          geo_tag: string | null
+          id: string
+          kind: string
+          offerer_op: string
+          qty: number | null
+          title: string
+          unit: string | null
+          window_end: string | null
+          window_start: string | null
+          withdrawn_at: string | null
+        }
+        Insert: {
+          body_md?: string | null
+          context_tier?: string
+          created_at?: string
+          geo_tag?: string | null
+          id?: string
+          kind: string
+          offerer_op: string
+          qty?: number | null
+          title: string
+          unit?: string | null
+          window_end?: string | null
+          window_start?: string | null
+          withdrawn_at?: string | null
+        }
+        Update: {
+          body_md?: string | null
+          context_tier?: string
+          created_at?: string
+          geo_tag?: string | null
+          id?: string
+          kind?: string
+          offerer_op?: string
+          qty?: number | null
           title?: string
-          url?: string | null
+          unit?: string | null
+          window_end?: string | null
+          window_start?: string | null
+          withdrawn_at?: string | null
+        }
+        Relationships: []
+      }
+      resource_requests: {
+        Row: {
+          body_md: string | null
+          closed_at: string | null
+          context_tier: string
+          created_at: string
+          geo_tag: string | null
+          id: string
+          kind: string
+          needed_by: string | null
+          qty: number | null
+          requester_op: string
+          title: string
+          unit: string | null
+        }
+        Insert: {
+          body_md?: string | null
+          closed_at?: string | null
+          context_tier?: string
+          created_at?: string
+          geo_tag?: string | null
+          id?: string
+          kind: string
+          needed_by?: string | null
+          qty?: number | null
+          requester_op: string
+          title: string
+          unit?: string | null
+        }
+        Update: {
+          body_md?: string | null
+          closed_at?: string | null
+          context_tier?: string
+          created_at?: string
+          geo_tag?: string | null
+          id?: string
+          kind?: string
+          needed_by?: string | null
+          qty?: number | null
+          requester_op?: string
+          title?: string
+          unit?: string | null
         }
         Relationships: []
       }
       response_drafts: {
         Row: {
-          auto_posted: boolean
-          auto_posted_at: string | null
+          auto_posted: boolean | null
           classifier_reasoning: string | null
-          classifier_tier: number
+          classifier_tier: number | null
           created_at: string
-          cta_eligible: boolean | null
-          draft_body: string
+          created_by: string | null
           draft_text: string | null
           id: string
           narrative_track: string | null
           post_title: string | null
-          post_url: string | null
-          posted_at: string | null
-          reddit_comment_id: string | null
-          reddit_comment_url: string | null
           reddit_id: string | null
-          reply_to_comments: Json | null
+          reply_to_author: string | null
+          reply_to_text: string | null
           response_mode: string | null
-          reviewed_at: string | null
-          reviewed_by: string | null
-          safety_flags: Json | null
-          selected_frame_key: string | null
-          selected_redirect_id: string | null
-          shannon_edits: string | null
-          status: string
+          safety_flags: string | null
+          shannon_notes: string | null
+          shannon_prior_comment: string | null
+          status: string | null
           subreddit: string | null
           target_door: string | null
           target_path: string | null
+          template_id: string | null
           thread_id: string | null
+          thread_url: string | null
+          tone: string | null
           updated_at: string
+          used_at: string | null
           voice_key: string | null
           word_count: number | null
         }
         Insert: {
-          auto_posted?: boolean
-          auto_posted_at?: string | null
+          auto_posted?: boolean | null
           classifier_reasoning?: string | null
-          classifier_tier?: number
+          classifier_tier?: number | null
           created_at?: string
-          cta_eligible?: boolean | null
-          draft_body?: string
+          created_by?: string | null
           draft_text?: string | null
           id?: string
           narrative_track?: string | null
           post_title?: string | null
-          post_url?: string | null
-          posted_at?: string | null
-          reddit_comment_id?: string | null
-          reddit_comment_url?: string | null
           reddit_id?: string | null
-          reply_to_comments?: Json | null
+          reply_to_author?: string | null
+          reply_to_text?: string | null
           response_mode?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          safety_flags?: Json | null
-          selected_frame_key?: string | null
-          selected_redirect_id?: string | null
-          shannon_edits?: string | null
-          status?: string
+          safety_flags?: string | null
+          shannon_notes?: string | null
+          shannon_prior_comment?: string | null
+          status?: string | null
           subreddit?: string | null
           target_door?: string | null
           target_path?: string | null
+          template_id?: string | null
           thread_id?: string | null
+          thread_url?: string | null
+          tone?: string | null
           updated_at?: string
+          used_at?: string | null
           voice_key?: string | null
           word_count?: number | null
         }
         Update: {
-          auto_posted?: boolean
-          auto_posted_at?: string | null
+          auto_posted?: boolean | null
           classifier_reasoning?: string | null
-          classifier_tier?: number
+          classifier_tier?: number | null
           created_at?: string
-          cta_eligible?: boolean | null
-          draft_body?: string
+          created_by?: string | null
           draft_text?: string | null
           id?: string
           narrative_track?: string | null
           post_title?: string | null
-          post_url?: string | null
-          posted_at?: string | null
-          reddit_comment_id?: string | null
-          reddit_comment_url?: string | null
           reddit_id?: string | null
-          reply_to_comments?: Json | null
+          reply_to_author?: string | null
+          reply_to_text?: string | null
           response_mode?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          safety_flags?: Json | null
-          selected_frame_key?: string | null
-          selected_redirect_id?: string | null
-          shannon_edits?: string | null
-          status?: string
+          safety_flags?: string | null
+          shannon_notes?: string | null
+          shannon_prior_comment?: string | null
+          status?: string | null
           subreddit?: string | null
           target_door?: string | null
           target_path?: string | null
+          template_id?: string | null
           thread_id?: string | null
+          thread_url?: string | null
+          tone?: string | null
           updated_at?: string
+          used_at?: string | null
           voice_key?: string | null
           word_count?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "response_drafts_selected_redirect_id_fkey"
-            columns: ["selected_redirect_id"]
+            foreignKeyName: "response_drafts_template_id_fkey"
+            columns: ["template_id"]
             isOneToOne: false
-            referencedRelation: "redirect_targets"
+            referencedRelation: "reply_templates"
             referencedColumns: ["id"]
           },
           {
@@ -2260,29 +1730,94 @@ export type Database = {
           },
         ]
       }
-      sender_patterns: {
+      room_intelligence: {
         Row: {
-          created_at: string
+          connection_pattern_md: string | null
+          created_at: string | null
+          default_response_level: string | null
+          display_name: string
+          hwr_lean: Database["public"]["Enums"]["hwr_axis"][] | null
           id: string
-          pattern_type: string
-          pattern_value: string
-          signal: Json | null
+          metadata: Json | null
+          platform: string | null
+          room_slug: string
+          rules_md: string | null
+          story_md: string | null
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
+          connection_pattern_md?: string | null
+          created_at?: string | null
+          default_response_level?: string | null
+          display_name: string
+          hwr_lean?: Database["public"]["Enums"]["hwr_axis"][] | null
           id?: string
-          pattern_type: string
-          pattern_value: string
-          signal?: Json | null
+          metadata?: Json | null
+          platform?: string | null
+          room_slug: string
+          rules_md?: string | null
+          story_md?: string | null
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
+          connection_pattern_md?: string | null
+          created_at?: string | null
+          default_response_level?: string | null
+          display_name?: string
+          hwr_lean?: Database["public"]["Enums"]["hwr_axis"][] | null
           id?: string
-          pattern_type?: string
-          pattern_value?: string
-          signal?: Json | null
+          metadata?: Json | null
+          platform?: string | null
+          room_slug?: string
+          rules_md?: string | null
+          story_md?: string | null
+          updated_at?: string | null
         }
         Relationships: []
+      }
+      routing_logic: {
+        Row: {
+          created_at: string | null
+          feedback_notes: string | null
+          hwr_match: Database["public"]["Enums"]["hwr_axis"][] | null
+          id: string
+          prompt_template_md: string
+          response_level: string
+          room_slug: string | null
+          situation_key: string
+          toolkit_slugs: string[] | null
+        }
+        Insert: {
+          created_at?: string | null
+          feedback_notes?: string | null
+          hwr_match?: Database["public"]["Enums"]["hwr_axis"][] | null
+          id?: string
+          prompt_template_md: string
+          response_level: string
+          room_slug?: string | null
+          situation_key: string
+          toolkit_slugs?: string[] | null
+        }
+        Update: {
+          created_at?: string | null
+          feedback_notes?: string | null
+          hwr_match?: Database["public"]["Enums"]["hwr_axis"][] | null
+          id?: string
+          prompt_template_md?: string
+          response_level?: string
+          room_slug?: string | null
+          situation_key?: string
+          toolkit_slugs?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routing_logic_room_slug_fkey"
+            columns: ["room_slug"]
+            isOneToOne: false
+            referencedRelation: "room_intelligence"
+            referencedColumns: ["room_slug"]
+          },
+        ]
       }
       site_status: {
         Row: {
@@ -2311,617 +1846,234 @@ export type Database = {
         }
         Relationships: []
       }
-      skill_files: {
+      social_handles: {
         Row: {
-          applies_to_modes: string[]
-          applies_to_tools: string[]
-          body_markdown: string
-          created_at: string
+          created_at: string | null
+          display_name: string | null
+          email: string | null
+          handle: string
+          hwr_lean: Database["public"]["Enums"]["hwr_axis"][] | null
           id: string
-          is_enabled: boolean
-          scoped_to_sub_account: string | null
-          slug: string
-          sort_order: number
-          summary: string | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          applies_to_modes?: string[]
-          applies_to_tools?: string[]
-          body_markdown: string
-          created_at?: string
-          id?: string
-          is_enabled?: boolean
-          scoped_to_sub_account?: string | null
-          slug: string
-          sort_order?: number
-          summary?: string | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          applies_to_modes?: string[]
-          applies_to_tools?: string[]
-          body_markdown?: string
-          created_at?: string
-          id?: string
-          is_enabled?: boolean
-          scoped_to_sub_account?: string | null
-          slug?: string
-          sort_order?: number
-          summary?: string | null
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "skill_files_scoped_to_sub_account_fkey"
-            columns: ["scoped_to_sub_account"]
-            isOneToOne: false
-            referencedRelation: "ghl_sub_accounts"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
-      skills: {
-        Row: {
-          always_loaded: boolean
-          category: string
-          created_at: string
-          description: string | null
-          id: string
-          is_active: boolean
-          min_privilege: string
-          name: string
-          prompt_fragment: string | null
-          slug: string
-          sort_order: number
-        }
-        Insert: {
-          always_loaded?: boolean
-          category: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean
-          min_privilege?: string
-          name: string
-          prompt_fragment?: string | null
-          slug: string
-          sort_order?: number
-        }
-        Update: {
-          always_loaded?: boolean
-          category?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean
-          min_privilege?: string
-          name?: string
-          prompt_fragment?: string | null
-          slug?: string
-          sort_order?: number
-        }
-        Relationships: []
-      }
-      source_kill_switches: {
-        Row: {
-          disabled_at: string | null
-          disabled_by: string | null
-          enabled: boolean
-          reason: string | null
-          source_platform: string
-          updated_at: string
-        }
-        Insert: {
-          disabled_at?: string | null
-          disabled_by?: string | null
-          enabled?: boolean
-          reason?: string | null
-          source_platform: string
-          updated_at?: string
-        }
-        Update: {
-          disabled_at?: string | null
-          disabled_by?: string | null
-          enabled?: boolean
-          reason?: string | null
-          source_platform?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      subreddit_discoveries: {
-        Row: {
-          approved_at: string | null
-          approved_by: string | null
-          created_at: string
-          description: string | null
-          id: string
-          member_count_hint: string | null
+          is_whitelisted: boolean | null
+          metadata: Json | null
           notes: string | null
-          relevance_reason: Json | null
-          relevance_score: number | null
-          seed_topic: string
-          status: string
-          subreddit: string
-          updated_at: string
-          url: string | null
+          platform: string
         }
         Insert: {
-          approved_at?: string | null
-          approved_by?: string | null
-          created_at?: string
-          description?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          handle: string
+          hwr_lean?: Database["public"]["Enums"]["hwr_axis"][] | null
           id?: string
-          member_count_hint?: string | null
+          is_whitelisted?: boolean | null
+          metadata?: Json | null
           notes?: string | null
-          relevance_reason?: Json | null
-          relevance_score?: number | null
-          seed_topic: string
-          status?: string
-          subreddit: string
-          updated_at?: string
-          url?: string | null
+          platform: string
         }
         Update: {
-          approved_at?: string | null
-          approved_by?: string | null
-          created_at?: string
-          description?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          handle?: string
+          hwr_lean?: Database["public"]["Enums"]["hwr_axis"][] | null
           id?: string
-          member_count_hint?: string | null
+          is_whitelisted?: boolean | null
+          metadata?: Json | null
           notes?: string | null
-          relevance_reason?: Json | null
-          relevance_score?: number | null
-          seed_topic?: string
-          status?: string
-          subreddit?: string
-          updated_at?: string
-          url?: string | null
+          platform?: string
         }
         Relationships: []
       }
-      switchboard_decisions: {
+      stance_vectors: {
         Row: {
-          confidence: number | null
-          context: Json
-          created_at: string
-          id: string
-          mode_slug: string
-          outcome: string | null
-          reasoning: string | null
-          sub_account_slug: string | null
-          tool_chosen: string | null
-          tools_considered: string[]
-          user_id: string
-        }
-        Insert: {
-          confidence?: number | null
-          context?: Json
-          created_at?: string
-          id?: string
-          mode_slug: string
-          outcome?: string | null
-          reasoning?: string | null
-          sub_account_slug?: string | null
-          tool_chosen?: string | null
-          tools_considered?: string[]
-          user_id: string
-        }
-        Update: {
-          confidence?: number | null
-          context?: Json
-          created_at?: string
-          id?: string
-          mode_slug?: string
-          outcome?: string | null
-          reasoning?: string | null
-          sub_account_slug?: string | null
-          tool_chosen?: string | null
-          tools_considered?: string[]
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "switchboard_decisions_sub_account_slug_fkey"
-            columns: ["sub_account_slug"]
-            isOneToOne: false
-            referencedRelation: "ghl_sub_accounts"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
-      telegram_channels: {
-        Row: {
-          created_at: string
-          host_display_name: string | null
-          host_user_id: string | null
-          id: string
-          is_active: boolean
-          label: string
-          scope_config: Json
-          slug: string
-        }
-        Insert: {
-          created_at?: string
-          host_display_name?: string | null
-          host_user_id?: string | null
-          id?: string
-          is_active?: boolean
-          label: string
-          scope_config?: Json
-          slug: string
-        }
-        Update: {
-          created_at?: string
-          host_display_name?: string | null
-          host_user_id?: string | null
-          id?: string
-          is_active?: boolean
-          label?: string
-          scope_config?: Json
-          slug?: string
-        }
-        Relationships: []
-      }
-      tool_library: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          is_active: boolean
-          slug: string
-          tier_required: string | null
-          title: string
-          url: string | null
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean
-          slug: string
-          tier_required?: string | null
-          title: string
-          url?: string | null
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean
-          slug?: string
-          tier_required?: string | null
-          title?: string
-          url?: string | null
-        }
-        Relationships: []
-      }
-      tool_registry: {
-        Row: {
-          confidence_threshold: number
-          config: Json
-          created_at: string
-          description: string | null
-          id: string
-          is_enabled: boolean
-          kind: string
-          label: string
-          skill_summary: string | null
-          slug: string
-          surface: string
+          context_tier: string
+          sample_n: number
+          subject_ref: string
           updated_at: string
+          vector: Json
         }
         Insert: {
-          confidence_threshold?: number
-          config?: Json
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_enabled?: boolean
-          kind: string
-          label: string
-          skill_summary?: string | null
-          slug: string
-          surface?: string
+          context_tier?: string
+          sample_n?: number
+          subject_ref: string
           updated_at?: string
+          vector: Json
         }
         Update: {
-          confidence_threshold?: number
-          config?: Json
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_enabled?: boolean
-          kind?: string
-          label?: string
-          skill_summary?: string | null
-          slug?: string
-          surface?: string
+          context_tier?: string
+          sample_n?: number
+          subject_ref?: string
           updated_at?: string
+          vector?: Json
         }
         Relationships: []
       }
-      topic_verticals: {
+      substrate_sources: {
         Row: {
+          category: number
+          context_tier: string
           created_at: string
-          id: string
-          min_privilege: string
-          name: string
-          slug: string
-          status: string
+          display_name: string
+          institution: string | null
+          license: string
+          notes_md: string | null
+          redundant_mirrors: Json
+          refresh_cadence: string | null
+          source_slug: string
+          stability_rating: string
+          url_root: string | null
         }
         Insert: {
+          category: number
+          context_tier?: string
           created_at?: string
-          id?: string
-          min_privilege?: string
-          name: string
-          slug: string
-          status?: string
+          display_name: string
+          institution?: string | null
+          license: string
+          notes_md?: string | null
+          redundant_mirrors?: Json
+          refresh_cadence?: string | null
+          source_slug: string
+          stability_rating: string
+          url_root?: string | null
         }
         Update: {
+          category?: number
+          context_tier?: string
           created_at?: string
+          display_name?: string
+          institution?: string | null
+          license?: string
+          notes_md?: string | null
+          redundant_mirrors?: Json
+          refresh_cadence?: string | null
+          source_slug?: string
+          stability_rating?: string
+          url_root?: string | null
+        }
+        Relationships: []
+      }
+      toolkit_registry: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          hwr_axes: Database["public"]["Enums"]["hwr_axis"][] | null
+          id: string
+          metadata: Json | null
+          name: string
+          short_pitch: string | null
+          short_story_md: string | null
+          tool_slug: string
+          url: string | null
+          visibility: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          hwr_axes?: Database["public"]["Enums"]["hwr_axis"][] | null
           id?: string
-          min_privilege?: string
+          metadata?: Json | null
+          name: string
+          short_pitch?: string | null
+          short_story_md?: string | null
+          tool_slug: string
+          url?: string | null
+          visibility?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          hwr_axes?: Database["public"]["Enums"]["hwr_axis"][] | null
+          id?: string
+          metadata?: Json | null
           name?: string
-          slug?: string
-          status?: string
+          short_pitch?: string | null
+          short_story_md?: string | null
+          tool_slug?: string
+          url?: string | null
+          visibility?: string | null
         }
         Relationships: []
-      }
-      user_module_progress: {
-        Row: {
-          completed_at: string | null
-          created_at: string
-          id: string
-          module_id: string
-          status: string
-          user_id: string
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          module_id: string
-          status?: string
-          user_id: string
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          module_id?: string
-          status?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_module_progress_module_id_fkey"
-            columns: ["module_id"]
-            isOneToOne: false
-            referencedRelation: "course_modules"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       user_roles: {
         Row: {
+          created_at: string
           id: string
-          role: Database["public"]["Enums"]["app_role"]
+          role: string
           user_id: string
         }
         Insert: {
+          created_at?: string
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: string
           user_id: string
         }
         Update: {
+          created_at?: string
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: string
           user_id?: string
         }
         Relationships: []
       }
-      user_templates: {
+      value_ladder_tiers: {
         Row: {
+          cadence: string | null
           created_at: string | null
+          description_md: string | null
+          display_name: string
+          entitlements: Json | null
           id: string
-          input_type: string
-          name: string
-          selected_options: Json
-          user_id: string
+          price_cents: number | null
+          rung: number
+          tier_slug: string
+          visibility: string | null
         }
         Insert: {
+          cadence?: string | null
           created_at?: string | null
+          description_md?: string | null
+          display_name: string
+          entitlements?: Json | null
           id?: string
-          input_type: string
-          name: string
-          selected_options?: Json
-          user_id: string
+          price_cents?: number | null
+          rung: number
+          tier_slug: string
+          visibility?: string | null
         }
         Update: {
+          cadence?: string | null
           created_at?: string | null
+          description_md?: string | null
+          display_name?: string
+          entitlements?: Json | null
           id?: string
-          input_type?: string
-          name?: string
-          selected_options?: Json
-          user_id?: string
+          price_cents?: number | null
+          rung?: number
+          tier_slug?: string
+          visibility?: string | null
         }
         Relationships: []
-      }
-      venues: {
-        Row: {
-          address: string | null
-          calendar_url: string | null
-          city: string | null
-          created_at: string
-          host_person_id: string | null
-          id: string
-          is_active: boolean
-          latitude: number | null
-          lens_slug: string
-          longitude: number | null
-          name: string
-          notes: string | null
-          region: string | null
-          service_radius_miles: number | null
-          website: string | null
-        }
-        Insert: {
-          address?: string | null
-          calendar_url?: string | null
-          city?: string | null
-          created_at?: string
-          host_person_id?: string | null
-          id?: string
-          is_active?: boolean
-          latitude?: number | null
-          lens_slug: string
-          longitude?: number | null
-          name: string
-          notes?: string | null
-          region?: string | null
-          service_radius_miles?: number | null
-          website?: string | null
-        }
-        Update: {
-          address?: string | null
-          calendar_url?: string | null
-          city?: string | null
-          created_at?: string
-          host_person_id?: string | null
-          id?: string
-          is_active?: boolean
-          latitude?: number | null
-          lens_slug?: string
-          longitude?: number | null
-          name?: string
-          notes?: string | null
-          region?: string | null
-          service_radius_miles?: number | null
-          website?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "venues_host_person_id_fkey"
-            columns: ["host_person_id"]
-            isOneToOne: false
-            referencedRelation: "people"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "venues_lens_slug_fkey"
-            columns: ["lens_slug"]
-            isOneToOne: false
-            referencedRelation: "lenses"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
-      voice_memos: {
-        Row: {
-          audio_url: string | null
-          captured_at: string
-          id: string
-          operator_id: string
-          processed_at: string | null
-          routing_decision: Json | null
-          source_channel: string | null
-          status: string
-          transcript: string | null
-        }
-        Insert: {
-          audio_url?: string | null
-          captured_at?: string
-          id?: string
-          operator_id: string
-          processed_at?: string | null
-          routing_decision?: Json | null
-          source_channel?: string | null
-          status?: string
-          transcript?: string | null
-        }
-        Update: {
-          audio_url?: string | null
-          captured_at?: string
-          id?: string
-          operator_id?: string
-          processed_at?: string | null
-          routing_decision?: Json | null
-          source_channel?: string | null
-          status?: string
-          transcript?: string | null
-        }
-        Relationships: []
-      }
-      voice_templates: {
-        Row: {
-          created_at: string
-          drift_guardrails: Json
-          id: string
-          min_privilege: string
-          register_notes: string | null
-          slug: string
-          system_prompt_fragment: string
-          topic_slug: string | null
-          updated_at: string
-          venue: string
-        }
-        Insert: {
-          created_at?: string
-          drift_guardrails?: Json
-          id?: string
-          min_privilege?: string
-          register_notes?: string | null
-          slug: string
-          system_prompt_fragment: string
-          topic_slug?: string | null
-          updated_at?: string
-          venue: string
-        }
-        Update: {
-          created_at?: string
-          drift_guardrails?: Json
-          id?: string
-          min_privilege?: string
-          register_notes?: string | null
-          slug?: string
-          system_prompt_fragment?: string
-          topic_slug?: string | null
-          updated_at?: string
-          venue?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "voice_templates_topic_slug_fkey"
-            columns: ["topic_slug"]
-            isOneToOne: false
-            referencedRelation: "topic_verticals"
-            referencedColumns: ["slug"]
-          },
-        ]
       }
       webhook_errors: {
         Row: {
-          created_at: string | null
-          error_message: string | null
+          created_at: string
+          error_message: string
           event_type: string
           id: string
           payload: Json | null
         }
         Insert: {
-          created_at?: string | null
-          error_message?: string | null
+          created_at?: string
+          error_message: string
           event_type: string
           id?: string
           payload?: Json | null
         }
         Update: {
-          created_at?: string | null
-          error_message?: string | null
+          created_at?: string
+          error_message?: string
           event_type?: string
           id?: string
           payload?: Json | null
@@ -2930,71 +2082,183 @@ export type Database = {
       }
     }
     Views: {
-      shadow_log: {
+      context_envelope: {
         Row: {
-          author: string | null
-          auto_posted: boolean | null
-          auto_posted_at: string | null
-          classifier_reasoning: string | null
-          classifier_tier: number | null
+          bundle_count: number | null
+          chunk_count: number | null
+          classifications: Json | null
+          coke_vault: boolean | null
+          context_tier: Database["public"]["Enums"]["context_tier"] | null
           created_at: string | null
-          draft_body: string | null
-          id: string | null
-          log_category: string | null
-          post_title: string | null
-          post_url: string | null
-          reddit_comment_id: string | null
-          reddit_comment_url: string | null
-          reviewed_at: string | null
-          reviewed_by: string | null
-          safety_flags: Json | null
-          status: string | null
-          subreddit: string | null
-          thread_id: string | null
+          document_id: string | null
+          document_slug: string | null
+          document_title: string | null
+          document_type: string | null
+          hook_count: number | null
+          rule_count: number | null
           updated_at: string | null
+          visibility: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "response_drafts_thread_id_fkey"
-            columns: ["thread_id"]
-            isOneToOne: false
-            referencedRelation: "community_threads"
-            referencedColumns: ["id"]
-          },
-        ]
+        Insert: {
+          bundle_count?: never
+          chunk_count?: never
+          classifications?: never
+          coke_vault?: boolean | null
+          context_tier?: Database["public"]["Enums"]["context_tier"] | null
+          created_at?: string | null
+          document_id?: string | null
+          document_slug?: string | null
+          document_title?: string | null
+          document_type?: string | null
+          hook_count?: never
+          rule_count?: never
+          updated_at?: string | null
+          visibility?: string | null
+        }
+        Update: {
+          bundle_count?: never
+          chunk_count?: never
+          classifications?: never
+          coke_vault?: boolean | null
+          context_tier?: Database["public"]["Enums"]["context_tier"] | null
+          created_at?: string | null
+          document_id?: string | null
+          document_slug?: string | null
+          document_title?: string | null
+          document_type?: string | null
+          hook_count?: never
+          rule_count?: never
+          updated_at?: string | null
+          visibility?: string | null
+        }
+        Relationships: []
+      }
+      mesh_public_offers: {
+        Row: {
+          body_md: string | null
+          created_at: string | null
+          geo_tag: string | null
+          id: string | null
+          kind: string | null
+          qty: number | null
+          title: string | null
+          unit: string | null
+          window_end: string | null
+          window_start: string | null
+        }
+        Insert: {
+          body_md?: string | null
+          created_at?: string | null
+          geo_tag?: string | null
+          id?: string | null
+          kind?: string | null
+          qty?: number | null
+          title?: string | null
+          unit?: string | null
+          window_end?: string | null
+          window_start?: string | null
+        }
+        Update: {
+          body_md?: string | null
+          created_at?: string | null
+          geo_tag?: string | null
+          id?: string | null
+          kind?: string | null
+          qty?: number | null
+          title?: string | null
+          unit?: string | null
+          window_end?: string | null
+          window_start?: string | null
+        }
+        Relationships: []
       }
     }
     Functions: {
-      check_auto_post_eligible: { Args: { _draft_id: string }; Returns: Json }
-      has_min_privilege: {
-        Args: { _min: string; _user_id: string }
-        Returns: boolean
+      allowed_context_tiers: {
+        Args: never
+        Returns: Database["public"]["Enums"]["context_tier"][]
       }
-      has_role: {
+      current_tier_ceiling: {
+        Args: never
+        Returns: Database["public"]["Enums"]["context_tier"]
+      }
+      danny_status: { Args: never; Returns: Json }
+      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
+      library_explain_rpc: {
         Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
+          p_archetype?: string
+          p_hwr?: string
+          p_limit?: number
+          p_query: string
+          p_sector?: string
         }
-        Returns: boolean
+        Returns: Json
       }
-      is_email_approved: { Args: { _email: string }; Returns: boolean }
-      select_redirect_for_draft: {
-        Args: { _topic_slug: string; _venue: string }
+      library_match: {
+        Args: {
+          archetype?: string
+          hwr?: string
+          limit_n?: number
+          pain?: string
+          query_text?: string
+          sector?: string
+        }
         Returns: {
-          audience_frames: Json
-          destination_url: string
-          id: string
+          companion_role: string
+          cta_mode: string
+          doc_type: string
+          document_id: string
+          fulfillment_posture: string
+          matched_axes: string[]
+          rule_posture: string
+          rule_slug: string
+          score: number
           slug: string
-          video_url: string
+          title: string
         }[]
       }
-      user_can_read_skill: {
-        Args: { _scope: string; _user_id: string }
-        Returns: boolean
+      library_match_rpc: {
+        Args: {
+          p_archetype?: string
+          p_hwr?: string
+          p_limit?: number
+          p_query: string
+          p_sector?: string
+        }
+        Returns: Json
       }
+      log_escalation: {
+        Args: {
+          p_caller: string
+          p_cost_usd?: number
+          p_decision?: string
+          p_decision_meta?: Json
+          p_document_id: string
+          p_error?: string
+          p_latency_ms?: number
+          p_prompt: string
+          p_reason_code: string
+          p_response?: string
+          p_response_tokens?: number
+          p_target_model: string
+        }
+        Returns: string
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       app_role: "practitioner" | "healer" | "administrator" | "architect"
+      context_tier: "public" | "internal" | "vault" | "substrate" | "governance"
+      distribution_status:
+        | "queued"
+        | "sent"
+        | "confirmed"
+        | "failed"
+        | "skipped"
+      hwr_axis: "health" | "wealth" | "relationship"
+      radar_platform: "reddit" | "discord" | "forum" | "other" | "bluesky"
+      thread_status: "new" | "reviewed" | "replied" | "archived" | "flagged"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3123,6 +2387,11 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["practitioner", "healer", "administrator", "architect"],
+      context_tier: ["public", "internal", "vault", "substrate", "governance"],
+      distribution_status: ["queued", "sent", "confirmed", "failed", "skipped"],
+      hwr_axis: ["health", "wealth", "relationship"],
+      radar_platform: ["reddit", "discord", "forum", "other", "bluesky"],
+      thread_status: ["new", "reviewed", "replied", "archived", "flagged"],
     },
   },
 } as const
