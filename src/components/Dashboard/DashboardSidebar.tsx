@@ -1,4 +1,4 @@
-import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil, Network, BookOpen, CalendarPlus, Cable, Target, MessageSquare, Compass, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil, Network, BookOpen, CalendarPlus, Cable, Target, MessageSquare, Compass, ChevronLeft, ChevronRight, Table2 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { supabase } from '@/integrations/supabase/client';
