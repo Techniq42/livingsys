@@ -139,7 +139,7 @@ var remember_fact_default = defineTool4({
 });
 
 // src/lib/mcp/index.ts
-var projectRef = "spoiizdwriqfspehbcwp";
+var projectRef = "eyoqexibycelhsatitwt";
 var mcp_default = defineMcp({
   name: "sovereign-os-mcp",
   title: "Sovereign OS MCP",
