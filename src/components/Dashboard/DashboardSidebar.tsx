@@ -39,6 +39,7 @@ const bottomNavItems = [
   { to: '/dashboard/outreach', label: 'Outreach', icon: Target, end: false, architectOnly: true },
   { to: '/dashboard/discovery', label: 'Discovery', icon: Compass, end: false, architectOnly: true },
   { to: '/dashboard/conversations', label: 'Conversations', icon: MessageSquare, end: false },
+  { to: '/dashboard/tables', label: 'Tables', icon: Table2, end: false },
   { to: '/dashboard/settings', label: 'Settings', icon: Settings, end: false },
 ];
 
