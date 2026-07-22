@@ -1,4 +1,4 @@
-import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil, Network, BookOpen, CalendarPlus, Cable, Target, MessageSquare, Compass, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, Upload, Radar, Activity, BarChart3, GitFork, Settings, LogOut, Sparkles, Map, Inbox, Mail, Pencil, Network, BookOpen, CalendarPlus, Cable, Target, MessageSquare, Compass, ChevronLeft, ChevronRight, Table2 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useReduceMotion } from '@/hooks/use-reduce-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,6 +39,7 @@ const bottomNavItems = [
   { to: '/dashboard/outreach', label: 'Outreach', icon: Target, end: false, architectOnly: true },
   { to: '/dashboard/discovery', label: 'Discovery', icon: Compass, end: false, architectOnly: true },
   { to: '/dashboard/conversations', label: 'Conversations', icon: MessageSquare, end: false },
+  { to: '/dashboard/tables', label: 'Tables', icon: Table2, end: false },
   { to: '/dashboard/settings', label: 'Settings', icon: Settings, end: false },
 ];
 
